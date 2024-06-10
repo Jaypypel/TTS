@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TTSRegistrationActivity">
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="103dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginLeft="100dp"
+                android:text="Registration"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/tableLayout1">
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <EditText
+                android:id="@+id/editTextName"
+                android:layout_width="220dp"
+                android:layout_height="40dp"
+                android:layout_column="1"
+                android:layout_marginLeft="45dp"
+                android:ems="10"
+                android:hint="Enter Name"
+                android:inputType="textPersonName" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <EditText
+                android:id="@+id/editTextRegUserName"
+                android:layout_width="220dp"
+                android:layout_height="40dp"
+                android:layout_column="1"
+                android:layout_marginLeft="45dp"
+                android:ems="10"
+                android:hint="Enter User Name"
+                android:inputType="textPersonName" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+
+            <EditText
+                android:id="@+id/editTextRegPassword"
+                android:layout_width="220dp"
+                android:layout_height="40dp"
+                android:layout_column="1"
+                android:layout_marginLeft="45dp"
+                android:ems="10"
+                android:hint="Enter Password"
+                android:inputType="textPassword" />
+
+            <ToggleButton
+                android:id="@+id/reg_password_visibility"
+                android:layout_width="31dp"
+                android:layout_height="26dp"
+                android:layout_alignRight="@+id/editTextRegPassword"
+                android:layout_marginLeft="-30dp"
+                android:background="@drawable/icon_password_eye"
+                android:clickable="true"
+                android:textOn=""
+                android:textOff=""
+                android:text=""/>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <EditText
+                android:id="@+id/editTextRetypePassword"
+                android:layout_width="220dp"
+                android:layout_height="40dp"
+                android:layout_column="1"
+                android:layout_marginLeft="45dp"
+                android:ems="10"
+                android:hint="Retype Password"
+                android:inputType="textPassword" />
+
+            <ToggleButton
+                android:id="@+id/reg_retype_password_visibility"
+                android:layout_width="31dp"
+                android:layout_height="26dp"
+                android:layout_alignRight="@+id/editTextRetypePassword"
+                android:layout_marginLeft="-30dp"
+                android:background="@drawable/icon_password_eye"
+                android:clickable="true"
+                android:textOn=""
+                android:textOff=""
+                android:text=""/>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <EditText
+                android:id="@+id/editTextEmail"
+                android:layout_width="220dp"
+                android:layout_height="40dp"
+                android:layout_column="1"
+                android:layout_marginLeft="45dp"
+                android:ems="10"
+                android:hint="Enter E-Mail"
+                android:inputType="textEmailAddress" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <EditText
+                android:id="@+id/editTextMobileNo"
+                android:layout_width="220dp"
+                android:layout_height="40dp"
+                android:layout_column="1"
+                android:layout_marginLeft="45dp"
+                android:ems="10"
+                android:hint="Enter Mobile No"
+                android:inputType="phone" />
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/tableLayout2">
+
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <Button
+                android:id="@+id/buttonCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginLeft="20dp"
+                android:text="@android:string/cancel"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/buttonSubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_marginLeft="100dp"
+                android:text="Submit"
+                android:textStyle="bold" />
+
+            <requestFocus />
+        </TableRow>
+
+    </TableLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBarInReg"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:progressDrawable="@drawable/circular_progress_bar" />
+
+</RelativeLayout>

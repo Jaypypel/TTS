@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/textViewUser"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginTop="-10dp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/editTextDate"
+                android:layout_width="97dp"
+                android:layout_height="35dp"
+                android:layout_column="2"
+                android:layout_marginLeft="90dp"
+                android:ems="10"
+                android:hint="Enter Date"
+                android:inputType="textPersonName"
+                android:paddingBottom="5dp" />
+
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout1"
+        android:layout_marginTop="0dp">
+
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/textView27"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="Project Code:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/TSTextViewProjNo"
+                android:layout_width="220dp"
+                android:layout_height="40dp"
+                android:layout_column="2"
+                android:ems="10"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/textView28"
+                android:layout_width="94dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="Project Name:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/TSTextViewProjName"
+                android:layout_width="220dp"
+                android:layout_height="40dp"
+                android:layout_column="2"
+                android:ems="10"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/textView21"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="Activity Name:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/TSTextViewActName"
+                android:layout_width="220dp"
+                android:layout_height="37dp"
+                android:layout_column="2"
+                android:ems="10"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="80dp"
+                android:layout_height="20dp"
+                android:layout_column="1"
+                android:text="Task Name:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/TSTextViewTaskName"
+                android:layout_width="220dp"
+                android:layout_height="40dp"
+                android:layout_column="2"
+                android:ems="10"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+
+
+    </TableLayout>
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout2"
+        android:layout_marginTop="0dp">
+
+        <TableRow
+            android:id="@+id/tableRow6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/editTextStartTime"
+                android:layout_width="95dp"
+                android:layout_height="40dp"
+                android:layout_column="1"
+                android:layout_marginLeft="20dp"
+                android:ems="10"
+                android:hint="Start Time"
+                android:inputType="time" />
+
+            <EditText
+                android:id="@+id/editTextEndTime"
+                android:layout_width="95dp"
+                android:layout_height="40dp"
+                android:layout_column="2"
+                android:layout_marginLeft="70dp"
+                android:ems="10"
+                android:hint="End Time"
+                android:inputType="time" />
+
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout3"
+        android:layout_marginTop="0dp">
+
+    <TableRow
+        android:id="@+id/tableRow7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <Spinner
+            android:id="@+id/spinnerTimeShareMeasurable"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:spinnerMode="dialog"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/editTextTimeShareMeasurableQty"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_column="2"
+            android:layout_marginLeft="5dp"
+            android:ems="10"
+            android:hint="Qty"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/editTextTimeShareMeasurableUnit"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_column="3"
+            android:layout_marginLeft="5dp"
+            android:ems="10"
+            android:hint="Unit"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/buttonTimeShareMeasurableAdd"
+            android:layout_width="58dp"
+            android:layout_height="40dp"
+            android:layout_column="4"
+            android:layout_marginLeft="5dp"
+            android:gravity="center_horizontal"
+            android:text="ADD"
+            android:textStyle="bold" />
+
+
+    </TableRow>
+    </TableLayout>
+
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout4"
+        android:layout_marginTop="0dp">
+
+    <TableRow
+        android:id="@+id/tableRow8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <ListView
+            android:id="@+id/listTimeShareMeasurable"
+            android:layout_width="305dp"
+            android:layout_height="63dp"
+            android:layout_column="1"
+            android:layout_marginLeft="10dp" />
+    </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/editTextDescription"
+                android:layout_width="305dp"
+                android:layout_height="40dp"
+                android:layout_column="2"
+                android:layout_marginLeft="-307dp"
+                android:ems="10"
+                android:hint="Enter Description"
+                android:inputType="textMultiLine" />
+        </TableRow>
+    </TableLayout>
+
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout6"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout5"
+        android:layout_marginTop="5dp">
+
+        <TableRow
+            android:id="@+id/tableRow10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <Button
+                android:id="@+id/buttonCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginLeft="40dp"
+                android:text="Cancel"
+                android:textStyle="bold" />
+
+            <!--<Button-->
+                <!--android:id="@+id/buttonPreview"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_column="2"-->
+                <!--android:layout_marginLeft="20dp"-->
+                <!--android:text="Preview"-->
+                <!--android:textStyle="bold" />-->
+
+            <Button
+                android:id="@+id/buttonSubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_marginLeft="40dp"
+                android:text="Submit"
+                android:textStyle="bold" />
+        </TableRow>
+    </TableLayout>
+
+    <!--<ProgressBar-->
+        <!--android:id="@+id/progressBarInTimeShare"-->
+        <!--style="?android:attr/progressBarStyleLarge"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--android:progressDrawable="@drawable/circular_progress_bar" />-->
+</RelativeLayout>

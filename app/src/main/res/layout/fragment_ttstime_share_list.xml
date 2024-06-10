@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".TTSTimeShareListFragment">
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/textViewTimeShareListFragmentUser"
+                android:layout_width="92dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewTimeShareListFragmentDate"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_column="2"
+                android:layout_marginLeft="65dp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout1"
+        android:layout_marginTop="20dp">
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/editTextStartDate"
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:layout_column="1"
+                android:layout_marginLeft="20dp"
+                android:ems="10"
+                android:hint="Start Date"
+                android:inputType="date"
+                android:paddingTop="5dp" />
+
+            <EditText
+                android:id="@+id/editTextEndDate"
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:layout_column="2"
+                android:layout_marginLeft="80dp"
+                android:ems="10"
+                android:hint="End Date"
+                android:inputType="date"
+                android:paddingTop="5dp" />
+
+        </TableRow>
+
+    </TableLayout>
+
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout2"
+        android:layout_marginTop="20dp">
+
+        <TableRow
+            android:id="@+id/tableRow7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <Button
+                android:id="@+id/buttonDisplayTimeShares"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginLeft="80dp"
+                android:text="Get TimeShares" />
+
+        </TableRow>
+
+    </TableLayout>
+
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout3"
+        android:layout_marginTop="20dp">
+
+    <TableRow
+        android:id="@+id/tableRow8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <ListView
+            android:id="@+id/timeShareList"
+            android:layout_width="308dp"
+            android:layout_height="283dp"
+            android:layout_column="1" />
+
+    </TableRow>
+
+    </TableLayout>
+
+</RelativeLayout>

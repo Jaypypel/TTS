@@ -1,0 +1,200 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/textViewTOAUser"
+                android:layout_width="92dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginLeft="5dp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewOtherActivityDate"
+                android:layout_width="150dp"
+                android:layout_height="18dp"
+                android:layout_column="1"
+                android:layout_marginLeft="60dp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewOtherActivityTime"
+                android:layout_width="150dp"
+                android:layout_height="18dp"
+                android:layout_column="3"
+                android:layout_marginLeft="-150dp"
+                android:layout_marginTop="22dp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+
+        </TableRow>
+
+    </TableLayout>
+
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout1"
+        android:layout_marginTop="20dp">
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <EditText
+                android:id="@+id/editTextTOADate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginLeft="60dp"
+                android:ems="10"
+                android:hint="Enter Date"
+                android:inputType="textPersonName" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <Spinner
+                android:id="@+id/spinnerTaskOtherActSelect"
+                android:layout_width="209dp"
+                android:layout_height="40dp"
+                android:layout_column="1"
+                android:layout_marginLeft="60dp"
+                android:spinnerMode="dialog" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout2"
+        android:layout_marginTop="20dp">
+
+        <TableRow
+            android:id="@+id/tableRow7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <EditText
+                android:id="@+id/editTextTOAStartTime"
+                android:layout_width="110dp"
+                android:layout_height="40dp"
+                android:layout_column="1"
+                android:layout_marginLeft="30dp"
+                android:ems="10"
+                android:hint="Start Time"
+                android:inputType="time" />
+
+
+            <EditText
+                android:id="@+id/editTextTOAEndTime"
+                android:layout_width="110dp"
+                android:layout_height="40dp"
+                android:layout_column="2"
+                android:layout_marginLeft="40dp"
+                android:ems="10"
+                android:hint="End Time"
+                android:inputType="time" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout3"
+        android:layout_marginTop="20dp">
+
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <EditText
+                android:id="@+id/editTextTOADescription"
+                android:layout_width="300dp"
+                android:layout_height="60dp"
+                android:layout_column="1"
+                android:ems="10"
+                android:hint="Enter Description"
+                android:inputType="textMultiLine" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout4"
+        android:layout_marginTop="20dp">
+
+        <TableRow
+            android:id="@+id/tableRow9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <Button
+                android:id="@+id/buttonTOACancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginLeft="30dp"
+                android:text="Cancel"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/buttonTOASubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_marginLeft="80dp"
+                android:text="submit"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+    </TableLayout>
+
+
+</RelativeLayout>

@@ -1,0 +1,60 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+
+            <TextView
+                android:id="@+id/taskDeligateOwnerName"
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_column="1"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/taskDeligateTaskDate"
+                android:layout_width="65dp"
+                android:layout_height="50dp"
+                android:layout_column="2"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/taskDeligateTaskName"
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_column="3"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/taskDeligateTaskStatus"
+                android:layout_width="95dp"
+                android:layout_height="50dp"
+                android:layout_column="4"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>
+

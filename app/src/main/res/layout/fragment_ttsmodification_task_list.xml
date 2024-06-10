@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TTSTaskModificationListFragment">
+
+    <TextView
+        android:id="@+id/textViewModificationListUser"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewModificationListDate"
+        android:layout_width="150dp"
+        android:layout_height="18dp"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="5dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewModificationListTime"
+        android:layout_width="150dp"
+        android:layout_height="18dp"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="25dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewOutgoingModification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="55dp"
+        android:text="OutGoing Modification Task"
+        android:textStyle="bold" />
+
+    <TableLayout
+        android:id="@+id/tableLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="90dp">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/textViewModificationListTaskUser"
+                android:layout_width="50dp"
+                android:layout_height="25dp"
+                android:layout_column="1"
+                android:layout_marginLeft="10dp"
+                android:text="User"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewModificationListTaskDate"
+                android:layout_width="50dp"
+                android:layout_height="25dp"
+                android:layout_column="2"
+                android:layout_marginLeft="25dp"
+                android:text="Date"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewModificationListTask"
+                android:layout_width="70dp"
+                android:layout_height="25dp"
+                android:layout_column="3"
+                android:layout_marginLeft="12dp"
+                android:text="Task"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewModificationListStatus"
+                android:layout_width="70dp"
+                android:layout_height="25dp"
+                android:layout_column="4"
+                android:text="Status"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+        </TableRow>
+    </TableLayout>
+
+    <ListView
+        android:id="@+id/senderModificationTaskList"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="125dp" />
+
+    <TextView
+        android:id="@+id/textViewIncomingModificationTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="317dp"
+        android:text="InComing Modification Task"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/receiverModificationTaskList"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="340dp" />
+
+</RelativeLayout>

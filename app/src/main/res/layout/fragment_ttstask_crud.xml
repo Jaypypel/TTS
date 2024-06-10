@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TTSTaskCRUDFragment">
+
+    <Spinner
+        android:id="@+id/spinnerTaskCRUDActivitySelect"
+        android:layout_width="225dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="150dp"
+        android:spinnerMode="dialog" />
+
+    <AutoCompleteTextView
+        android:id="@+id/editTextTaskCRUDTaskName"
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="205dp"
+        android:ems="10"
+        android:hint="Enter Task Name"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/textViewTaskCRUDUser"
+        android:layout_width="83dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewTaskCRUDDate"
+        android:layout_width="150dp"
+        android:layout_height="18dp"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewTaskCRUDTime"
+        android:layout_width="150dp"
+        android:layout_height="18dp"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="31dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+
+    <Spinner
+        android:id="@+id/spinnerTaskCRUDUserSelect"
+        android:layout_width="225dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="90dp"
+        android:spinnerMode="dialog" />
+
+    <Button
+        android:id="@+id/buttonTaskCRUDAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="280dp"
+        android:text="ADD"
+        android:textStyle="bold" />
+
+</RelativeLayout>

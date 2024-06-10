@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TTSMeasurableCRUDFragment">
+
+
+    <Spinner
+        android:id="@+id/spinnerMeasurableCRUDUserSelect"
+        android:layout_width="225dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="90dp"
+        android:spinnerMode="dialog" />
+
+    <TextView
+        android:id="@+id/textViewMeasurableCRUDUser"
+        android:layout_width="83dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/textViewMeasurableCRUDDate"
+        android:layout_width="150dp"
+        android:layout_height="18dp"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewMeasurableCRUDTime"
+        android:layout_width="150dp"
+        android:layout_height="18dp"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="31dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <AutoCompleteTextView
+        android:id="@+id/editTextMeasurableCRUDMeasurable"
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="155dp"
+        android:ems="10"
+        android:hint="Enter Measurable"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/buttonMeasurableCRUDAddMeasurable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="220dp"
+        android:text="ADD"
+        android:textStyle="bold" />
+</RelativeLayout>

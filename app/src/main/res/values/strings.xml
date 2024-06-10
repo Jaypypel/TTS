@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">TTS</string>
+    <string name="admin_work">Admin Home</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="navigation_drawer_items_array_admin">
+        <item>Home</item>
+        <item>Add Activity</item>
+        <item>Add Project</item>
+        <item>Add Task</item>
+        <item>Add Measurable</item>
+        <item>Add Other Activity</item>
+        <item>Report Generation</item>
+
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string-array name="navigation_drawer_items_array">
+        <item>Daily Time Share</item>
+        <item>DTS View</item>
+        <item>Received Tasks</item>
+        <item>Committed Tasks</item>
+        <item>Approval Completion Tasks</item>
+        <item>Work Done Status</item>
+        <item>Assign Task</item>
+        <item>Assigned Tasks</item>
+        <item>Accepted Tasks</item>
+        <item>Completed Tasks</item>
+        <item>Modification Tasks</item>
+        <item>Task Admin</item>
+
+    </string-array>
+
+
+</resources>

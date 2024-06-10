@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TTSManagementReportFragment">
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+
+            <TextView
+                android:id="@+id/textViewMgmtReportUser"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewMgmtReportDate"
+                android:layout_width="150dp"
+                android:layout_height="18dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewMgmtReportTime"
+                android:layout_width="150dp"
+                android:layout_height="18dp"
+                android:layout_marginLeft="-150dp"
+                android:layout_marginTop="27dp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp">
+
+        <TableRow
+            android:id="@+id/tableRow6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/editTextMgmtReportStartDate"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:ems="10"
+                android:hint="Enter Start Date"
+                android:inputType="date" />
+
+            <EditText
+                android:id="@+id/editTextMgmtReportEndDate"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:ems="10"
+                android:hint="Enter End Date"
+                android:inputType="date" />
+
+            <Button
+                android:id="@+id/buttonGetPATDetails"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="-220dp"
+                android:layout_marginTop="50dp"
+                android:text="Get PAT Details" />
+
+        </TableRow>
+
+    </TableLayout>
+
+
+    <TableLayout
+        android:id="@+id/tableLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp">
+
+        <TableRow
+            android:id="@+id/tableRow5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/textViewMgmtReportProjectCount"
+                android:layout_width="135dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewMgmtReportActivtyCount"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+
+            <TextView
+                android:id="@+id/textViewMgmtReportTaskCount"
+                android:layout_width="135dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewMgmtReportMeasurableCount"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="235dp">
+
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="3dp">
+
+            <TextView
+                android:id="@+id/textViewMgmtReportProjFrq"
+                android:layout_width="180dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="50dp"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="3dp">
+
+            <TextView
+                android:id="@+id/textViewMgmtReportActFrq"
+                android:layout_width="180dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="50dp"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="3dp">
+
+            <TextView
+                android:id="@+id/textViewMgmtReportTaskFrq"
+                android:layout_width="180dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="50dp"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow13"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="3dp">
+
+            <TextView
+                android:id="@+id/textViewMgmtReportProjectTimeConsume"
+                android:layout_width="220dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="50dp"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+    </TableLayout>
+
+</RelativeLayout>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TTSOtherActivityCRUDFragment">
+
+    <TextView
+        android:id="@+id/textViewOtherActivityCRUDUser"
+        android:layout_width="83dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/textViewOtherActivityCRUDDate"
+        android:layout_width="150dp"
+        android:layout_height="18dp"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewOtherActivityCRUDTime"
+        android:layout_width="150dp"
+        android:layout_height="18dp"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="31dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <AutoCompleteTextView
+        android:id="@+id/editTextOtherActivityCRUDOtherActivity"
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="80dp"
+        android:ems="10"
+        android:hint="Enter Other Activity"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/buttonOtherActivityCRUDAddOtherActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="175dp"
+        android:text="ADD"
+        android:textStyle="bold" />
+
+</RelativeLayout>

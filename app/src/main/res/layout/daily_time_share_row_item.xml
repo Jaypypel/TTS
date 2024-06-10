@@ -1,0 +1,58 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="65dp"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/dailyTimeShareStartTime"
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:layout_column="1"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/dailyTimeShareEndTime"
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:layout_column="2"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/dailyTimeShareTaskName"
+                android:layout_width="95dp"
+                android:layout_height="40dp"
+                android:layout_column="3"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/dailyTimeShareProjName"
+                android:layout_width="95dp"
+                android:layout_height="40dp"
+                android:layout_column="4"
+                android:layout_marginLeft="5dp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>
+
+
+

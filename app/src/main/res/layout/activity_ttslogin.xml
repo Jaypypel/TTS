@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".TTSLoginActivity">
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="108dp"
+                android:layout_height="41dp"
+                android:layout_column="1"
+                android:layout_marginLeft="120dp"
+                android:text="LogIn"
+                android:textColor="@android:color/black"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout1"
+        android:layout_marginTop="40dp">
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <EditText
+                android:id="@+id/editTextLoginUsername"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginLeft="50dp"
+                android:ems="10"
+                android:hint="Enter User Name"
+                android:inputType="textPersonName" />
+        </TableRow>
+
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <EditText
+                android:id="@+id/editTextLoginPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginLeft="50dp"
+                android:ems="10"
+                android:hint="Enter Password"
+                android:inputType="textPassword" />
+
+            <ToggleButton
+                android:id="@+id/login_password_visibility"
+                android:layout_width="31dp"
+                android:layout_height="26dp"
+                android:layout_alignRight="@+id/editTextLoginPassword"
+                android:layout_marginLeft="-30dp"
+                android:layout_marginTop="5dp"
+                android:clickable="true"
+                android:background="@drawable/icon_password_eye"
+                android:textOn=""
+                android:textOff=""
+                android:text=""/>
+
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout3"
+        android:layout_width="fill_parent"
+        android:layout_height="66dp"
+        android:layout_below="@+id/tableLayout2"
+        android:layout_marginTop="100dp">
+
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <Button
+                android:id="@+id/buttonRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="Register"
+                android:layout_marginLeft="20dp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/buttonSignin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:text="SignIn"
+                android:layout_marginLeft="100dp"
+                android:textStyle="bold" />
+
+        </TableRow>
+    </TableLayout>
+
+
+    <TableLayout
+        android:id="@+id/tableLayoutVersion"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="485dp">
+
+        <TableRow
+            android:id="@+id/tableRowVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <!--<TextView-->
+                <!--android:id="@+id/textViewPoweredBy"-->
+                <!--android:layout_width="70dp"-->
+                <!--android:layout_height="30dp"-->
+                <!--android:layout_column="1"-->
+                <!--android:text="Powered By Ecologic"-->
+                <!--android:textColor="@android:color/black"-->
+                <!--android:textSize="12sp" />-->
+
+            <TextView
+                android:id="@+id/textViewVersion"
+                android:layout_width="89dp"
+                android:layout_height="20dp"
+                android:layout_column="1"
+                android:layout_marginLeft="120dp"
+                android:text="TTS Version 4.0"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
+
+            <!--<TextView-->
+                <!--android:id="@+id/textViewDevelopedBy"-->
+                <!--android:layout_width="70dp"-->
+                <!--android:layout_height="30dp"-->
+                <!--android:layout_column="3"-->
+                <!--android:layout_marginLeft="50dp"-->
+                <!--android:text="Developed By Ecologic"-->
+                <!--android:textColor="@android:color/black"-->
+                <!--android:textSize="12sp" />-->
+        </TableRow>
+
+    </TableLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBarInLogin"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:progressDrawable="@drawable/circular_progress_bar" />
+
+</RelativeLayout>
