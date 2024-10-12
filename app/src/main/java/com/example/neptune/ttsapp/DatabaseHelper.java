@@ -11,12 +11,12 @@ import java.sql.SQLException;
 public class DatabaseHelper {
 
 //    private static final String url="jdbc:mysql://ecologic.org.in/ecologic_ForTest";
-    private static final String url="jdbc:mysql://ecologic.org.in/ecologic_TTS";
-    private static final String usr = "ecologic_YoDo";
-    private static final String pass="password123";
-//    private static final String url="jdbc:mysql://localhost:3306/tts";
-//    private static final String usr = "root";
-//    private static final String pass="root";
+//    private static final String url="jdbc:mysql://ecologic.org.in/ecologic_TTS";
+//    private static final String usr = "ecologic_YoDo";
+//    private static final String pass="password123";
+    private static final String url="jdbc:mysql://localhost:3306/tts7";
+    private static final String usr = "root";
+    private static final String pass="root";
 
     public static Connection getDBConnection() {
 

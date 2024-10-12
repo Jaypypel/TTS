@@ -2,6 +2,9 @@ package com.example.neptune.ttsapp;
 
 import android.app.Application;
 
+import dagger.hilt.android.HiltAndroidApp;
+
+@HiltAndroidApp
 public class TTSApplication extends Application {
 
     private static TTSApplication mInstance;
