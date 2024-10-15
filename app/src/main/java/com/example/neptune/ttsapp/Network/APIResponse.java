@@ -5,7 +5,9 @@ import java.util.Map;
 
 import retrofit2.Response;
 
-public abstract class APIResponse<T>{
+public  class APIResponse<T>{
+    public APIResponse() {
+    }
 
     public static  <T> APIErrorResponse<T> create(Throwable err){
         return new APIErrorResponse<>(err.getMessage() != null ? err.getMessage():"unknown error");

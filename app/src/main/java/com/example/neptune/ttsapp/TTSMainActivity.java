@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -36,6 +37,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.DTO.DailyTimeShareDTO;
+import com.example.neptune.ttsapp.DTO.DailyTimeShareMeasurable;
+import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.ActivityInterface;
+import com.example.neptune.ttsapp.Network.DailyTimeShareInterface;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,9 +53,35 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.inject.Inject;
+
+import dagger.hilt.InstallIn;
+import dagger.hilt.android.AndroidEntryPoint;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+
+@AndroidEntryPoint
 public class TTSMainActivity extends AppCompatActivity {
+
+    @Inject
+    AppExecutors appExecutor;
+
+    @Inject
+    DailyTimeShareInterface dailyTimeShareInterface;
+
+    @Inject
+    ActivityInterface activityInterface;
+
+    ArrayList<DailyTimeShareMeasurable> dailyTimeShareMeasurableList = new ArrayList<>();
+    DailyTimeShareDTO dailyTimeShareDTO;
+
+
 
     private String[] mNavigationDrawerItemTitles;
     private DrawerLayout mDrawerLayout;
@@ -73,6 +106,10 @@ public class TTSMainActivity extends AppCompatActivity {
 
     private int mYear, mMonth, mDay, mHour, mMinute;
 
+    DailyTimeShare dailyTimeShare = new DailyTimeShare(isDateValid(),
+            isProjectCodeValid(),isProjectNameValid(),isActivityNameValid(),
+            isTaskNameValid(),isStartTimeValid(),isEndTimeValid(),getConsumedTime(),
+            isDescriptionValid(),delegationTime().toString(), sessionManager.getUserID());
 //    private ProgressBar progressBar;
 
     // Code for Finishing activity from TimeShareList Activity
@@ -87,8 +124,8 @@ public class TTSMainActivity extends AppCompatActivity {
         mainActivity = this;
 
         setContentView(R.layout.activity_ttsmain);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
 
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles= getResources().getStringArray(R.array.navigation_drawer_items_array);
@@ -216,6 +253,7 @@ public class TTSMainActivity extends AppCompatActivity {
             try {
                 measurableListDataModels.add(new MeasurableListDataModel(timeShareMeasurable.getSelectedItem().toString(), timeShareMeasurableQty.getText().toString(), timeShareMeasurableUnit.getText().toString()));
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getApplicationContext());
+//                dailyTimeShareMeasurableList.add(new DailyTimeShareMeasurable(Long.parseLong(timeShareMeasurableQty.getText().toString().replaceAll("[^0-9]"," ")),timeShareMeasurableUnit.getText().toString()));
                 listView.setAdapter(measurableListCustomAdapter);
                 clear();
                 }
@@ -242,9 +280,12 @@ public class TTSMainActivity extends AppCompatActivity {
                          {
                             timeShareSubmit.setBackgroundColor(Color.GRAY);
 //                            Toast.makeText(getApplicationContext(), "Wait For Inserting TimeShare", Toast.LENGTH_LONG).show();
-                            String result = insertDailyTimeShare(getMaxTimeShareTaskId(), sessionManager.getUserID(), isDateValid(), isProjectCodeValid(), isProjectNameValid(), isActivityNameValid(),
-                                    isTaskNameValid(), isStartTimeValid(), isEndTimeValid(), getConsumedTime(),isDescriptionValid(), delegationTime(), measurableListDataModels);
-                            if (result.equals("true")) {
+
+//                            String result = insertDailyTimeShare(getMaxTimeShareTaskId(), sessionManager.getUserID(), isDateValid(), isProjectCodeValid(), isProjectNameValid(), isActivityNameValid(),
+//                                    isTaskNameValid(), isStartTimeValid(), isEndTimeValid(), getConsumedTime(),isDescriptionValid(), delegationTime(), measurableListDataModels);
+                             dailyTimeShareDTO = new DailyTimeShareDTO(dailyTimeShare,measurableListDataModels);
+                             AtomicBoolean isRequestPass = addDailyTimeShare(dailyTimeShareDTO);
+                            if (isRequestPass.get()) {
                                 Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
                                 clearAll();
 //                                timeShareSubmit.setBackgroundColor(Color.LTGRAY);
@@ -562,7 +603,9 @@ public class TTSMainActivity extends AppCompatActivity {
     }
 
     //Validation Start
-    private String isDateValid() { return timeShareDate.getText().toString().trim().replaceAll("\\s+",""); }
+    private String isDateValid() { if(timeShareDate !=null){
+        return timeShareDate.getText().toString().trim().replaceAll("\\s+","");}
+    }
 
     private String isActivityNameValid() { return timeShareActivityName.getText().toString().trim(); }
 
@@ -661,161 +704,207 @@ public class TTSMainActivity extends AppCompatActivity {
         return id;
     }
 
+
+      private AtomicBoolean addDailyTimeShare(DailyTimeShareDTO dailyTimeShareDTO) {
+          AtomicBoolean isResponseCompleted = new AtomicBoolean(false);
+        appExecutor.getNetworkIO().execute(() -> {
+            Call<APIResponse<Object>> addDailyTimeShareResponse = dailyTimeShareInterface.addDailyTimeShare(dailyTimeShareDTO);
+            addDailyTimeShareResponse.enqueue(new Callback<APIResponse<Object>>() {
+                @Override
+                public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
+                    if(response.isSuccessful() && response.body() != null && response.errorBody()!=null) {
+                      isResponseCompleted.set(true);
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
+                    appExecutor.getMainThread().execute(() -> {
+                        Log.e("Network Request", "Failed to add : " + t.getMessage());
+                    });
+                }
+            });
+        });
+        return isResponseCompleted;
+      }
+
+
     //Insert Time Share
-    public String insertDailyTimeShare(Long timeShareId,String userId,String timeShareDate,String timeShareProjCode,String timeShareProjName,
-                                       String timeShareActivityName,String timeShareTaskName,String timeShareStartTime,String timeShareEndTime,
-                                       String consumedTime, String description,Timestamp createdOn,ArrayList<MeasurableListDataModel> measurableList){
-        String result="false";
-        int x = 0;
-        Connection con;
+//    public String insertDailyTimeShare(Long timeShareId,String userId,String timeShareDate,String timeShareProjCode,String timeShareProjName,
+//                                       String timeShareActivityName,String timeShareTaskName,String timeShareStartTime,String timeShareEndTime,
+//                                       String consumedTime, String description,Timestamp createdOn,ArrayList<MeasurableListDataModel> measurableList){
+//        String result="false";
+//        int x = 0;
+//        Connection con;
+//
+//        try{
+//            con = DatabaseHelper.getDBConnection();
+//            PreparedStatement ps;
+//
+//            ps = con.prepareStatement("insert into DAILY_TIME_SHARE(ID,FK_AUTHENTICATION_USER_ID,DATE_OF_TIME_SHARE,PROJECT_CODE,PROJECT_NAME,ACTIVITY_NAME,TASK_NAME," +
+//                                            "START_TIME,END_TIME,CONSUMED_TIME,DESCRIPTION,CREATED_ON) values(?,?,?,?,?,?,?,?,?,?,?,?)");
+//
+//            ps.setLong(1,timeShareId);
+//            ps.setString(2,userId);
+//            ps.setString(3,timeShareDate);
+//            ps.setString(4,timeShareProjCode);
+//            ps.setString(5, timeShareProjName);
+//            ps.setString(6, timeShareActivityName);
+//            ps.setString(7, timeShareTaskName);
+//            ps.setString(8, timeShareStartTime);
+//            ps.setString(9, timeShareEndTime);
+//            ps.setString(10, consumedTime);
+//            ps.setString(11, description);
+//            ps.setTimestamp(12, createdOn);
+//
+//            x = ps.executeUpdate();
+//            ps.close();
+//
+//
+//            String sql = "insert into DAILY_TIME_SHARE_MEASURABLE(FK_TIME_SHARE_ID,FK_MEASURABLE_ID,MEASURABLE_QUANTITY,MEASURABLE_UNIT) values(?,?,?,?)";
+//            PreparedStatement ps1 = con.prepareStatement(sql);
+//            con.setAutoCommit(false);
+//            for (MeasurableListDataModel mList:measurableList)
+//            {
+//                ps1.setLong(1,timeShareId);
+//                ps1.setLong(2, Long.parseLong(mList.getMeasurableName().replaceAll("[^0-9]", "")));
+//                ps1.setString(3, mList.getMeasurableQty());
+//                ps1.setString(4, mList.getMeasurableUnit());
+//
+//                ps1.addBatch();
+//
+//            }
+//
+//            int[] x1=ps1.executeBatch();
+//
+//            if (x==1 ||  x1.length>0){
+//                result = "true";
+//            }
+//
+//            con.commit();
+//            ps1.close();
+//            con.close();
+//        }
+//        catch(Exception e){
+//            e.printStackTrace();
+//        }
+//
+//        return result;
+//    }
+//
+//    // Getting Measurable List
+//    public ArrayList<MeasurableListDataModel> getMeasurableList(){
+//
+//        ArrayList measurableList = new ArrayList();
+//        MeasurableListDataModel measurableListDataModel;
+//
+//        Connection con;
+//        try {
+//            con = DatabaseHelper.getDBConnection();
+//
+//            PreparedStatement ps = con.prepareStatement("select * from MEASURABLES ORDER BY NAME ASC");
+//
+//
+//            ResultSet rs = ps.executeQuery();
+//
+//            while (rs.next()) {
+//                measurableListDataModel= new MeasurableListDataModel();
+//
+//                measurableListDataModel.setId(rs.getString("ID"));
+//                measurableListDataModel.setMeasurableName(rs.getString("NAME"));
+//
+//                measurableList.add(measurableListDataModel);
+//
+//            }
+//            rs.close();
+//            ps.close();
+//            con.close();
+//        } catch (Exception e) { e.printStackTrace(); }
+//
+//        Log.d("Measurable List",measurableList.toString());
+//        return measurableList;
+//
+//    }
+//
+//    // Getting Measurable Unit List
+//    public ArrayList <String> getMeasurableUnit(){
+//
+//        ArrayList unitNameList = new ArrayList();
+//
+//        Connection con;
+//        try {
+//            con = DatabaseHelper.getDBConnection();
+//
+//            PreparedStatement ps = con.prepareStatement("select * from MEASURABLE_UNIT");
+//
+//            ResultSet rs = ps.executeQuery();
+//
+//            while (rs.next())
+//            {
+//                String s = rs.getString("UNIT_NAME");
+//
+//                unitNameList.add(s);
+//            }
+//            rs.close();
+//            ps.close();
+//            con.close();
+//        } catch (Exception e) { e.printStackTrace(); }
+//
+//        return unitNameList;
+//
+//    }
 
-        try{
-            con = DatabaseHelper.getDBConnection();
-            PreparedStatement ps;
+    ArrayList<> getActivityList(){
 
-            ps = con.prepareStatement("insert into DAILY_TIME_SHARE(ID,FK_AUTHENTICATION_USER_ID,DATE_OF_TIME_SHARE,PROJECT_CODE,PROJECT_NAME,ACTIVITY_NAME,TASK_NAME," +
-                                            "START_TIME,END_TIME,CONSUMED_TIME,DESCRIPTION,CREATED_ON) values(?,?,?,?,?,?,?,?,?,?,?,?)");
+        appExecutor.getNetworkIO().execute(() -> {
+            Call<APIResponse<Object>> activityListResponse = activityInterface.getActivityList();
+            activityListResponse.enqueue(new Callback<APIResponse<Object>>() {
+                @Override
+                public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
+                    if(response.isSuccessful() && response.body() != null){
+                        ArrayList<String> activiyList =(ArrayList<String>) response.body();
+                    }
+                }
 
-            ps.setLong(1,timeShareId);
-            ps.setString(2,userId);
-            ps.setString(3,timeShareDate);
-            ps.setString(4,timeShareProjCode);
-            ps.setString(5, timeShareProjName);
-            ps.setString(6, timeShareActivityName);
-            ps.setString(7, timeShareTaskName);
-            ps.setString(8, timeShareStartTime);
-            ps.setString(9, timeShareEndTime);
-            ps.setString(10, consumedTime);
-            ps.setString(11, description);
-            ps.setTimestamp(12, createdOn);
-
-            x = ps.executeUpdate();
-            ps.close();
-
-
-            String sql = "insert into DAILY_TIME_SHARE_MEASURABLE(FK_TIME_SHARE_ID,FK_MEASURABLE_ID,MEASURABLE_QUANTITY,MEASURABLE_UNIT) values(?,?,?,?)";
-            PreparedStatement ps1 = con.prepareStatement(sql);
-            con.setAutoCommit(false);
-            for (MeasurableListDataModel mList:measurableList)
-            {
-                ps1.setLong(1,timeShareId);
-                ps1.setLong(2, Long.parseLong(mList.getMeasurableName().replaceAll("[^0-9]", "")));
-                ps1.setString(3, mList.getMeasurableQty());
-                ps1.setString(4, mList.getMeasurableUnit());
-
-                ps1.addBatch();
-
-            }
-
-            int[] x1=ps1.executeBatch();
-
-            if (x==1 ||  x1.length>0){
-                result = "true";
-            }
-
-            con.commit();
-            ps1.close();
-            con.close();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-
-        return result;
+                @Override
+                public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
+                    appExecutor.getMainThread().execute(() -> {
+                        Log.e("Network Request", "Failed to get" + t.getMessage());
+                    });
+                }
+            });
+        });
+        return activiyList;
     }
-
-
-    // Getting Measurable List
-    public ArrayList<MeasurableListDataModel> getMeasurableList(){
-
-        ArrayList measurableList = new ArrayList();
-        MeasurableListDataModel measurableListDataModel;
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select * from MEASURABLES ORDER BY NAME ASC");
-
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                measurableListDataModel= new MeasurableListDataModel();
-
-                measurableListDataModel.setId(rs.getString("ID"));
-                measurableListDataModel.setMeasurableName(rs.getString("NAME"));
-
-                measurableList.add(measurableListDataModel);
-
-            }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        Log.d("Measurable List",measurableList.toString());
-        return measurableList;
-
-    }
-
-    // Getting Measurable Unit List
-    public ArrayList <String> getMeasurableUnit(){
-
-        ArrayList unitNameList = new ArrayList();
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select * from MEASURABLE_UNIT");
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next())
-            {
-                String s = rs.getString("UNIT_NAME");
-
-                unitNameList.add(s);
-            }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return unitNameList;
-
-    }
-
     // Getting Activity List
-    public ArrayList<String> getActivityList(){
-
-        ArrayList<String> activityList = new ArrayList();
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select DISTINCT NAME from ACTIVITY");
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                String s = rs.getString("NAME");
-
-                activityList.add(s);
-
-            }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return activityList;
-
-    }
-
-
+//    public ArrayList<String> getActivityList(){
+//
+//        ArrayList<String> activityList = new ArrayList();
+//
+//        Connection con;
+//        try {
+//            con = DatabaseHelper.getDBConnection();
+//
+//            PreparedStatement ps = con.prepareStatement("select DISTINCT NAME from ACTIVITY");
+//
+//            ResultSet rs = ps.executeQuery();
+//
+//            while (rs.next()) {
+//                String s = rs.getString("NAME");
+//
+//                activityList.add(s);
+//
+//            }
+//            rs.close();
+//            ps.close();
+//            con.close();
+//        } catch (Exception e) { e.printStackTrace(); }
+//
+//        return activityList;
+//
+//    }
+/*
     // Getting Task List
     public ArrayList<String> getTaskList(){
 
@@ -873,32 +962,33 @@ public class TTSMainActivity extends AppCompatActivity {
         return projectNameList;
 
     }
+*/
 
     // Getting Project Code List
-    public String getProjectCode(String projectName){
-
-        String projectCode=null;
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select DISTINCT CODE from PROJECT WHERE NAME = ?");
-            ps.setString(1, projectName);
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                projectCode = rs.getString("CODE");
-
-            }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return projectCode;
-
-    }
+//    public String getProjectCode(String projectName){
+//
+//        String projectCode=null;
+//
+//        Connection con;
+//        try {
+//            con = DatabaseHelper.getDBConnection();
+//
+//            PreparedStatement ps = con.prepareStatement("select DISTINCT CODE from PROJECT WHERE NAME = ?");
+//            ps.setString(1, projectName);
+//
+//            ResultSet rs = ps.executeQuery();
+//
+//            while (rs.next()) {
+//                projectCode = rs.getString("CODE");
+//
+//            }
+//            rs.close();
+//            ps.close();
+//            con.close();
+//        } catch (Exception e) { e.printStackTrace(); }
+//
+//        return projectCode;
+//
+//    }
 
 }

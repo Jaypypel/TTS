@@ -2,14 +2,14 @@ package com.example.neptune.ttsapp;
 
 public class User {
     private final String fullName;
-    private final String userName;
+    private final String username;
     private final String password;
     private final String email;
     private final String mobileNo;
 
     public User(String fullName, String userName, String password, String email, String mobileNo) {
         this.fullName = fullName;
-        this.userName = userName;
+        this.username = userName;
         this.password = password;
         this.email = email;
         this.mobileNo = mobileNo;
@@ -19,8 +19,8 @@ public class User {
         return fullName;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
     public String getPassword() {

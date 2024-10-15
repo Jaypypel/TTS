@@ -53,8 +53,8 @@ public class TTSRegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ttsregistration);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
 
 
         fullName = (EditText) findViewById(R.id.editTextName);
@@ -101,25 +101,28 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                          //   String result = registerUser(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo(), delegationTime());
                             User userRegistration = new User(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo());
                             appExecutors.getNetworkIO().execute(() -> {
-                                Call<APIResponse<?>> userRegCall = userServiceInterface.registerUser(userRegistration);
-                                userRegCall.enqueue(new Callback<APIResponse<?>>() {
+                                Call<APIResponse<Object>> userRegCall = userServiceInterface.registerUser(userRegistration);
+                                userRegCall.enqueue(new Callback<APIResponse<Object>>() {
                                     @Override
-                                    public void onResponse(Call<APIResponse<?>> call, Response<APIResponse<?>> response) {
+                                    public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
                                         runOnUiThread(() -> {
                                             progressBar.setVisibility(View.INVISIBLE);
                                             if(response.isSuccessful() && response.body() !=null){
+                                                Log.d("Network Request", "User registered successfully: " + response.body());
                                                 Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
                                                 startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
                                                 finish();
                                                 return;
                                             }
+                                            Log.e("Network Request", "Error: " + response.errorBody());
                                             Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
                                         });
                                     }
 
                                     @Override
-                                    public void onFailure(Call<APIResponse<?>> call, Throwable t) {
+                                    public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
                                         appExecutors.getMainThread().execute(() -> {
+                                            Log.e("Network Request", "Failed to connect: " + t.getMessage());
                                             progressBar.setVisibility(View.INVISIBLE);
                                             Toast.makeText(TTSRegistrationActivity.this, "Error: "+t.getMessage(),Toast.LENGTH_LONG).show();
                                         });

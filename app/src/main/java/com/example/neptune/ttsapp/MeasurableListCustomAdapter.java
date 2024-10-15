@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.neptune.ttsapp.DTO.DailyTimeShareMeasurable;
+
 import java.util.ArrayList;
 
 
