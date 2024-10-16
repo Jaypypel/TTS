@@ -7,7 +7,6 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
-import android.os.StrictMode;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -24,7 +23,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -40,8 +38,11 @@ import android.widget.Toast;
 import com.example.neptune.ttsapp.DTO.DailyTimeShareDTO;
 import com.example.neptune.ttsapp.DTO.DailyTimeShareMeasurable;
 import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.ActivityInterface;
 import com.example.neptune.ttsapp.Network.DailyTimeShareInterface;
+import com.example.neptune.ttsapp.Network.ProjectServiceInterface;
+import com.example.neptune.ttsapp.Network.TaskServiceInterface;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,13 +54,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
-import dagger.hilt.InstallIn;
 import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -77,6 +76,14 @@ public class TTSMainActivity extends AppCompatActivity {
 
     @Inject
     ActivityInterface activityInterface;
+
+    @Inject
+    ProjectServiceInterface projectServiceInterface;
+
+    @Inject
+    TaskServiceInterface taskServiceInterface;
+
+
 
     ArrayList<DailyTimeShareMeasurable> dailyTimeShareMeasurableList = new ArrayList<>();
     DailyTimeShareDTO dailyTimeShareDTO;
@@ -229,9 +236,8 @@ public class TTSMainActivity extends AppCompatActivity {
             timeShareMeasurableUnit.setText("");
 
 
-            ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, getActivityList());
-            timeShareActivityName.setAdapter(activityNameAdapter);
-
+        /*    ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, getActivityList());
+            timeShareActivityName.setAdapter(activityNameAdapter);*/
             ArrayAdapter<String> taskNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, getTaskList());
             timeShareTaskName.setAdapter(taskNameAdapter);
 
@@ -603,8 +609,8 @@ public class TTSMainActivity extends AppCompatActivity {
     }
 
     //Validation Start
-    private String isDateValid() { if(timeShareDate !=null){
-        return timeShareDate.getText().toString().trim().replaceAll("\\s+","");}
+    private String isDateValid() {
+        return timeShareDate.getText().toString().trim().replaceAll("\\s+","");
     }
 
     private String isActivityNameValid() { return timeShareActivityName.getText().toString().trim(); }
@@ -855,28 +861,130 @@ public class TTSMainActivity extends AppCompatActivity {
 //
 //    }
 
-    ArrayList<> getActivityList(){
+//    public void getActivityList(){
+//        appExecutor.getNetworkIO().execute(() -> {
+//            Call<ArrayList<String>> activityListResponse = activityInterface.getActivityList();
+//            activityListResponse.enqueue(new Callback<ArrayList<String>>() {
+//                @Override
+//                public void onResponse(Call<ArrayList<String>> call, Response<ArrayList<String>> response) {
+//                    if(response.isSuccessful() && response.body() != null){
+//                        ArrayList<String> activityList = (ArrayList<String>) response.body().getBody();
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<ArrayList<String>> call, Throwable t) {
+//                    appExecutor.getMainThread().execute(() -> {
+//                        Log.e("Network Request", "Failed to get" + t.getMessage());
+//                    });
+//                }
+//            });
+//        });
+//
+//
+//    }
 
+    public void getActivityListAndUpdateUi() {
         appExecutor.getNetworkIO().execute(() -> {
             Call<APIResponse<Object>> activityListResponse = activityInterface.getActivityList();
             activityListResponse.enqueue(new Callback<APIResponse<Object>>() {
                 @Override
                 public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
-                    if(response.isSuccessful() && response.body() != null){
-                        ArrayList<String> activiyList =(ArrayList<String>) response.body();
+                    if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
+                        // Cast the response to APISuccessResponse to access the body
+                        APISuccessResponse<Object> successResponse = (APISuccessResponse<Object>) response.body();
+                        ArrayList<String> activityList = (ArrayList<String>) successResponse.getBody(); // Use the correct getter
+                        appExecutor.getMainThread().execute(() -> {
+                            ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, activityList);
+                            timeShareActivityName.setAdapter(activityNameAdapter);
+                        });
+                    } else {
+                        appExecutor.getMainThread().execute(() ->
+                                Toast.makeText(getApplicationContext(), "couldn't fetched activityList", Toast.LENGTH_LONG).show());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
-                    appExecutor.getMainThread().execute(() -> {
-                        Log.e("Network Request", "Failed to get" + t.getMessage());
-                    });
+                    Log.e("Network Request", "Failed: " + t.getMessage());
+                    appExecutor.getMainThread().execute( () -> {
+                        Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                    );
                 }
             });
         });
-        return activiyList;
     }
+
+    public void getProjectNameListAndUpdateUi() {
+        appExecutor.getNetworkIO().execute(() -> {
+            Call<APIResponse<Object>> projectNameResponse = projectServiceInterface.getProjectNameList();
+            projectNameResponse.enqueue(new Callback<APIResponse<Object>>() {
+                @Override
+                public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
+                    if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
+                        // Cast the response to APISuccessResponse to access the body
+                        APISuccessResponse<Object> successResponse = (APISuccessResponse<Object>) response.body();
+                        ArrayList<String> projectList = (ArrayList<String>) successResponse.getBody(); // Use the correct getter
+                        appExecutor.getMainThread().execute(() -> {
+                            ArrayAdapter<String> projectNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, projectList);
+                            timeShareTaskName.setAdapter(projectNameAdapter);
+                        });
+                    } else {
+                        appExecutor.getMainThread().execute(() ->
+                                Toast.makeText(getApplicationContext(), "couldn't fetch activityList", Toast.LENGTH_LONG).show());
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
+                    Log.e("Network Request", "Failed: " + t.getMessage());
+                    appExecutor.getMainThread().execute( () -> {
+                                Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                    );
+
+                }
+            });
+        });
+
+    }
+    public void getTaskNameListAndUpdateUi() {
+        appExecutor.getNetworkIO().execute(() -> {
+            Call<APIResponse<Object>> taskNameResponse = taskServiceInterface.getTaskNames();
+            taskNameResponse.enqueue(new Callback<APIResponse<Object>>() {
+                @Override
+                public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
+                    if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
+                        // Cast the response to APISuccessResponse to access the body
+                        APISuccessResponse<Object> successResponse = (APISuccessResponse<Object>) response.body();
+                        ArrayList<String> taskList = (ArrayList<String>) successResponse.getBody(); // Use the correct getter
+                        appExecutor.getMainThread().execute(() -> {
+                            ArrayAdapter<String> taskNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, taskList);
+                            timeShareTaskName.setAdapter(taskNameAdapter);
+                        });
+                    } else {
+                        appExecutor.getMainThread().execute(() ->
+                                Toast.makeText(getApplicationContext(), "couldn't fetch taskList", Toast.LENGTH_LONG).show());
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
+                    Log.e("Network Request", "Failed: " + t.getMessage());
+                    appExecutor.getMainThread().execute( () -> {
+                                Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                    );
+
+                }
+            });
+        });
+
+    }
+
     // Getting Activity List
 //    public ArrayList<String> getActivityList(){
 //
