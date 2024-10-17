@@ -44,11 +44,34 @@ public class NetworkConfig {
 
     @Provides
     @Singleton
+    public static MeasurableServiceInterface provideMeasurableService(){
+        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
+                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
+                build().create(MeasurableServiceInterface.class);
+    }
+    @Provides
+    @Singleton
+    public static ProjectServiceInterface provideProejectService(){
+        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
+                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
+                build().create(ProjectServiceInterface.class);
+    }
+
+    @Provides
+    @Singleton
     public static DailyTimeShareInterface provideDTSService(){
         return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
                 .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
                 build().create(DailyTimeShareInterface.class);
     }
+    @Provides
+    @Singleton
+    public static TaskServiceInterface provideTask0Service(){
+        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
+                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
+                build().create(TaskServiceInterface.class);
+    }
+
 
 
 
