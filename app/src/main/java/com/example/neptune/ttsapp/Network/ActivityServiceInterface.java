@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.http.GET;
 
-public interface ActivityInterface {
+public interface ActivityServiceInterface {
 
     @GET("/activities/names")
     Call<APIResponse<Object>> getActivityList();

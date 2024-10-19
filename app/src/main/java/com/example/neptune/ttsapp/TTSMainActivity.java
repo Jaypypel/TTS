@@ -39,7 +39,7 @@ import com.example.neptune.ttsapp.DTO.DailyTimeShareDTO;
 import com.example.neptune.ttsapp.DTO.DailyTimeShareMeasurable;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
-import com.example.neptune.ttsapp.Network.ActivityInterface;
+import com.example.neptune.ttsapp.Network.ActivityServiceInterface;
 import com.example.neptune.ttsapp.Network.DailyTimeShareInterface;
 import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ProjectServiceInterface;
@@ -76,7 +76,7 @@ public class TTSMainActivity extends AppCompatActivity {
     DailyTimeShareInterface dailyTimeShareInterface;
 
     @Inject
-    ActivityInterface activityInterface;
+    ActivityServiceInterface activityInterface;
 
     @Inject
     ProjectServiceInterface projectServiceInterface;
@@ -117,10 +117,6 @@ public class TTSMainActivity extends AppCompatActivity {
 
     private int mYear, mMonth, mDay, mHour, mMinute;
 
-    DailyTimeShare dailyTimeShare = new DailyTimeShare(isDateValid(),
-            isProjectCodeValid(),isProjectNameValid(),isActivityNameValid(),
-            isTaskNameValid(),isStartTimeValid(),isEndTimeValid(),getConsumedTime(),
-            isDescriptionValid(),delegationTime().toString(), sessionManager.getUserID());
 //    private ProgressBar progressBar;
 
     // Code for Finishing activity from TimeShareList Activity
@@ -129,8 +125,8 @@ public class TTSMainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+        super.onCreate(savedInstanceState);
         // Code for Finishing activity from TimeShareList Activity
         mainActivity = this;
 
@@ -296,6 +292,10 @@ public class TTSMainActivity extends AppCompatActivity {
                             timeShareSubmit.setBackgroundColor(Color.GRAY);
 //                            Toast.makeText(getApplicationContext(), "Wait For Inserting TimeShare", Toast.LENGTH_LONG).show();
 
+                             DailyTimeShare dailyTimeShare = new DailyTimeShare(isDateValid(),
+                                     isProjectCodeValid(),isProjectNameValid(),isActivityNameValid(),
+                                     isTaskNameValid(),isStartTimeValid(),isEndTimeValid(),getConsumedTime(),
+                                     isDescriptionValid(),delegationTime().toString(), sessionManager.getUserID());
 //                            String result = insertDailyTimeShare(getMaxTimeShareTaskId(), sessionManager.getUserID(), isDateValid(), isProjectCodeValid(), isProjectNameValid(), isActivityNameValid(),
 //                                    isTaskNameValid(), isStartTimeValid(), isEndTimeValid(), getConsumedTime(),isDescriptionValid(), delegationTime(), measurableListDataModels);
                              dailyTimeShareDTO = new DailyTimeShareDTO(dailyTimeShare,measurableListDataModels);
@@ -620,22 +620,53 @@ public class TTSMainActivity extends AppCompatActivity {
 
     //Validation Start
     private String isDateValid() {
-        return timeShareDate.getText().toString().trim().replaceAll("\\s+","");
+        if(timeShareDate !=  null){
+            return timeShareDate.getText().toString().trim().replaceAll("\\s+","");
+        }else
+            return "time share date is not iniaitzed";
     }
 
-    private String isActivityNameValid() { return timeShareActivityName.getText().toString().trim(); }
+    private String isActivityNameValid() {
+        if(timeShareActivityName != null){
+            return timeShareActivityName.getText().toString().trim();
+        }
+        return "not initaiztied";
+    }
 
-    private String isTaskNameValid() { return timeShareTaskName.getText().toString().trim(); }
+    private String isTaskNameValid() {
+        if(timeShareTaskName != null){
+        return timeShareTaskName.getText().toString().trim();
+        }
+        return "N.I";
 
-    private String isProjectCodeValid() { return timeShareProjCode.getText().toString().trim(); }
+    }
 
-    private String isProjectNameValid() { return timeShareProjName.getText().toString().trim(); }
+    private String isProjectCodeValid() { if (timeShareProjCode != null){
+        return timeShareProjCode.getText().toString().trim();
+     }else {
+        return "N.I";
+      }
+    }
 
-    private String isStartTimeValid() { return timeShareStartTime.getText().toString().trim().replaceAll("\\s+",""); }
+    private String isProjectNameValid() {
+        if(timeShareProjName != null) return timeShareProjName.getText().toString().trim();
+        else return "N.I";
+    }
 
-    private String isEndTimeValid() { return timeShareEndTime.getText().toString().trim().replaceAll("\\s+",""); }
+    private String isStartTimeValid() {
+        if(timeShareStartTime !=null)return timeShareStartTime.getText().toString().trim().replaceAll("\\s+","");
+        else return "N.I";
+    }
 
-    private String isDescriptionValid() { return timeShareDescription.getText().toString().trim(); }
+    private String isEndTimeValid() {
+        if(timeShareEndTime != null)return timeShareEndTime.getText().toString().trim().replaceAll("\\s+","");
+        else return "N.I";
+    }
+
+    private String isDescriptionValid() {
+        if(timeShareDescription  != null)return timeShareDescription.getText().toString().trim();
+        else return "N.I";
+    }
     //Validation End
 
     //Getting Current TimeStamp
@@ -671,8 +702,8 @@ public class TTSMainActivity extends AppCompatActivity {
     //Calculate Time Difference between startTime and endTime
     private String getConsumedTime()
     {
-        String start= timeShareStartTime.getText().toString().trim().replaceAll("\\s+","");
-        String end= timeShareEndTime.getText().toString().trim().replaceAll("\\s+","");
+        String start= timeShareStartTime!=null ? timeShareStartTime.getText().toString().trim().replaceAll("\\s+","") : "N.I";
+        String end=timeShareEndTime !=null ? timeShareEndTime.getText().toString().trim().replaceAll("\\s+","") : "N.I" ;
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
 
@@ -997,7 +1028,7 @@ public class TTSMainActivity extends AppCompatActivity {
     }
     public void getProjectCodeAndUpdateUi() {
         appExecutor.getNetworkIO().execute(() -> {
-            Call<APIResponse<Object>> projectCodeResponse = projectServiceInterface.getProjectViaList(isProjectNameValid());
+            Call<APIResponse<Object>> projectCodeResponse = projectServiceInterface.getProjectCodeViaProjectName(isProjectNameValid());
             projectCodeResponse.enqueue(new Callback<APIResponse<Object>>() {
                 @Override
                 public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {

@@ -4,12 +4,13 @@ import android.app.UiAutomation;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 public interface ProjectServiceInterface {
 
-    @GET("Projects/name/list")
+    @GET("/Projects/name/list")
     Call<APIResponse<Object>> getProjectNameList();
 
-    @GET("Projects/projectName/")
-    Call<APIResponse<Object>> getProjectViaList(String projectCode);
+    @GET("/Projects/project/projectName/")
+    Call<APIResponse<Object>> getProjectCodeViaProjectName(@Query("proj_name") String projectName);
 }

@@ -71,6 +71,13 @@ public class NetworkConfig {
                 .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
                 build().create(TaskServiceInterface.class);
     }
+    @Provides
+    @Singleton
+    public static ActivityServiceInterface provideActivityService(){
+        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
+                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
+                build().create(ActivityServiceInterface.class);
+    }
 
 
 
