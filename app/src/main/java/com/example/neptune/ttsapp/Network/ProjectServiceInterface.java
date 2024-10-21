@@ -2,6 +2,8 @@ package com.example.neptune.ttsapp.Network;
 
 import android.app.UiAutomation;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -9,8 +11,8 @@ import retrofit2.http.Query;
 public interface ProjectServiceInterface {
 
     @GET("/Projects/name/list")
-    Call<APIResponse<Object>> getProjectNameList();
+    Call<List<String>> getProjectNameList();
 
     @GET("/Projects/project/projectName/")
-    Call<APIResponse<Object>> getProjectCodeViaProjectName(@Query("proj_name") String projectName);
+    Call<String> getProjectCodeViaProjectName(@Query("proj_name") String projectName);
 }

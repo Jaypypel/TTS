@@ -55,6 +55,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -136,7 +137,7 @@ public class TTSMainActivity extends AppCompatActivity {
 
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles= getResources().getStringArray(R.array.navigation_drawer_items_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout =  findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         sessionManager = new SessionManager(getApplicationContext());
 
@@ -254,6 +255,7 @@ public class TTSMainActivity extends AppCompatActivity {
             getTaskNameListAndUpdateUi();
             getProjectNameListAndUpdateUi();
             getMeasurableListAndUpdateUi();
+            getProjectCodeAndUpdateUi();
             
 
         }else {Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
@@ -327,7 +329,7 @@ public class TTSMainActivity extends AppCompatActivity {
                 if (projectName.length()>0) { timeShareProjCode.setText(getProjectCode(isProjectNameValid())); }
             }
         });*/
-        getProjectCodeAndUpdateUi();
+
 
 
         timeShareCancel.setOnClickListener(v -> clearAll());
@@ -927,13 +929,13 @@ public class TTSMainActivity extends AppCompatActivity {
 
     public void getActivityListAndUpdateUi() {
         appExecutor.getNetworkIO().execute(() -> {
-            Call<APIResponse<Object>> activityListResponse = activityInterface.getActivityList();
-            activityListResponse.enqueue(new Callback<APIResponse<Object>>() {
+            Call<List<String>> activityListResponse = activityInterface.getActivitiesName();
+            activityListResponse.enqueue(new Callback<List<String>>() {
                 @Override
-                public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
+                public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                     if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
                         // Cast the response to APISuccessResponse to access the body
-                        APISuccessResponse<Object> successResponse = (APISuccessResponse<Object>) response.body();
+                        APISuccessResponse<List<String>> successResponse = (APISuccessResponse<List<String>>) response.body();
                         ArrayList<String> activityList = (ArrayList<String>) successResponse.getBody(); // Use the correct getter
                         appExecutor.getMainThread().execute(() -> {
                             ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, activityList);
@@ -946,7 +948,7 @@ public class TTSMainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
+                public void onFailure(Call<List<String>> call, Throwable t) {
                     Log.e("Network Request", "Failed: " + t.getMessage());
                     appExecutor.getMainThread().execute( () -> {
                         Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
@@ -959,13 +961,13 @@ public class TTSMainActivity extends AppCompatActivity {
 
     public void getProjectNameListAndUpdateUi() {
         appExecutor.getNetworkIO().execute(() -> {
-            Call<APIResponse<Object>> projectNameResponse = projectServiceInterface.getProjectNameList();
-            projectNameResponse.enqueue(new Callback<APIResponse<Object>>() {
+            Call<List<String>> projectNameResponse = projectServiceInterface.getProjectNameList();
+            projectNameResponse.enqueue(new Callback<List<String>>() {
                 @Override
-                public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
+                public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                     if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
                         // Cast the response to APISuccessResponse to access the body
-                        APISuccessResponse<Object> successResponse = (APISuccessResponse<Object>) response.body();
+                        APISuccessResponse<List<String>> successResponse = ( APISuccessResponse<List<String>>) response.body();
                         ArrayList<String> projectList = (ArrayList<String>) successResponse.getBody(); // Use the correct getter
                         appExecutor.getMainThread().execute(() -> {
                             ArrayAdapter<String> projectNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, projectList);
@@ -979,7 +981,7 @@ public class TTSMainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
+                public void onFailure(Call<List<String>> call, Throwable t) {
                     Log.e("Network Request", "Failed: " + t.getMessage());
                     appExecutor.getMainThread().execute( () -> {
                                 Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
@@ -994,13 +996,13 @@ public class TTSMainActivity extends AppCompatActivity {
 
     public void getTaskNameListAndUpdateUi() {
         appExecutor.getNetworkIO().execute(() -> {
-            Call<APIResponse<Object>> taskNameResponse = taskServiceInterface.getTaskNames();
-            taskNameResponse.enqueue(new Callback<APIResponse<Object>>() {
+            Call<List<String>> taskNameResponse = taskServiceInterface.getTaskNames();
+            taskNameResponse.enqueue(new Callback<List<String>>() {
                 @Override
-                public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
+                public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                     if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
                         // Cast the response to APISuccessResponse to access the body
-                        APISuccessResponse<Object> successResponse = (APISuccessResponse<Object>) response.body();
+                        APISuccessResponse<List<String>> successResponse = (APISuccessResponse<List<String>>) response.body();
                         ArrayList<String> taskList = (ArrayList<String>) successResponse.getBody(); // Use the correct getter
                         appExecutor.getMainThread().execute(() -> {
                             ArrayAdapter<String> taskNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, taskList);
@@ -1014,7 +1016,7 @@ public class TTSMainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
+                public void onFailure(Call<List<String>> call, Throwable t) {
                     Log.e("Network Request", "Failed: " + t.getMessage());
                     appExecutor.getMainThread().execute( () -> {
                                 Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
@@ -1028,20 +1030,21 @@ public class TTSMainActivity extends AppCompatActivity {
     }
     public void getProjectCodeAndUpdateUi() {
         appExecutor.getNetworkIO().execute(() -> {
-            Call<APIResponse<Object>> projectCodeResponse = projectServiceInterface.getProjectCodeViaProjectName(isProjectNameValid());
-            projectCodeResponse.enqueue(new Callback<APIResponse<Object>>() {
+
+            Call<String> projectCodeResponse = projectServiceInterface.getProjectCodeViaProjectName(isProjectNameValid());
+            projectCodeResponse.enqueue(new Callback<String>() {
                 @Override
-                public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
-                    if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (response.isSuccessful() && response.body() != null) {
                         // Cast the response to APISuccessResponse to access the body
-                        APISuccessResponse<Object> successResponse = (APISuccessResponse<Object>) response.body();
-                        String projectCode = (String) successResponse.getBody(); // Use the correct getter
+                        String successResponse =(String) response.body();
+                       // String projectCode = (String) successResponse.getBody(); // Use the correct getter
                         appExecutor.getMainThread().execute(() -> {
                             timeShareProjName.setOnFocusChangeListener((v, hasFocus) -> {
                                 if (!hasFocus)
                                 {
                                     String projectName = timeShareProjName.getText().toString().trim();
-                                    if (projectName.length()>0) { timeShareProjCode.setText(projectCode); }
+                                    if (projectName.length()>0) { timeShareProjCode.setText(successResponse); }
                                 }
                             });
                         });
@@ -1053,7 +1056,7 @@ public class TTSMainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
+                public void onFailure(Call<String> call, Throwable t) {
                     Log.e("Network Request", "Failed: " + t.getMessage());
                     appExecutor.getMainThread().execute( () -> {
                                 Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
@@ -1066,13 +1069,13 @@ public class TTSMainActivity extends AppCompatActivity {
 
     }    public void getMeasurableListAndUpdateUi() {
         appExecutor.getNetworkIO().execute(() -> {
-            Call<APIResponse<Object>> measurableListResponse = measurableServiceInterface.getMeasurableList();
-            measurableListResponse.enqueue(new Callback<APIResponse<Object>>() {
+            Call<List<MeasurableListDataModel>> measurableListResponse = measurableServiceInterface.getMeasurableList();
+            measurableListResponse.enqueue(new Callback<List<MeasurableListDataModel>>() {
                 @Override
-                public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
+                public void onResponse(Call<List<MeasurableListDataModel>> call, Response<List<MeasurableListDataModel>> response) {
                     if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
                         // Cast the response to APISuccessResponse to access the body
-                        APISuccessResponse<Object> successResponse = (APISuccessResponse<Object>) response.body();
+                        APISuccessResponse<List<MeasurableListDataModel>> successResponse = (APISuccessResponse<List<MeasurableListDataModel>>) response.body();
                         ArrayList<MeasurableListDataModel> measurableList = (ArrayList<MeasurableListDataModel>) successResponse.getBody(); // Use the correct getter
                         appExecutor.getMainThread().execute(() -> {
 
@@ -1087,8 +1090,11 @@ public class TTSMainActivity extends AppCompatActivity {
 
                 }
 
+
+
+
                 @Override
-                public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
+                public void onFailure(Call<List<MeasurableListDataModel>> call, Throwable t) {
                     Log.e("Network Request", "Failed: " + t.getMessage());
                     appExecutor.getMainThread().execute( () -> {
                                 Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
