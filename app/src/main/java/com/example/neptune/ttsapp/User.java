@@ -15,15 +15,35 @@ public class User {
         this.mobileNo = mobileNo;
     }
 
+    public User(String username){
+        this.fullName =null;
+        this.username = username;
+        this.password = null;
+        this.email = null;
+        this.mobileNo = null;
+    }
     public String getFullName() {
         return fullName;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "fullName='" + fullName + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", mobileNo='" + mobileNo + '\'' +
+                '}';
+    }
+
     public String getUsername() {
+
         return username;
     }
 
     public String getPassword() {
+
         return password;
     }
 

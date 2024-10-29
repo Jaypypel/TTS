@@ -11,5 +11,5 @@ public interface MeasurableServiceInterface {
 
 
     @GET("Measurables/list")
-    Call<List<MeasurableListDataModel>> getMeasurableList();
+    Call<ResponseBody> getMeasurableList();
 }

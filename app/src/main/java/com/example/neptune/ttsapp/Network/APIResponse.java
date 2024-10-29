@@ -1,6 +1,8 @@
 package com.example.neptune.ttsapp.Network;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import retrofit2.Response;
@@ -13,11 +15,11 @@ public  class APIResponse<T>{
         return new APIErrorResponse<>(err.getMessage() != null ? err.getMessage():"unknown error");
     }
 
-    public static <T> APIResponse<T> create(Response<T> response) {
+    public static <T> APIResponse<T> create(Response<T> response) throws IOException {
         if (response.isSuccessful()) {
             T body = response.body();
             if (body == null || response.code() == 204) return new APIEmptyResponse<>();
-            Map<String, String> linkheader = Collections.emptyMap();
+            Map<String, String> linkheader = new HashMap<>();
             linkheader.put("link", response.headers().get("link"));
             return new APISuccessResponse<>(body, linkheader);
         }
@@ -30,6 +32,7 @@ public  class APIResponse<T>{
             }
         }
         String errorMsg = (msg != null && !msg.isEmpty() ? msg: response.message());
+//        String errorMsg = response.errorBody() != null ? response.errorBody().string() : response.message();
         return new APIErrorResponse<>(errorMsg != null ? errorMsg: "unknown error");
     }
 }

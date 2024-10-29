@@ -22,9 +22,9 @@ public class DailyTimeShare {
 
     private String createdOn;
 
-    private String username;
+    private User user;
 
-    public DailyTimeShare(String dateOfTimeShare, String projectCode, String projectName, String activityName, String taskName, String startTime, String endTime, String timeDifference, String description, String createdOn, String username) {
+    public DailyTimeShare(String dateOfTimeShare, String projectCode, String projectName, String activityName, String taskName, String startTime, String endTime, String timeDifference, String description, String createdOn, User username) {
         this.dateOfTimeShare = dateOfTimeShare;
         this.projectCode = projectCode;
         this.projectName = projectName;
@@ -35,7 +35,7 @@ public class DailyTimeShare {
         this.timeDifference = timeDifference;
         this.description = description;
         this.createdOn = createdOn;
-        this.username = username;
+        this.user = username;
     }
 
 }

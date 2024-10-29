@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId "com.example.neptune.ttsapp"
 
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 34
 
         versionCode 1
@@ -66,6 +66,11 @@ dependencies {
     annotationProcessor 'com.google.dagger:hilt-android-compiler:2.51.1'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0' // Replace with the latest version
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.0'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.0'
+
 
 
     // Other dependencies

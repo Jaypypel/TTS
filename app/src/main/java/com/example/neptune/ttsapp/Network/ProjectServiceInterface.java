@@ -13,6 +13,6 @@ public interface ProjectServiceInterface {
     @GET("/Projects/name/list")
     Call<List<String>> getProjectNameList();
 
-    @GET("/Projects/project/projectName/")
-    Call<String> getProjectCodeViaProjectName(@Query("proj_name") String projectName);
+    @GET("/Projects/project/projectName")
+    Call<ResponseBody> getProjectCodeViaProjectName(@Query("proj_name") String projectName);
 }
