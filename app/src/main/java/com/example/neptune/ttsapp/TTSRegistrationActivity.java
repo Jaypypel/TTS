@@ -16,9 +16,15 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.example.neptune.ttsapp.Network.APIEmptyResponse;
+import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.JSONConfig;
+import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.UserServiceInterface;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -101,26 +107,53 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                          //   String result = registerUser(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo(), delegationTime());
                             User userRegistration = new User(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo());
                             appExecutors.getNetworkIO().execute(() -> {
-                                Call<APIResponse<Object>> userRegCall = userServiceInterface.registerUser(userRegistration);
-                                userRegCall.enqueue(new Callback<APIResponse<Object>>() {
+                                Call<ResponseBody> userRegCall = userServiceInterface.registerUser(userRegistration);
+                                userRegCall.enqueue(new Callback<ResponseBody>() {
                                     @Override
-                                    public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
+                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                         runOnUiThread(() -> {
                                             progressBar.setVisibility(View.INVISIBLE);
-                                            if(response.isSuccessful() && response.body() !=null){
-                                                Log.d("Network Request", "User registered successfully: " + response.body());
-                                                Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-                                                startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
-                                                finish();
-                                                return;
+//                                            if(response.isSuccessful() && response.body() !=null){
+//                                                Log.d("Network Request", "User registered successfully: " + response.body());
+//                                                Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
+//                                                startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
+//                                                finish();
+//                                                return;
+//                                            }
+                                            APIResponse apiResponse = null;
+
+                                            try {
+                                               apiResponse = APIResponse.create(response);
+                                               if(apiResponse instanceof APISuccessResponse){
+                                                   String responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().toString();
+                                                   JSONConfig jsonConfig = new JSONConfig();
+                                                   String message = jsonConfig.extractMessageFromBodyFromJson(responseBody);
+                                                   Log.d("Network Request", "Result" + message);
+                                                   Toast.makeText(TTSRegistrationActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
+                                                   startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
+                                                   finish();
+                                                   return;
+                                               }
+                                               if(apiResponse instanceof APIErrorResponse){
+                                                   Log.e("Network Request", "Error: " + ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage());
+                                                   Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
+
+                                               }
+                                               if(apiResponse instanceof APIEmptyResponse){
+                                                   Log.d("Network Request", "Result: "+ apiResponse +"empty response");
+                                                   Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
+                                               }
                                             }
-                                            Log.e("Network Request", "Error: " + response.errorBody());
-                                            Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
+
+                                            catch (IOException e) {
+                                                throw new RuntimeException(e);
+                                            }
+
                                         });
                                     }
 
                                     @Override
-                                    public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
+                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
                                         appExecutors.getMainThread().execute(() -> {
                                             Log.e("Network Request", "Failed to connect: " + t.getMessage());
                                             progressBar.setVisibility(View.INVISIBLE);

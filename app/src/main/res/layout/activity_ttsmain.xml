@@ -253,7 +253,9 @@
                             android:layout_column="1"
                             android:layout_marginTop="7dp"
                             android:spinnerMode="dialog"
-                            android:textColor="@android:color/black" />
+                            android:textColor="@android:color/black"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"/>
 
                         <!--<AutoCompleteTextView-->
                             <!--android:id="@+id/measurableSelect"-->

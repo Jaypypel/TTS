@@ -1,17 +1,17 @@
 package com.example.neptune.ttsapp.Network;
 
-import com.example.neptune.ttsapp.MeasurableListDataModel;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.List;
 
-public class JSONConfig<T> {
+public class JSONConfig {
 
-    public T extractBodyFromJson(String json) throws IOException {
+    public JsonNode extractBodyFromJson(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        ResponseBody<T> responseBody = mapper.readValue(json, ResponseBody.class);
+        ResponseBody responseBody = mapper.readValue(json, ResponseBody.class);
         return responseBody.getBody();
     }
 
@@ -22,5 +22,13 @@ public class JSONConfig<T> {
         JsonNode rootNode = mapper.readTree(json);
         JsonNode bodyNode = rootNode.path("body");
 
-        return mapper.readerForListOf(clazz).readValue(bodyNode); }
+        return mapper.readerForListOf(clazz).readValue(bodyNode);
+    }
+
+    public String extractMessageFromBodyFromJson(String json) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        ResponseBody responseBody = mapper.readValue(json,ResponseBody.class);
+        return responseBody.getMessage();
+
+    }
 }

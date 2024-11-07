@@ -13,7 +13,7 @@ import retrofit2.http.Query;
 public interface UserServiceInterface {
 
     @POST("/app/user/register")
-    Call<APIResponse<Object>> registerUser(@Body User user);
+    Call<ResponseBody> registerUser(@Body User user);
 
     @GET("/app/user/login")
     Call<APIResponse<Object>> login(@Query("username") String username,@Query("password") String password);

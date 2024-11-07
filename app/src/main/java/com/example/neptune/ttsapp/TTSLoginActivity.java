@@ -105,7 +105,7 @@ public class TTSLoginActivity extends AppCompatActivity {
             {
                 togglePassword.setVisibility(View.VISIBLE);
                 String pass = password.getText().toString().trim().replaceAll("\\s+", "");
-                if (pass.length()==0){togglePassword.setVisibility(View.INVISIBLE);}
+                if (pass.isEmpty()){togglePassword.setVisibility(View.INVISIBLE);}
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {togglePassword.setVisibility(View.INVISIBLE); }
             public void onTextChanged(CharSequence s, int start, int before, int count) { }
@@ -192,7 +192,9 @@ public class TTSLoginActivity extends AppCompatActivity {
                                      finish();
 
                                  }else {
+                                     progressBarInLogin.setVisibility(View.INVISIBLE);
                                      Toast.makeText(TTSLoginActivity.this, "You entered incorrect details ", Toast.LENGTH_SHORT).show();
+
                                  }
 
                              });

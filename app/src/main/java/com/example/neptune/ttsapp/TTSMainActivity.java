@@ -22,6 +22,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
@@ -68,8 +69,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
+
 import dagger.hilt.android.AndroidEntryPoint;
-import hilt_aggregated_deps._dagger_hilt_android_internal_lifecycle_HiltWrapper_HiltViewModelFactory_ActivityCreatorEntryPoint;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -120,6 +122,8 @@ public class TTSMainActivity extends AppCompatActivity {
     private Spinner timeShareMeasurable;
 
     ArrayList<MeasurableListDataModel> measurableListDataModels = new ArrayList<>();
+
+
     private ListView listView;
     private MeasurableListCustomAdapter measurableListCustomAdapter;
 
@@ -154,20 +158,21 @@ public class TTSMainActivity extends AppCompatActivity {
 //        user.setText(sessionManager.getUserID());
         timeShareDate=(EditText)findViewById(R.id.editTextMainDate);
 
-        timeShareProjCode=(TextView)findViewById(R.id.editTextMainProjNo);
-        timeShareProjName=(AutoCompleteTextView)findViewById(R.id.editTextMainProjName);
-        timeShareActivityName=(AutoCompleteTextView)findViewById(R.id.editTextMainActName);
-        timeShareTaskName=(AutoCompleteTextView)findViewById(R.id.editTextMainTaskName);
-        timeShareStartTime=(EditText)findViewById(R.id.editTextMainStartTime);
-        timeShareEndTime=(EditText)findViewById(R.id.editTextMainEndTime);
-        timeShareDescription=(EditText)findViewById(R.id.editTextMainDescription);
+        timeShareProjCode=findViewById(R.id.editTextMainProjNo);
+        timeShareProjName=findViewById(R.id.editTextMainProjName);
+        timeShareActivityName=findViewById(R.id.editTextMainActName);
+        timeShareTaskName=findViewById(R.id.editTextMainTaskName);
+        timeShareStartTime=findViewById(R.id.editTextMainStartTime);
+        timeShareEndTime=findViewById(R.id.editTextMainEndTime);
+        timeShareDescription=findViewById(R.id.editTextMainDescription);
 //        btnAddDesSteps = (Button)findViewById(R.id.buttonMainDesSteps);
 
-        timeShareCancel=(Button)findViewById(R.id.buttonMainCancel);
-        timeShareSubmit=(Button)findViewById(R.id.buttonMainSubmit);
+        timeShareCancel=findViewById(R.id.buttonMainCancel);
+        timeShareSubmit=findViewById(R.id.buttonMainSubmit);
 
-        date = (TextView) findViewById(R.id.textViewMainDate);
-        time = (TextView) findViewById(R.id.textViewMainTime);
+        date = findViewById(R.id.textViewMainDate);
+        time = findViewById(R.id.textViewMainTime);
+
 
         final Handler someHandler = new Handler(getMainLooper());
         someHandler.postDelayed(new Runnable()
@@ -278,13 +283,26 @@ public class TTSMainActivity extends AppCompatActivity {
 
         }else {Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
-
+        timeShareMeasurable.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                timeShareMeasurable.performClick(); // Force open
+            }
+            return false;
+        });
 
         timeShareAddMeasurable.setOnClickListener(v -> {
             getMeasurableListAndUpdateUi().thenAccept(measurableListDataModels1 -> {
-                ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(getBaseContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
-                adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                timeShareMeasurable.setAdapter(adapterMeasurable);}).exceptionally(e -> {
+
+                if(measurableListDataModels1 != null && !measurableListDataModels1.isEmpty()){
+                    ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(getBaseContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
+                    adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    if(timeShareMeasurable == null) Log.e("Error","Spinner isn't initialized");
+                    else timeShareMeasurable.setAdapter(adapterMeasurable);
+                }else {
+                    Log.e("Error", "Measurable list is empty");
+                    Toast.makeText(getApplicationContext(), "No measurable data available", Toast.LENGTH_LONG).show();
+                }
+            }).exceptionally(e -> {
 
                 Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
                 appExecutor.getMainThread().execute(() ->
@@ -294,19 +312,19 @@ public class TTSMainActivity extends AppCompatActivity {
 
             try {
                 String tmeShrMsrble =  timeShareMeasurable.getSelectedItem() != null ? timeShareMeasurable.getSelectedItem().toString(): "undefined";
-                String tmeShreMsrbleQty = timeShareMeasurableQty.getText().toString() != null ? timeShareMeasurableQty.getText().toString(): "1";
-                String tmeShreMsrblUnit = timeShareMeasurableUnit.getText().toString() != null ? timeShareMeasurableQty.getText().toString(): "Unit";
+                String tmeShreMsrbleQty = timeShareMeasurableQty.getText().toString();
+
+                String tmeShreMsrblUnit = timeShareMeasurableQty.getText().toString();
 
                 measurableListDataModels.add(new MeasurableListDataModel(tmeShrMsrble,tmeShreMsrbleQty,tmeShreMsrblUnit));
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getApplicationContext());
 //                dailyTimeShareMeasurableList.add(new DailyTimeShareMeasurable(Long.parseLong(timeShareMeasurableQty.getText().toString().replaceAll("[^0-9]"," ")),timeShareMeasurableUnit.getText().toString()));
                 listView.setAdapter(measurableListCustomAdapter);
                 clear();
-                }
+            }
             catch (Exception e){e.printStackTrace();}
 
         });
-
 
         timeShareSubmit.setOnClickListener(v -> {
             try {
@@ -378,33 +396,6 @@ public class TTSMainActivity extends AppCompatActivity {
                     getProjectCodeAndUpdateUi(projectName).thenAccept(projectCode -> {
                                 runOnUiThread(() -> timeShareProjCode.setText(projectCode));
 
-//                        // Update the UI with the fetched project code
-//                        if (projectCode instanceof APIResponse){
-//                            Log.e("Project code",""+projectCode)
-//                            String projectcode = ((APISuccessResponse<String>) projectCode).getBody().toString();
-//                            timeShareProjCode.setText(projectCode.toString());
-//                        }
-//                        if (projectCode instanceof APIEmptyResponse) {
-//                            Log.e("Empty Response ", "fetch empty response" );
-//                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "empty response", Toast.LENGTH_LONG).show());
-//                            // Handle empty response
-//                        }
-//                        if (projectCode instanceof APIErrorResponse) {
-//                            String errorMessage = ((APIErrorResponse<String>) projectCode).getErrorMessage();
-//
-//                        if (projectCode instanceof APISuccessResponse) {
-//                            Log.e("Project code", "" + projectCode);
-//                            String code = ((APISuccessResponse<String>) projectCode).getBody();
-//                            runOnUiThread(() -> timeShareProjCode.setText(code));  // Safely update the UI
-//                        } else if (projectCode instanceof APIEmptyResponse) {
-//                            Log.e("Empty Response", "Received empty response");
-//                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "No content received", Toast.LENGTH_LONG).show());
-//                        } else if (projectCode instanceof APIErrorResponse) {
-//                            String errorMessage = ((APIErrorResponse<String>) projectCode).getErrorMessage();
-//                            Log.e("Error Response", "Error message: " + errorMessage);
-//                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Error: " + errorMessage, Toast.LENGTH_LONG).show());
-//                        }
-         //                }
                     }
                         ).exceptionally(e -> {
                         // Handle error and log it
@@ -536,16 +527,7 @@ public class TTSMainActivity extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    public View getView(int position, View convertView, ViewGroup parent) {
-//        final View view = View.inflate(getApplicationContext(), R.layout.left_drawer, null);
-//
-//        if (position == mSelectedItem) {
-//            // set your color
-//        }
-//
-//        return view;
-//    }
+
 
 
     private void selectItem(int position) {
@@ -692,6 +674,7 @@ public class TTSMainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
+
         new AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle("EXIT")
@@ -867,153 +850,6 @@ public class TTSMainActivity extends AppCompatActivity {
       }
 
 
-    //Insert Time Share
-//    public String insertDailyTimeShare(Long timeShareId,String userId,String timeShareDate,String timeShareProjCode,String timeShareProjName,
-//                                       String timeShareActivityName,String timeShareTaskName,String timeShareStartTime,String timeShareEndTime,
-//                                       String consumedTime, String description,Timestamp createdOn,ArrayList<MeasurableListDataModel> measurableList){
-//        String result="false";
-//        int x = 0;
-//        Connection con;
-//
-//        try{
-//            con = DatabaseHelper.getDBConnection();
-//            PreparedStatement ps;
-//
-//            ps = con.prepareStatement("insert into DAILY_TIME_SHARE(ID,FK_AUTHENTICATION_USER_ID,DATE_OF_TIME_SHARE,PROJECT_CODE,PROJECT_NAME,ACTIVITY_NAME,TASK_NAME," +
-//                                            "START_TIME,END_TIME,CONSUMED_TIME,DESCRIPTION,CREATED_ON) values(?,?,?,?,?,?,?,?,?,?,?,?)");
-//
-//            ps.setLong(1,timeShareId);
-//            ps.setString(2,userId);
-//            ps.setString(3,timeShareDate);
-//            ps.setString(4,timeShareProjCode);
-//            ps.setString(5, timeShareProjName);
-//            ps.setString(6, timeShareActivityName);
-//            ps.setString(7, timeShareTaskName);
-//            ps.setString(8, timeShareStartTime);
-//            ps.setString(9, timeShareEndTime);
-//            ps.setString(10, consumedTime);
-//            ps.setString(11, description);
-//            ps.setTimestamp(12, createdOn);
-//
-//            x = ps.executeUpdate();
-//            ps.close();
-//
-//
-//            String sql = "insert into DAILY_TIME_SHARE_MEASURABLE(FK_TIME_SHARE_ID,FK_MEASURABLE_ID,MEASURABLE_QUANTITY,MEASURABLE_UNIT) values(?,?,?,?)";
-//            PreparedStatement ps1 = con.prepareStatement(sql);
-//            con.setAutoCommit(false);
-//            for (MeasurableListDataModel mList:measurableList)
-//            {
-//                ps1.setLong(1,timeShareId);
-//                ps1.setLong(2, Long.parseLong(mList.getMeasurableName().replaceAll("[^0-9]", "")));
-//                ps1.setString(3, mList.getMeasurableQty());
-//                ps1.setString(4, mList.getMeasurableUnit());
-//
-//                ps1.addBatch();
-//
-//            }
-//
-//            int[] x1=ps1.executeBatch();
-//
-//            if (x==1 ||  x1.length>0){
-//                result = "true";
-//            }
-//
-//            con.commit();
-//            ps1.close();
-//            con.close();
-//        }
-//        catch(Exception e){
-//            e.printStackTrace();  `
-//        }
-//
-//        return result;
-//    }
-//
-//    // Getting Measurable List
-//    public ArrayList<MeasurableListDataModel> getMeasurableList(){
-//
-//        ArrayList measurableList = new ArrayList();
-//        MeasurableListDataModel measurableListDataModel;
-//
-//        Connection con;
-//        try {
-//            con = DatabaseHelper.getDBConnection();
-//
-//            PreparedStatement ps = con.prepareStatement("select * from MEASURABLES ORDER BY NAME ASC");
-//
-//
-//            ResultSet rs = ps.executeQuery();
-//
-//            while (rs.next()) {
-//                measurableListDataModel= new MeasurableListDataModel();
-//
-//                measurableListDataModel.setId(rs.getString("ID"));
-//                measurableListDataModel.setMeasurableName(rs.getString("NAME"));
-//
-//                measurableList.add(measurableListDataModel);
-//
-//            }
-//            rs.close();
-//            ps.close();
-//            con.close();
-//        } catch (Exception e) { e.printStackTrace(); }
-//
-//        Log.d("Measurable List",measurableList.toString());
-//        return measurableList;
-//
-//    }
-//
-//    // Getting Measurable Unit List
-//    public ArrayList <String> getMeasurableUnit(){
-//
-//        ArrayList unitNameList = new ArrayList();
-//
-//        Connection con;
-//        try {
-//            con = DatabaseHelper.getDBConnection();
-//
-//            PreparedStatement ps = con.prepareStatement("select * from MEASURABLE_UNIT");
-//
-//            ResultSet rs = ps.executeQuery();
-//
-//            while (rs.next())
-//            {
-//                String s = rs.getString("UNIT_NAME");
-//
-//                unitNameList.add(s);
-//            }
-//            rs.close();
-//            ps.close();
-//            con.close();
-//        } catch (Exception e) { e.printStackTrace(); }
-//
-//        return unitNameList;
-//
-//    }
-
-//    public void getActivityList(){
-//        appExecutor.getNetworkIO().execute(() -> {
-//            Call<ArrayList<String>> activityListResponse = activityInterface.getActivityList();
-//            activityListResponse.enqueue(new Callback<ArrayList<String>>() {
-//                @Override
-//                public void onResponse(Call<ArrayList<String>> call, Response<ArrayList<String>> response) {
-//                    if(response.isSuccessful() && response.body() != null){
-//                        ArrayList<String> activityList = (ArrayList<String>) response.body().getBody();
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<ArrayList<String>> call, Throwable t) {
-//                    appExecutor.getMainThread().execute(() -> {
-//                        Log.e("Network Request", "Failed to get" + t.getMessage());
-//                    });
-//                }
-//            });
-//        });
-//
-//
-//    }
 
     public void getActivityListAndUpdateUi() {
         appExecutor.getNetworkIO().execute(() -> {
@@ -1133,10 +969,10 @@ public class TTSMainActivity extends AppCompatActivity {
                     }
                     if(apiResponse instanceof APISuccessResponse) {
                         String responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().toString();
-                        JSONConfig<String> jsonConfig = new JSONConfig<>();
+                        JSONConfig jsonConfig = new JSONConfig();
                         try {
 
-                            String projectCode = jsonConfig.extractBodyFromJson(responseBody);
+                        String projectCode = jsonConfig.extractBodyFromJson(responseBody).asText();
                             future.complete(projectCode);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
@@ -1168,52 +1004,33 @@ public class TTSMainActivity extends AppCompatActivity {
 
                     APIResponse apiResponse;
                     try {
+
                         apiResponse = APIResponse.create(response);
                         if (apiResponse instanceof APISuccessResponse) {
                             String rspnseBdy = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().toString();
-                            rspnseBdy = rspnseBdy.replaceAll("\"body\":\"\\[", "\"body\":[");
-                            rspnseBdy = rspnseBdy.replaceAll("=\\{", ":{")
-                                    .replaceAll("=", ":")
-                                    .replaceAll(", ", "\",\"")
-                                    .replaceAll(",", "\"")
-                                    .replaceAll("},", "},")
-                                    .replaceAll("}]", "}]")
-                                    .replaceAll("\"", "\"");
-                            Log.e("responsebody",""+rspnseBdy);
-                            JSONConfig<MeasurableListDataModel> jsonConfig = new JSONConfig<>();
-                            List<MeasurableListDataModel> measurableListDataModels1 = jsonConfig.extractListFromBodyFromJson(rspnseBdy,MeasurableListDataModel.class);
-                            Log.e("measurable list",""+measurableListDataModels1);
-                            future.complete(measurableListDataModels1);
 
-                        }else if(apiResponse instanceof APIErrorResponse){
+                            Log.e("responsebody", "" + rspnseBdy);
+                            JSONConfig jsonConfig = new JSONConfig();
+                            if (jsonConfig.extractBodyFromJson(rspnseBdy).isArray()) {
+                                ArrayList<MeasurableListDataModel> measurableListDataModels1 = (ArrayList<MeasurableListDataModel>) jsonConfig.extractBodyFromJson(rspnseBdy).elements();
+                                Log.e("measurable list", "" + measurableListDataModels1);
+                                future.complete(measurableListDataModels1);
+                            }
+
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
                             String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                            Log.e("Error Received",""+erMsg);
-                        }else if(apiResponse instanceof APIErrorResponse){
-                            Log.e("Response","is empty repsonse"+apiResponse);
+                            Log.e("Error Received", "" + erMsg);
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            Log.e("Response", "is empty repsonse" + apiResponse);
                         }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
 
 
-
-//                    if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
-//                        // Cast the response to APISuccessResponse to access the body
-//                        APISuccessResponse<List<MeasurableListDataModel>> successResponse = (APISuccessResponse<List<MeasurableListDataModel>>) response.body();
-//                        ArrayList<MeasurableListDataModel> measurableList = (ArrayList<MeasurableListDataModel>) successResponse.getBody(); // Use the correct getter
-//                        appExecutor.getMainThread().execute(() -> {
-//
-//                            ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(getBaseContext(), android.R.layout.simple_spinner_item, measurableList);
-//                            adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//                            timeShareMeasurable.setAdapter(adapterMeasurable);
-//                        });
-//
-//                    } else {
-//                        appExecutor.getMainThread().execute(() ->
-//                                Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
-//                    }
-//
-               }
+                }
 
 
 
@@ -1221,128 +1038,11 @@ public class TTSMainActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                     Log.e("Network Request", "Failed: " + t.getMessage());
-//                    appExecutor.getMainThread().execute( () -> {
-//                                Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
-//                            }
-//                    );
 
                 }
             });
         });
             return future;
     }
-    // Getting Activity List
-//    public ArrayList<String> getActivityList(){
-//
-//        ArrayList<String> activityList = new ArrayList();
-//
-//        Connection con;
-//        try {
-//            con = DatabaseHelper.getDBConnection();
-//
-//            PreparedStatement ps = con.prepareStatement("select DISTINCT NAME from ACTIVITY");
-//
-//            ResultSet rs = ps.executeQuery();
-//
-//            while (rs.next()) {
-//                String s = rs.getString("NAME");
-//
-//                activityList.add(s);
-//
-//            }
-//            rs.close();
-//            ps.close();
-//            con.close();
-//        } catch (Exception e) { e.printStackTrace(); }
-//
-//        return activityList;
-//
-//    }
-/*
-    // Getting Task List
-    public ArrayList<String> getTaskList(){
-
-        ArrayList<String> activityList = new ArrayList();
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select DISTINCT NAME from TASK");
-
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                String s = rs.getString("NAME");
-
-                activityList.add(s);
-
-            }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return activityList;
-
-    }
-
-    // Getting Project Name List
-    public ArrayList<String> getProjectNameList(){
-
-        ArrayList<String> projectNameList = new ArrayList();
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select DISTINCT NAME from PROJECT");
-
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                String s = rs.getString("NAME");
-
-                projectNameList.add(s);
-
-            }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return projectNameList;
-
-    }
-*/
-
-    // Getting Project Code List
-//    public String getProjectCode(String projectName){
-//
-//        String projectCode=null;
-//
-//        Connection con;
-//        try {
-//            con = DatabaseHelper.getDBConnection();
-//
-//            PreparedStatement ps = con.prepareStatement("select DISTINCT CODE from PROJECT WHERE NAME = ?");
-//            ps.setString(1, projectName);
-//
-//            ResultSet rs = ps.executeQuery();
-//
-//            while (rs.next()) {
-//                projectCode = rs.getString("CODE");
-//
-//            }
-//            rs.close();
-//            ps.close();
-//            con.close();
-//        } catch (Exception e) { e.printStackTrace(); }
-//
-//        return projectCode;
-//
-//    }
 
 }
