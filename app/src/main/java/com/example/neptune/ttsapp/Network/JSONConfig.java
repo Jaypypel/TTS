@@ -11,8 +11,8 @@ public class JSONConfig {
 
     public JsonNode extractBodyFromJson(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        ResponseBody responseBody = mapper.readValue(json, ResponseBody.class);
-        return responseBody.getBody();
+        JsonNode rootNode = mapper.readTree(json);  // Convert the whole response into a JsonNode
+        return rootNode.path("body");
     }
 
     public <T> List<T> extractListFromBodyFromJson(String json, Class<T> clazz)  throws IOException {

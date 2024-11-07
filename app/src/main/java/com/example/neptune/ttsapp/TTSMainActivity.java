@@ -49,8 +49,12 @@ import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ProjectServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskServiceInterface;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -114,7 +118,7 @@ public class TTSMainActivity extends AppCompatActivity {
     ActionBarDrawerToggle mDrawerToggle;
     private SessionManager sessionManager;
 
-//    private Spinner spinnerMeasurable;
+
     private EditText timeShareDate,timeShareStartTime,timeShareEndTime,timeShareDescription,timeShareMeasurableQty;
     private TextView time,date,timeShareProjCode;
     private AutoCompleteTextView timeShareActivityName,timeShareTaskName,timeShareProjName, timeShareMeasurableUnit;
@@ -130,7 +134,7 @@ public class TTSMainActivity extends AppCompatActivity {
 
     private int mYear, mMonth, mDay, mHour, mMinute;
 
-//    private ProgressBar progressBar;
+
 
     // Code for Finishing activity from TimeShareList Activity
     public static TTSMainActivity mainActivity;
@@ -144,20 +148,13 @@ public class TTSMainActivity extends AppCompatActivity {
         mainActivity = this;
 
         setContentView(R.layout.activity_ttsmain);
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
 
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles= getResources().getStringArray(R.array.navigation_drawer_items_array);
         mDrawerLayout =  findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerList =  findViewById(R.id.left_drawer);
         sessionManager = new SessionManager(getApplicationContext());
-
-
-//        user = (TextView) findViewById(R.id.textViewMainUser);
-//        user.setText(sessionManager.getUserID());
-        timeShareDate=(EditText)findViewById(R.id.editTextMainDate);
-
+        timeShareDate=findViewById(R.id.editTextMainDate);
         timeShareProjCode=findViewById(R.id.editTextMainProjNo);
         timeShareProjName=findViewById(R.id.editTextMainProjName);
         timeShareActivityName=findViewById(R.id.editTextMainActName);
@@ -165,7 +162,7 @@ public class TTSMainActivity extends AppCompatActivity {
         timeShareStartTime=findViewById(R.id.editTextMainStartTime);
         timeShareEndTime=findViewById(R.id.editTextMainEndTime);
         timeShareDescription=findViewById(R.id.editTextMainDescription);
-//        btnAddDesSteps = (Button)findViewById(R.id.buttonMainDesSteps);
+
 
         timeShareCancel=findViewById(R.id.buttonMainCancel);
         timeShareSubmit=findViewById(R.id.buttonMainSubmit);
@@ -196,11 +193,11 @@ public class TTSMainActivity extends AppCompatActivity {
 
 
         // Code for Measurable list
-        listView=(ListView)findViewById(R.id.listMainMeasurable);
-        timeShareAddMeasurable=(Button)findViewById(R.id.buttonMainMeasurableAdd);
-        timeShareMeasurableQty=(EditText)findViewById(R.id.editTextMainQty);
-        timeShareMeasurableUnit=(AutoCompleteTextView) findViewById(R.id.editTextMainUnit);
-        timeShareMeasurable = (Spinner) findViewById(R.id.measurableSelect);
+        listView=findViewById(R.id.listMainMeasurable);
+        timeShareAddMeasurable=findViewById(R.id.buttonMainMeasurableAdd);
+        timeShareMeasurableQty=findViewById(R.id.editTextMainQty);
+        timeShareMeasurableUnit= findViewById(R.id.editTextMainUnit);
+        timeShareMeasurable =  findViewById(R.id.measurableSelect);
 
 
 
@@ -269,11 +266,13 @@ public class TTSMainActivity extends AppCompatActivity {
             getTaskNameListAndUpdateUi();
             getProjectNameListAndUpdateUi();
             getMeasurableListAndUpdateUi().thenAccept(measurableListDataModels1 -> {
-                ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(getBaseContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
-                adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                timeShareMeasurable.setAdapter(adapterMeasurable);}).exceptionally(e -> {
+                runOnUiThread(() -> {
+                    ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(getBaseContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
+                    adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    timeShareMeasurable.setAdapter(adapterMeasurable);
 
-                   Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
+                });
+            }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
                 appExecutor.getMainThread().execute(() ->
                               Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
                 return null;
@@ -314,7 +313,7 @@ public class TTSMainActivity extends AppCompatActivity {
                 String tmeShrMsrble =  timeShareMeasurable.getSelectedItem() != null ? timeShareMeasurable.getSelectedItem().toString(): "undefined";
                 String tmeShreMsrbleQty = timeShareMeasurableQty.getText().toString();
 
-                String tmeShreMsrblUnit = timeShareMeasurableQty.getText().toString();
+                String tmeShreMsrblUnit = timeShareMeasurableUnit.getText().toString();
 
                 measurableListDataModels.add(new MeasurableListDataModel(tmeShrMsrble,tmeShreMsrbleQty,tmeShreMsrblUnit));
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getApplicationContext());
@@ -1007,15 +1006,29 @@ public class TTSMainActivity extends AppCompatActivity {
 
                         apiResponse = APIResponse.create(response);
                         if (apiResponse instanceof APISuccessResponse) {
-                            String rspnseBdy = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().toString();
+                            ResponseBody<?> responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody();
 
-                            Log.e("responsebody", "" + rspnseBdy);
-                            JSONConfig jsonConfig = new JSONConfig();
-                            if (jsonConfig.extractBodyFromJson(rspnseBdy).isArray()) {
-                                ArrayList<MeasurableListDataModel> measurableListDataModels1 = (ArrayList<MeasurableListDataModel>) jsonConfig.extractBodyFromJson(rspnseBdy).elements();
-                                Log.e("measurable list", "" + measurableListDataModels1);
-                                future.complete(measurableListDataModels1);
-                            }
+                                ArrayList<MeasurableListDataModel> measurableListDataModels = (ArrayList<MeasurableListDataModel>) responseBody.getBody();
+
+
+                                future.complete(measurableListDataModels);
+
+
+
+// Deserialize the response body using Gson (or your preferred library)
+
+//                            Log.e("responsebody", "" + rspnseBdy);
+//                            JSONConfig jsonConfig = new JSONConfig();
+//                            List<MeasurableListDataModel> measurableListDataModels = new ArrayList<>();
+
+                            // Assuming extractBodyFromJson() returns a JSON Array
+//                            if (jsonConfig.extractBodyFromJson(rspnseBdy).isArray()) {
+
+
+//                            } else {
+//                                future.completeExceptionally(new IOException("Unexpected response format"));
+//                            }
+
 
                         }
                         if (apiResponse instanceof APIErrorResponse) {

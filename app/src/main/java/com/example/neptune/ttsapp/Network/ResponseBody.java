@@ -2,11 +2,13 @@ package com.example.neptune.ttsapp.Network;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class ResponseBody {
+public class ResponseBody<T> {
 
     private String message;
-    private JsonNode body;
+    private T body;
 
+    public ResponseBody() {
+    }
 
     public String getMessage() {
         return message;
@@ -21,11 +23,11 @@ public class ResponseBody {
         return "{\"message\": \" " + message + "\",\"body\":\" " + body + "\"}";
     }
 
-    public JsonNode getBody() {
+    public T getBody() {
         return body;
     }
 
-    public void setBody(JsonNode body) {
+    public void setBody(T body) {
         this.body = body;
     }
 }
