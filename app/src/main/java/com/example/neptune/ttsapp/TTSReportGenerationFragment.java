@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import androidx.fragment.app.Fragment;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +20,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.ResponseBody;
+import com.example.neptune.ttsapp.Network.UserServiceInterface;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,7 +41,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.Label;
@@ -37,11 +54,20 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-
+@AndroidEntryPoint
 public class TTSReportGenerationFragment extends Fragment {
 
-    public TTSReportGenerationFragment() { }
+    @Inject
+    AppExecutors appExecutors;
+
+    @Inject
+    UserServiceInterface userService;
+
+//    public TTSReportGenerationFragment() { }
 
     private EditText startDate,endDate;
     private TextView user,date,time;
@@ -59,12 +85,12 @@ public class TTSReportGenerationFragment extends Fragment {
         StrictMode.setThreadPolicy(policy);
 
 
-        user=(TextView)view.findViewById(R.id.textViewRGUser);
+        user=view.findViewById(R.id.textViewRGUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         user.setText(sessionManager.getUserID());
 
-        date=(TextView)view.findViewById(R.id.textViewRGDate);
-        time=(TextView)view.findViewById(R.id.textViewRGTime);
+        date=view.findViewById(R.id.textViewRGDate);
+        time=view.findViewById(R.id.textViewRGTime);
 
 
         final Handler someHandler = new Handler(Looper.getMainLooper());
@@ -87,18 +113,29 @@ public class TTSReportGenerationFragment extends Fragment {
             }
         }, 10);
 
-        startDate=(EditText)view.findViewById(R.id.editTextRGStartDate);
-        endDate=(EditText)view.findViewById(R.id.editTextRGEndDate);
+        startDate=view.findViewById(R.id.editTextRGStartDate);
+        endDate=view.findViewById(R.id.editTextRGEndDate);
 
-        btnReportGenerate=(Button)view.findViewById(R.id.buttonRGReportGenerate);
+        btnReportGenerate=view.findViewById(R.id.buttonRGReportGenerate);
+        spinnerSelectUser = view.findViewById(R.id.spinnerRGSelectUser);
 
         if (InternetConnectivity.isConnected()) {
-            ArrayList users = getUserList();
-            users.add(0, "Select User");
-            spinnerSelectUser = (Spinner)view.findViewById(R.id.spinnerRGSelectUser);
-            ArrayAdapter<String> userAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
-            userAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerSelectUser.setAdapter(userAdapter);
+
+            getUsernames().thenAccept(usernames -> {
+                ArrayList<String>  users = usernames;
+                //users.add(0,"Select user");
+                ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
+                userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerSelectUser.setAdapter(userSelectAdapter);
+            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update usernames", Toast.LENGTH_LONG).show();
+                return null;
+            });
+//            ArrayList users = getUserList();
+//            users.add(0, "Select User");
+//            spinnerSelectUser = view.findViewById(R.id.spinnerRGSelectUser);
+//            ArrayAdapter<String> userAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
+//            userAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            spinnerSelectUser.setAdapter(userAdapter);
         }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
@@ -199,35 +236,47 @@ public class TTSReportGenerationFragment extends Fragment {
     }
 
 
-    // Getting Users List
-    public ArrayList <String> getUserList(){
+    public CompletableFuture<ArrayList<String>> getUsernames() {
+        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
 
-        ArrayList userNameList = new ArrayList();
+        appExecutors.getNetworkIO().execute(() -> {
+            Call<ResponseBody> usernamesResponse = userService.getUsernames();
+            usernamesResponse.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
 
-            PreparedStatement ps = con.prepareStatement("select * from AUTHENTICATION");
+                    try {
+                        APIResponse apiResponse =   APIResponse.create(response);
+                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
 
-            ResultSet rs = ps.executeQuery();
+                        if(result.isJsonArray()){
+                            JsonArray usernames = result.getAsJsonArray();
+                            ArrayList<String> list = gson.fromJson(usernames, listType);
+                            future.complete(list);
 
-            while (rs.next()) {
+                        }
+                    } catch (RuntimeException e) {
+                        Log.e("Error", ""+e.getMessage());
+                    } catch (IOException e) {
+                        Log.e("Error", ""+e.getMessage());
+                    }
 
-                String s = rs.getString("USER_ID");
+                }
 
-                userNameList.add(s);
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.e("Network Request", "Failed: " + t.getMessage());
 
-            }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return userNameList;
+                }
+            });
+
+        });
+
+        return future;
     }
-
 
     // Getting Report Generation Details
     public ArrayList <ReportGenerationDataModel> getUserReportDetails(String userID, String startDate,String endDate){

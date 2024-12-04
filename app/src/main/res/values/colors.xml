@@ -1,8 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<resources>-->
+
+<!--  <color name="colorPrimary">#F50057</color>-->
+<!--  <color name="colorAccent">#FF80AB</color>-->
+<!--  <color name="colorPrimaryDark">#C51162</color>-->
+
+<!--</resources>-->
 <resources>
+  <!-- Primary Colors -->
+  <color name="primaryColor">#6200EE</color>
+  <color name="primaryVariant">#3700B3</color>
+  <color name="onPrimary">#FFFFFF</color>
 
-  <color name="colorPrimary">#F50057</color>
-  <color name="colorAccent">#FF80AB</color>
-  <color name="colorPrimaryDark">#C51162</color>
+  <!-- Secondary Colors -->
+  <color name="secondaryColor">#03DAC6</color>
+  <color name="secondaryVariant">#018786</color>
+  <color name="onSecondary">#000000</color>
 
+  <!-- Background Colors -->
+  <color name="background">#FFFFFF</color>
+  <color name="onBackground">#000000</color>
+
+  <!-- Surface Colors -->
+  <color name="surface">#FFFFFF</color>
+  <color name="onSurface">#000000</color>
+
+  <!-- Error Colors -->
+  <color name="error">#B00020</color>
+  <color name="onError">#FFFFFF</color>
 </resources>

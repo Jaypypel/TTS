@@ -22,8 +22,8 @@ public class APISuccessResponse<T> extends APIResponse<T> {
         this.links = links;
     }
 
-    public T getBody() {
-        return body;
+    public ResponseBody getBody() {
+        return (ResponseBody) body;
     }
 
     public Map<String, String> getLinks() {

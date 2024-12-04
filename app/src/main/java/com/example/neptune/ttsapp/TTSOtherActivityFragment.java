@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.Util.DateConverter;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -147,13 +149,7 @@ public class TTSOtherActivityFragment extends Fragment {
                 mMonth=mcurrentDate.get(Calendar.MONTH);
                 mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        date.setText(convertDateTime(dayOfMonth) + "-" + convertDateTime((month+1))  + "-" + year);
-                    }
-                },mYear, mMonth, mDay);
+                DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), (view3, year, month, dayOfMonth) -> date.setText(convertDateTime(dayOfMonth) + "-" + convertDateTime((month+1))  + "-" + year),mYear, mMonth, mDay);
                 mDatePicker.getDatePicker().setCalendarViewShown(false);
                 mDatePicker.setTitle("Select date");
                 mDatePicker.show();
@@ -163,26 +159,23 @@ public class TTSOtherActivityFragment extends Fragment {
         });
 
         // Time Picker for Start Time
-        startTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Calendar c = Calendar.getInstance();
-                mHour = c.get(Calendar.HOUR_OF_DAY);
-                mMinute = c.get(Calendar.MINUTE);
+        startTime.setOnClickListener(v -> {
+            final Calendar c = Calendar.getInstance();
+            mHour = c.get(Calendar.HOUR_OF_DAY);
+            mMinute = c.get(Calendar.MINUTE);
 
-                // Launch Time Picker Dialog
-                TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
-                        new TimePickerDialog.OnTimeSetListener() {
+            // Launch Time Picker Dialog
+            TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
+                    new TimePickerDialog.OnTimeSetListener() {
 
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay,
-                                                  int minute) {
+                        @Override
+                        public void onTimeSet(TimePicker view2, int hourOfDay,
+                                              int minute) {
 
-                                startTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute));
-                            }
-                        }, mHour, mMinute, true);
-                timePickerDialog.show();
-            }
+                            startTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute));
+                        }
+                    }, mHour, mMinute, true);
+            timePickerDialog.show();
         });
 
         // Time Picker for End Time
@@ -253,9 +246,10 @@ public class TTSOtherActivityFragment extends Fragment {
 
     private String delegationTime()
     {
-        Calendar calendar = Calendar.getInstance();
-        Timestamp delegationTimestamp = new Timestamp(calendar.getTime().getTime());
-        return delegationTimestamp.toString();
+//        Calendar calendar = Calendar.getInstance();
+//        Timestamp delegationTimestamp = new Timestamp(calendar.getTime().getTime());
+//        return delegationTimestamp.toString();
+        return DateConverter.getCurrentDateTime();
     }
 
     // Calculate Time Difference between startTime and endTime

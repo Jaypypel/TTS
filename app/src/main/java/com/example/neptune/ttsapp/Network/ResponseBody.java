@@ -1,20 +1,23 @@
 package com.example.neptune.ttsapp.Network;
 
-import com.fasterxml.jackson.databind.JsonNode;
 
-public class ResponseBody<T> {
 
-    private String message;
-    private T body;
+import com.google.gson.JsonElement;
+
+
+public class ResponseBody {
+
+    private JsonElement message;
+    private JsonElement body;
 
     public ResponseBody() {
     }
 
-    public String getMessage() {
+    public JsonElement getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(JsonElement message) {
         this.message = message;
     }
 
@@ -23,11 +26,11 @@ public class ResponseBody<T> {
         return "{\"message\": \" " + message + "\",\"body\":\" " + body + "\"}";
     }
 
-    public T getBody() {
+    public JsonElement getBody() {
         return body;
     }
 
-    public void setBody(T body) {
+    public void setBody(JsonElement body) {
         this.body = body;
     }
 }

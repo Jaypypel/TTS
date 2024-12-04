@@ -43,18 +43,25 @@ import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.ActivityServiceInterface;
+import com.example.neptune.ttsapp.Network.DTSMeasurableInterface;
 import com.example.neptune.ttsapp.Network.DailyTimeShareInterface;
-import com.example.neptune.ttsapp.Network.JSONConfig;
 import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ProjectServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskServiceInterface;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.example.neptune.ttsapp.Util.DateConverter;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -62,16 +69,23 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
+import javax.security.auth.login.LoginException;
 
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -91,16 +105,19 @@ public class TTSMainActivity extends AppCompatActivity {
     DailyTimeShareInterface dailyTimeShareInterface;
 
     @Inject
-    ActivityServiceInterface activityInterface;
+    ActivityServiceInterface activityService;
 
     @Inject
-    ProjectServiceInterface projectServiceInterface;
+    ProjectServiceInterface projectService;
 
     @Inject
-    TaskServiceInterface taskServiceInterface;
+    TaskServiceInterface taskService;
 
     @Inject
-    MeasurableServiceInterface measurableServiceInterface;
+    MeasurableServiceInterface measurableService;
+
+    @Inject
+    DTSMeasurableInterface dtsMeasurableInterface;
 
 
 
@@ -232,7 +249,7 @@ public class TTSMainActivity extends AppCompatActivity {
             { timeShareMeasurableUnit.requestFocus(); }
             return false;
         });
-
+        CompletableFuture<List<MeasurableListDataModel>> measurableList  = getMeasurableListAndUpdateUi();
         //Code For set measurable list to spinner
         if (InternetConnectivity.isConnected())
         {
@@ -247,35 +264,59 @@ public class TTSMainActivity extends AppCompatActivity {
             timeShareProjName.setText("");
             timeShareMeasurableUnit.setText("");
 
-
-        /*    ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, getActivityList());
-            timeShareActivityName.setAdapter(activityNameAdapter);*/
-//            ArrayAdapter<String> taskNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, getTaskList());
-//            timeShareTaskName.setAdapter(taskNameAdapter);
-//
-//            ArrayAdapter<String> projectNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, getProjectNameList());
-//            timeShareProjName.setAdapter(projectNameAdapter);
-//
-//            ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(getBaseContext(), android.R.layout.simple_spinner_item, getMeasurableList());
-//            adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            timeShareMeasurable.setAdapter(adapterMeasurable);
-
-//            ArrayAdapter<String> unitNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, getMeasurableUnit());
-//            timeShareMeasurableUnit.setAdapter(unitNameAdapter);
-            getActivityListAndUpdateUi();
-            getTaskNameListAndUpdateUi();
-            getProjectNameListAndUpdateUi();
-            getMeasurableListAndUpdateUi().thenAccept(measurableListDataModels1 -> {
-                runOnUiThread(() -> {
-                    ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(getBaseContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
-                    adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    timeShareMeasurable.setAdapter(adapterMeasurable);
-
+            appExecutor.getNetworkIO().execute(() -> {
+                getActivityNames().thenAccept(activityNames -> {
+                    appExecutor.getMainThread().execute(() -> {
+                        ArrayAdapter<String> activityNamesAdapter = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_list_item_1,activityNames);
+                        timeShareActivityName.setAdapter(activityNamesAdapter);
+                    });
+                }).exceptionally(e -> {
+                    appExecutor.getMainThread().execute(() ->
+                            Toast.makeText(getApplicationContext(), "couldn't fetch activity names ", Toast.LENGTH_LONG).show());
+                    return null;
                 });
-            }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
-                appExecutor.getMainThread().execute(() ->
-                              Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
-                return null;
+            });
+
+            appExecutor.getNetworkIO().execute(() -> {
+                getTaskNames().thenAccept(taskNames -> {
+                    appExecutor.getMainThread().execute( () -> {
+                        ArrayAdapter<String> taskNamesAdapter = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_list_item_1,taskNames);
+                        timeShareActivityName.setAdapter(taskNamesAdapter);
+                    });
+                }).exceptionally(e -> {
+                    appExecutor.getMainThread().execute(() ->
+                            Toast.makeText(getApplicationContext(), "couldn't fetch task names ", Toast.LENGTH_LONG).show());
+                    return null;
+                });
+            });
+            appExecutor.getNetworkIO().execute(() -> {
+                getProjectNames().thenAccept(projectNames -> {
+                    appExecutor.getMainThread().execute(() -> {
+                        ArrayAdapter<String> projectNamesAdapter = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_list_item_1, projectNames);
+                        timeShareActivityName.setAdapter(projectNamesAdapter);
+                    });
+                }).exceptionally(e -> {
+                    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
+                    appExecutor.getMainThread().execute(() ->
+                            Toast.makeText(getApplicationContext(), "couldn't fetch project names", Toast.LENGTH_LONG).show());
+                    return null;
+                });
+            });
+
+
+            appExecutor.getNetworkIO().execute(() -> {
+                getMeasurableListAndUpdateUi().thenAccept(measurableListDataModels1 -> {
+                    runOnUiThread(() -> {
+                        ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(getBaseContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
+                        adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        timeShareMeasurable.setAdapter(adapterMeasurable);
+
+                    });
+                }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
+                    appExecutor.getMainThread().execute(() ->
+                            Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
+                    return null;
+                });
             });
 
 
@@ -290,34 +331,30 @@ public class TTSMainActivity extends AppCompatActivity {
         });
 
         timeShareAddMeasurable.setOnClickListener(v -> {
-            getMeasurableListAndUpdateUi().thenAccept(measurableListDataModels1 -> {
-
-                if(measurableListDataModels1 != null && !measurableListDataModels1.isEmpty()){
-                    ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(getBaseContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
-                    adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    if(timeShareMeasurable == null) Log.e("Error","Spinner isn't initialized");
-                    else timeShareMeasurable.setAdapter(adapterMeasurable);
-                }else {
-                    Log.e("Error", "Measurable list is empty");
-                    Toast.makeText(getApplicationContext(), "No measurable data available", Toast.LENGTH_LONG).show();
-                }
-            }).exceptionally(e -> {
-
-                Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
-                appExecutor.getMainThread().execute(() ->
-                        Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
-                return null;
-            });
 
             try {
-                String tmeShrMsrble =  timeShareMeasurable.getSelectedItem() != null ? timeShareMeasurable.getSelectedItem().toString(): "undefined";
+                String tmeShrMsrble =  timeShareMeasurable.getSelectedItem().toString() != null ? timeShareMeasurable.getSelectedItem().toString(): "undefined";
                 String tmeShreMsrbleQty = timeShareMeasurableQty.getText().toString();
 
                 String tmeShreMsrblUnit = timeShareMeasurableUnit.getText().toString();
 
-                measurableListDataModels.add(new MeasurableListDataModel(tmeShrMsrble,tmeShreMsrbleQty,tmeShreMsrblUnit));
+                String[]   parts = tmeShrMsrble.split("-");
+                Log.e("parts",""+parts);
+
+                String numberPart = parts[0].split("\\.")[0]; // Cast to int to remove decimal
+                Log.e("numberPart",""+numberPart);
+                // Extract the word part
+                String wordPart = parts[1];
+                Log.e("wordPart",""+wordPart);
+
+                MeasurableListDataModel m = new MeasurableListDataModel();
+                m.setId(numberPart);
+                m.setMeasurableName(wordPart);
+                m.setMeasurableQty(tmeShreMsrbleQty);
+                m.setMeasurableUnit(tmeShreMsrblUnit);
+
+                measurableListDataModels.add(m);
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getApplicationContext());
-//                dailyTimeShareMeasurableList.add(new DailyTimeShareMeasurable(Long.parseLong(timeShareMeasurableQty.getText().toString().replaceAll("[^0-9]"," ")),timeShareMeasurableUnit.getText().toString()));
                 listView.setAdapter(measurableListCustomAdapter);
                 clear();
             }
@@ -342,50 +379,52 @@ public class TTSMainActivity extends AppCompatActivity {
                     else
                          {
                             timeShareSubmit.setBackgroundColor(Color.GRAY);
-//                            Toast.makeText(getApplicationContext(), "Wait For Inserting TimeShare", Toast.LENGTH_LONG).show()
-                             //getProjectCodeAndUpdateUi();
+
 
                              String projectcode = !isProjectNameValid().isEmpty()? isProjectCodeValid(): "No code received";
                              Log.e("Project code", "printed"+projectcode);
                              User user = new User(sessionManager.getUserID());
                              Log.e("User" , "user name"+user);
-
+                             Log.e("consumed Time",getConsumedTime());
                              DailyTimeShare dailyTimeShare = new DailyTimeShare(isDateValid(),projectcode
                                      ,isProjectNameValid(),isActivityNameValid(),
                                      isTaskNameValid(),isStartTimeValid(),isEndTimeValid(),getConsumedTime(),
-                                     isDescriptionValid(),delegationTime().toString(),user );
+                                     isDescriptionValid(),delegationTime(),user );
                                 Log.e("Received User Id", "id "+sessionManager.getUserID());
-//                            String result = insertDailyTimeShare(getMaxTimeShareTaskId(), sessionManager.getUserID(), isDateValid(), isProjectCodeValid(), isProjectNameValid(), isActivityNameValid(),
-//                                    isTaskNameValid(), isStartTimeValid(), isEndTimeValid(), getConsumedTime(),isDescriptionValid(), delegationTime(), measurableListDataModels);
                              dailyTimeShareDTO = new DailyTimeShareDTO(dailyTimeShare,measurableListDataModels);
-                             AtomicBoolean isRequestPass = addDailyTimeShare(dailyTimeShareDTO);
-                            if (isRequestPass.get()) {
-                                Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
-                                clearAll();
-//                                timeShareSubmit.setBackgroundColor(Color.LTGRAY);
-                                timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                            } else {
-//                                timeShareSubmit.setBackgroundColor(Color.LTGRAY);
-                                timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                                Toast.makeText(getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
-                            }
+
+
+                            appExecutor.getNetworkIO().execute(() -> {
+                                addDailyTimeShare(dailyTimeShare).thenCompose(result -> {
+                                    Long id = Long.valueOf(result.get(1));
+                                    return addDailyTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
+                                        if (finalResult) {
+                                            appExecutor.getMainThread().execute(() -> {
+                                                Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
+                                                clearAll();
+                                                timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                                            });
+                                        }
+                                    });
+                                }).exceptionally(e -> {
+                                    appExecutor.getMainThread().execute(() -> {
+                                        timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                                        Toast.makeText(getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
+                                    });
+                                    return null;
+
+                                }).join();
+                            });
+
                          }
                 } else {
                     Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
-//                        progressBar.setVisibility(View.INVISIBLE);
+
                 }
             } catch (Exception e) { e.printStackTrace(); }
         });
 
 
-        // Get Project Code Against Project Name And Set To Project Code TextView
-/*        timeShareProjName.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus)
-            {
-                String projectName = timeShareProjName.getText().toString().trim();
-                if (projectName.length()>0) { timeShareProjCode.setText(getProjectCode(isProjectNameValid())); }
-            }
-        });*/
 
         timeShareProjName.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
@@ -419,52 +458,136 @@ public class TTSMainActivity extends AppCompatActivity {
         timeShareStartTime.setFocusable(false);
         timeShareEndTime.setFocusable(false);
 
-        //Date Picker start
+
+//
         timeShareDate.setOnClickListener(v -> {
+            MaterialDatePicker<Long> datePicker = MaterialDatePicker
+                    .Builder
+                    .datePicker()
+                    .setTitleText("Select Date")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build();
 
-            //To show current date in the datePicker
-            Calendar mcurrentDate=Calendar.getInstance();
-            mYear=mcurrentDate.get(Calendar.YEAR);
-            mMonth=mcurrentDate.get(Calendar.MONTH);
-            mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
+            datePicker.show(getSupportFragmentManager(),"Date_Picker");
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                Log.e("Date",""+datePicker.getHeaderText());
+                LocalDate selectedDate = Instant
+                        .ofEpochMilli(selection)
+                        .atZone(ZoneId.systemDefault())
+                                .toLocalDate();
 
-            DatePickerDialog mDatePicker=new DatePickerDialog(TTSMainActivity.this, (view, year, month, dayOfMonth) ->
-            timeShareDate.setText(convertDateTime(dayOfMonth) + "/" + convertDateTime((month+1))  + "/" + year),mYear, mMonth, mDay);
-            mDatePicker.getDatePicker().setCalendarViewShown(false);
-            mDatePicker.setTitle("Select date");
-            mDatePicker.show();
+                DateTimeFormatter df =  DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                String formattedDate = selectedDate.format(df);
+                Log.e("fD",formattedDate);
+                Log.e("getCurrentDate", getTodayDate());
+                Log.e("isDateValid", isDateValid());
+                timeShareDate.setText(formattedDate);
+            });
+        });
+        //Date Picker start
+//        timeShareDate.setOnClickListener(v -> {
+//
+//            //To show current date in the datePicker
+//            Calendar mcurrentDate=Calendar.getInstance();
+//            mYear=mcurrentDate.get(Calendar.YEAR);
+//            mMonth=mcurrentDate.get(Calendar.MONTH);
+//            mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
+//
+//            DatePickerDialog mDatePicker=new DatePickerDialog(TTSMainActivity.this, (view, year, month, dayOfMonth) ->
+//            timeShareDate.setText(convertDateTime(dayOfMonth) + "/" + convertDateTime((month+1))  + "/" + year),mYear, mMonth, mDay);
+//            mDatePicker.getDatePicker().setCalendarViewShown(false);
+//            mDatePicker.setTitle("Select date");
+//            mDatePicker.show();
+//
+//        });
+
+
+        timeShareStartTime.setOnClickListener(view -> {
+            MaterialTimePicker timePicker = new MaterialTimePicker
+                    .Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_12H)
+                    .setHour(12)
+                    .setMinute(10)
+                    .setTitleText("Select Start Time")
+                    .build();
+
+            timePicker.show(getSupportFragmentManager(),"Time_Picker");
+
+            timePicker.addOnPositiveButtonClickListener(selection -> {
+                int hour = timePicker.getHour();
+                int minute = timePicker.getMinute();
+
+                // Determine AM/PM
+                String amPm = (hour < 12) ? "AM" : "PM";
+
+                // Convert to 12-hour format
+                int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
+
+                // Create formatted time string
+                String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
+
+                Log.d("StartTime",formattedTime);
+                timeShareStartTime.setText(formattedTime);
+            });
 
         });
-
-
-
 
 
         // Time Picker for Start Time
-        timeShareStartTime.setOnClickListener(v -> {
-            final Calendar c = Calendar.getInstance();
-            mHour = c.get(Calendar.HOUR_OF_DAY);
-            mMinute = c.get(Calendar.MINUTE);
+//        timeShareStartTime.setOnClickListener(v -> {
+//            final Calendar c = Calendar.getInstance();
+//            mHour = c.get(Calendar.HOUR_OF_DAY);
+//            mMinute = c.get(Calendar.MINUTE);
+//
+//            // Launch Time Picker Dialog
+//            TimePickerDialog timePickerDialog = new TimePickerDialog(TTSMainActivity.this, (view, hourOfDay, minute) ->
+//                    timeShareStartTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute)), mHour, mMinute, true);
+//            timePickerDialog.show();
+//
+//        });
 
-            // Launch Time Picker Dialog
-            TimePickerDialog timePickerDialog = new TimePickerDialog(TTSMainActivity.this, (view, hourOfDay, minute) ->
-                    timeShareStartTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute)), mHour, mMinute, true);
-            timePickerDialog.show();
+
+        timeShareEndTime.setOnClickListener(view -> {
+            MaterialTimePicker timePicker = new MaterialTimePicker
+                    .Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_12H)
+                    .setHour(12)
+                    .setMinute(10)
+                    .setTitleText("Select End Time")
+                    .build();
+
+            timePicker.show(getSupportFragmentManager(),"Time_Picker");
+
+            timePicker.addOnPositiveButtonClickListener(selection -> {
+                int hour = timePicker.getHour();
+                int minute = timePicker.getMinute();
+
+                // Determine AM/PM
+                String amPm = (hour < 12) ? "AM" : "PM";
+
+                // Convert to 12-hour format
+                int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
+
+                // Create formatted time string
+                String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
+
+                Log.d("StartTime",formattedTime);
+                timeShareEndTime.setText(formattedTime);
+            });
 
         });
 
-
-        // Time Picker for End Time
-        timeShareEndTime.setOnClickListener(v -> {
-            final Calendar c = Calendar.getInstance();
-            mHour = c.get(Calendar.HOUR_OF_DAY);
-            mMinute = c.get(Calendar.MINUTE);
-
-            // Launch Time Picker Dialog
-            TimePickerDialog timePickerDialog = new TimePickerDialog(TTSMainActivity.this,
-                    (view, hourOfDay, minute) -> timeShareEndTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute)), mHour, mMinute, true);
-            timePickerDialog.show();
-        });
+//        // Time Picker for End Time
+//        timeShareEndTime.setOnClickListener(v -> {
+//            final Calendar c = Calendar.getInstance();
+//            mHour = c.get(Calendar.HOUR_OF_DAY);
+//            mMinute = c.get(Calendar.MINUTE);
+//
+//            // Launch Time Picker Dialog
+//            TimePickerDialog timePickerDialog = new TimePickerDialog(TTSMainActivity.this,
+//                    (view, hourOfDay, minute) -> timeShareEndTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute)), mHour, mMinute, true);
+//            timePickerDialog.show();
+//        });
 
 
         timeShareEndTime.addTextChangedListener(new TextWatcher() {
@@ -555,9 +678,7 @@ public class TTSMainActivity extends AppCompatActivity {
 //            user.setVisibility(View.INVISIBLE);
              date.setVisibility(View.INVISIBLE);
              time.setVisibility(View.INVISIBLE);
-//            btnAddDesSteps.setVisibility(View.INVISIBLE);
 
-//            progressBar.setVisibility(View.INVISIBLE);
         }
 
         switch (position) {
@@ -685,15 +806,14 @@ public class TTSMainActivity extends AppCompatActivity {
 
     private String getTodayDate()
     {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        Date date1 = new Date();
-        return formatter.format(date1);
+     return DateConverter.currentDate();
     }
 
     //Validation Start
     private String isDateValid() {
         if(timeShareDate !=  null){
-            return timeShareDate.getText().toString().trim().replaceAll("\\s+","");
+//            return timeShareDate.getText().toString().trim().replaceAll("\\s+","");
+            return String.valueOf(timeShareDate.getText());
         }else
             return "time share date is not iniaitzed";
     }
@@ -726,12 +846,12 @@ public class TTSMainActivity extends AppCompatActivity {
     }
 
     private String isStartTimeValid() {
-        if(timeShareStartTime !=null)return timeShareStartTime.getText().toString().trim().replaceAll("\\s+","");
+        if(timeShareStartTime !=null)return timeShareStartTime.getText().toString().trim();
         else return "N.I";
     }
 
     private String isEndTimeValid() {
-        if(timeShareEndTime != null)return timeShareEndTime.getText().toString().trim().replaceAll("\\s+","");
+        if(timeShareEndTime != null)return timeShareEndTime.getText().toString().trim();
         else return "N.I";
     }
 
@@ -742,10 +862,9 @@ public class TTSMainActivity extends AppCompatActivity {
     //Validation End
 
     //Getting Current TimeStamp
-    private Timestamp delegationTime()
+    private String delegationTime()
     {
-        Calendar calendar = Calendar.getInstance();
-        return new Timestamp(calendar.getTime().getTime());
+        return DateConverter.getCurrentDateTime();
     }
 
 
@@ -777,7 +896,7 @@ public class TTSMainActivity extends AppCompatActivity {
         String start= timeShareStartTime!=null ? timeShareStartTime.getText().toString().trim().replaceAll("\\s+","") : "N.I";
         String end=timeShareEndTime !=null ? timeShareEndTime.getText().toString().trim().replaceAll("\\s+","") : "N.I" ;
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        format.setTimeZone(TimeZone.getTimeZone("IST"));
 
         String difference=null;
 
@@ -824,138 +943,283 @@ public class TTSMainActivity extends AppCompatActivity {
     }
 
 
-      private AtomicBoolean addDailyTimeShare(DailyTimeShareDTO dailyTimeShareDTO) {
-          AtomicBoolean isResponseCompleted = new AtomicBoolean(false);
-        appExecutor.getNetworkIO().execute(() -> {
-            Call<APIResponse<Object>> addDailyTimeShareResponse = dailyTimeShareInterface.addDailyTimeShare(dailyTimeShareDTO);
-            addDailyTimeShareResponse.enqueue(new Callback<APIResponse<Object>>() {
-                @Override
-                public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
-                    if(response.isSuccessful() && response.body() != null && response.errorBody()!=null) {
-                      isResponseCompleted.set(true);
+    private CompletableFuture<ArrayList<String>> addDailyTimeShare(DailyTimeShare dailyTimeShare) {
+    CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+    //it is used for to message & dts Id from ResponseBody object
+    ArrayList<String> messageAndId = new ArrayList<>();
+    appExecutor.getNetworkIO().execute(() -> {
+        Call<ResponseBody> call = dailyTimeShareInterface.addDailyTimeShare(dailyTimeShare);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                APIResponse apiResponse = null;
+                try {
+                    apiResponse = APIResponse.create(response);
+                    if (apiResponse != null) {
+                        if (apiResponse instanceof APISuccessResponse) {
+                            String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+                             JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();
+                             String dtsId = dtsobject.get("id").getAsString();
+                             if ("successful".equals(message)) {
+                                messageAndId.add(message);
+                                messageAndId.add(dtsId);
+                                future.complete(messageAndId);
+                            }
+                        }
                     }
-
+                } catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Exception("API request failed: " + response.code()));
                 }
 
-                @Override
-                public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
-                    appExecutor.getMainThread().execute(() -> {
-                        Log.e("Network Request", "Failed to add : " + t.getMessage());
-                    });
-                }
-            });
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                future.completeExceptionally(t);
+            }
         });
-        return isResponseCompleted;
+    });
+
+    return future;
+}
+
+      public CompletableFuture<Boolean> addDailyTimeShareMeasurables(Long timeShareId,List<MeasurableListDataModel> measurableListDataModel){
+            CompletableFuture<Boolean> future  = new CompletableFuture<>();
+          if(measurableListDataModel.isEmpty()) {
+              future.complete(false);
+              return future;
+          }
+          AtomicInteger pendingTasks = new AtomicInteger(measurableListDataModels.size());
+          AtomicBoolean allSuccessful = new AtomicBoolean(true);
+            for (MeasurableListDataModel m: measurableListDataModel
+               ) {
+
+              appExecutor.getNetworkIO().execute(() -> {
+                  Long measurableId = Long.valueOf(m.getId().split("\\.")[0]);
+                  Long measurableQty =  Long.valueOf(m.getMeasurableQty());
+                  String measurableUnit =  String.valueOf(m.getMeasurableUnit());
+                  Call<ResponseBody> call = dtsMeasurableInterface.addDailyTimeShareMeasurable(timeShareId,measurableId, measurableQty,measurableUnit);
+                  call.enqueue(new Callback<ResponseBody>() {
+                      @Override
+                      public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                          Log.d("Debug", "Response received for addDailyTimeShareMeasurables"+response.body());
+                          APIResponse apiResponse = null;
+                          try {
+                              apiResponse = APIResponse.create(response);
+                              if (apiResponse != null) {
+                                  if (apiResponse instanceof APISuccessResponse) {
+                                      String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+                                      Log.d("Debug", "Message from API: " + message);
+                                      if (!"successful".equals(message)) {
+                                          Log.d("Debug", "Measurable completed with success");
+                                          allSuccessful.set(false);
+                                      }
+                                  }else {
+                                      Log.e("Result", "apiresponse is nul");
+                                      allSuccessful.set(false);
+
+                                  }
+                              }
+                          } catch (IOException e) {
+
+                              Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                              allSuccessful.set(false);
+                          }
+                          finally {
+                              if (pendingTasks.decrementAndGet() == 0){
+                                  future.complete(allSuccessful.get());
+                              }
+                          }
+                      }
+
+                      @Override
+                      public void onFailure(Call<ResponseBody> call, Throwable t) {
+                          Log.e("IOException", "Exception occurred: " + t.getMessage(), t);
+                          allSuccessful.set(false);
+                          if (pendingTasks.decrementAndGet() == 0) {
+                              future.complete(false);
+                          }
+                      }
+                  });
+              });
+          }
+          return future;
       }
 
 
 
-    public void getActivityListAndUpdateUi() {
-        appExecutor.getNetworkIO().execute(() -> {
-            Call<List<String>> activityListResponse = activityInterface.getActivitiesName();
-            activityListResponse.enqueue(new Callback<List<String>>() {
-                @Override
-                public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                    if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
-                        // Cast the response to APISuccessResponse to access the body
-                        APISuccessResponse<List<String>> successResponse = (APISuccessResponse<List<String>>) response.body();
-                        ArrayList<String> activityList = (ArrayList<String>) successResponse.getBody(); // Use the correct getter
-                        appExecutor.getMainThread().execute(() -> {
-                            ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, activityList);
-                            timeShareActivityName.setAdapter(activityNameAdapter);
-                        });
-                    } else {
-                        appExecutor.getMainThread().execute(() ->
-                                Toast.makeText(getApplicationContext(), "couldn't fetch activity list", Toast.LENGTH_LONG).show());
+    public CompletableFuture<ArrayList<String>> getProjectNames() {
+        CompletableFuture<ArrayList<String>> future = new CompletableFuture();
+//        AtomicArrayList<String> projectNames;
+        Call<ResponseBody> call = projectService.getProjectNameList();
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+
+                try {
+                    APIResponse apiResponse =   APIResponse.create(response);
+                    if(apiResponse instanceof  APISuccessResponse){
+                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+
+                        if(result.isJsonArray()){
+                            JsonArray projectNames = result.getAsJsonArray();
+                            ArrayList<String> list = gson.fromJson(projectNames, listType);
+                            future.complete(list);
+
+                        }
+                    }
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        Log.e("Error Received", "" + erMsg);
+                    }
+                    if (apiResponse instanceof APIErrorResponse) {
+                        Log.e("Response", "is empty repsonse" + apiResponse);
                     }
                 }
-
-                @Override
-                public void onFailure(Call<List<String>> call, Throwable t) {
-                    Log.e("Network Request", "Failed: " + t.getMessage());
-                    appExecutor.getMainThread().execute( () -> {
-                        Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                    );
+                catch (ClassCastException e) {
+                    Log.e("Error", ""+e.getMessage());
                 }
-            });
+                catch (RuntimeException e) {
+                    Log.e("Error", ""+e.getMessage());
+                } catch (IOException e) {
+                    Log.e("Error", ""+e.getMessage());
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Network Request", "Failed: " + t.getMessage());
+
+            }
         });
+
+        return future;
     }
 
-    public void getProjectNameListAndUpdateUi() {
-        appExecutor.getNetworkIO().execute(() -> {
-            Call<List<String>> projectNameResponse = projectServiceInterface.getProjectNameList();
-            projectNameResponse.enqueue(new Callback<List<String>>() {
+
+    public CompletableFuture<ArrayList<String>> getActivityNames() {
+        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+
+
+            Call<ResponseBody> call = activityService.getActivitiesName();
+            call.enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                    if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
-                        // Cast the response to APISuccessResponse to access the body
-                        APISuccessResponse<List<String>> successResponse = ( APISuccessResponse<List<String>>) response.body();
-                        ArrayList<String> projectList = (ArrayList<String>) successResponse.getBody(); // Use the correct getter
-                        appExecutor.getMainThread().execute(() -> {
-                            ArrayAdapter<String> projectNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, projectList);
-                            timeShareTaskName.setAdapter(projectNameAdapter);
-                        });
-                    } else {
-                        appExecutor.getMainThread().execute(() ->
-                                Toast.makeText(getApplicationContext(), "couldn't fetch project List", Toast.LENGTH_LONG).show());
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+
+                    try {
+                        APIResponse apiResponse =   APIResponse.create(response);
+                         if(apiResponse instanceof  APISuccessResponse){
+                             JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                             Gson gson = new Gson();
+                             Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+
+                             if(result.isJsonArray()){
+                                 JsonArray activityNames = result.getAsJsonArray();
+                                 ArrayList<String> list = gson.fromJson(activityNames, listType);
+                                 future.complete(list);
+
+                             }
+                         }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            Log.e("Error Received", "" + erMsg);
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            Log.e("Response", "is empty repsonse" + apiResponse);
+                        }
+                    }
+                    catch (ClassCastException e) {
+                        Log.e("Error", ""+e.getMessage());
+                    }
+                    catch (RuntimeException e) {
+                        Log.e("Error", ""+e.getMessage());
+                    } catch (IOException e) {
+                        Log.e("Error", ""+e.getMessage());
                     }
 
                 }
 
                 @Override
-                public void onFailure(Call<List<String>> call, Throwable t) {
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
                     Log.e("Network Request", "Failed: " + t.getMessage());
-                    appExecutor.getMainThread().execute( () -> {
-                                Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                    );
 
                 }
             });
-        });
 
+
+
+        return future;
     }
 
-    public void getTaskNameListAndUpdateUi() {
-        appExecutor.getNetworkIO().execute(() -> {
-            Call<List<String>> taskNameResponse = taskServiceInterface.getTaskNames();
-            taskNameResponse.enqueue(new Callback<List<String>>() {
+
+    public CompletableFuture<ArrayList<String>> getTaskNames() {
+        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+
+
+        Call<ResponseBody> call = taskService.getTaskNames();
+            call.enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                    if (response.isSuccessful() && response.body() instanceof APISuccessResponse) {
-                        // Cast the response to APISuccessResponse to access the body
-                        APISuccessResponse<List<String>> successResponse = (APISuccessResponse<List<String>>) response.body();
-                        ArrayList<String> taskList = (ArrayList<String>) successResponse.getBody(); // Use the correct getter
-                        appExecutor.getMainThread().execute(() -> {
-                            ArrayAdapter<String> taskNameAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, taskList);
-                            timeShareTaskName.setAdapter(taskNameAdapter);
-                        });
-                    } else {
-                        appExecutor.getMainThread().execute(() ->
-                                Toast.makeText(getApplicationContext(), "couldn't fetch task List", Toast.LENGTH_LONG).show());
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+
+                    try {
+                        APIResponse apiResponse =   APIResponse.create(response);
+                         if(apiResponse instanceof  APISuccessResponse){
+                             JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                             Gson gson = new Gson();
+                             Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+
+                             if(result.isJsonArray()){
+                                 JsonArray activityNames = result.getAsJsonArray();
+                                 ArrayList<String> list = gson.fromJson(activityNames, listType);
+                                 future.complete(list);
+
+                             }
+                         }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            Log.e("Error Received", "" + erMsg);
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            Log.e("Response", "is empty repsonse" + apiResponse);
+                        }
+                    }
+                    catch (ClassCastException e) {
+                        Log.e("Error", ""+e.getMessage());
+                    }
+                    catch (RuntimeException e) {
+                        Log.e("Error", ""+e.getMessage());
+                    } catch (IOException e) {
+                        Log.e("Error", ""+e.getMessage());
                     }
 
                 }
 
                 @Override
-                public void onFailure(Call<List<String>> call, Throwable t) {
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
                     Log.e("Network Request", "Failed: " + t.getMessage());
-                    appExecutor.getMainThread().execute( () -> {
-                                Toast.makeText(getApplicationContext(), "Error"+t.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                    );
 
                 }
             });
-        });
 
+
+
+        return future;
     }
+
+
+
     public CompletableFuture<String> getProjectCodeAndUpdateUi(String projectName) {
         CompletableFuture<String> future = new CompletableFuture<>();
         appExecutor.getNetworkIO().execute(() -> {
 
-            Call<ResponseBody> projectCodeResponse = projectServiceInterface.getProjectCodeViaProjectName(projectName);
+            Call<ResponseBody> projectCodeResponse = projectService.getProjectCodeViaProjectName(projectName);
             projectCodeResponse.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -963,28 +1227,30 @@ public class TTSMainActivity extends AppCompatActivity {
                     APIResponse apiResponse = null;
                     try {
                         apiResponse = APIResponse.create(response);
+                        if(apiResponse instanceof APISuccessResponse) {
+                            JsonElement jsonElement = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                            String projectCode = jsonElement != null ? jsonElement.getAsString(): "";
+
+                             future.complete(projectCode);  Log.e("ProjectCode",projectCode);
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            Log.e("Error Received", "" + erMsg);
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            Log.e("Response", "is empty repsonse" + apiResponse);
+                        }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    if(apiResponse instanceof APISuccessResponse) {
-                        String responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().toString();
-                        JSONConfig jsonConfig = new JSONConfig();
-                        try {
 
-                        String projectCode = jsonConfig.extractBodyFromJson(responseBody).asText();
-                            future.complete(projectCode);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-
-
-                    }
                 }
 
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                     future.completeExceptionally(t);
+
                 }
             });
         } );
@@ -996,7 +1262,7 @@ public class TTSMainActivity extends AppCompatActivity {
     public CompletableFuture<List<MeasurableListDataModel>> getMeasurableListAndUpdateUi() {
         CompletableFuture<List<MeasurableListDataModel>> future = new CompletableFuture<>();
         appExecutor.getNetworkIO().execute(() -> {
-            Call<ResponseBody> measurableListResponse = measurableServiceInterface.getMeasurableList();
+            Call<ResponseBody> measurableListResponse = measurableService.getMeasurableList();
             measurableListResponse.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -1006,30 +1272,25 @@ public class TTSMainActivity extends AppCompatActivity {
 
                         apiResponse = APIResponse.create(response);
                         if (apiResponse instanceof APISuccessResponse) {
-                            ResponseBody<?> responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody();
-
-                                ArrayList<MeasurableListDataModel> measurableListDataModels = (ArrayList<MeasurableListDataModel>) responseBody.getBody();
-
-
+                            JsonElement responseElement =((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                            if (responseElement.isJsonArray()) {
+                                JsonArray responseBody = responseElement.getAsJsonArray();
+                                ArrayList<MeasurableListDataModel> measurableListDataModels = new ArrayList<>();
+                                for (JsonElement element : responseBody) {
+                                    JsonObject obj = element.getAsJsonObject();
+                                    double id = obj.get("id").getAsDouble();
+                                    String measurableName = obj.get("measurableName").getAsString();
+                                    MeasurableListDataModel m = new MeasurableListDataModel();
+                                    m.setId(String.valueOf(id));
+                                    m.setMeasurableName(measurableName);
+                                    measurableListDataModels.add(m);
+                                }
                                 future.complete(measurableListDataModels);
+                                Log.d("Meaurable List", "list" + measurableListDataModels);
 
 
 
-// Deserialize the response body using Gson (or your preferred library)
-
-//                            Log.e("responsebody", "" + rspnseBdy);
-//                            JSONConfig jsonConfig = new JSONConfig();
-//                            List<MeasurableListDataModel> measurableListDataModels = new ArrayList<>();
-
-                            // Assuming extractBodyFromJson() returns a JSON Array
-//                            if (jsonConfig.extractBodyFromJson(rspnseBdy).isArray()) {
-
-
-//                            } else {
-//                                future.completeExceptionally(new IOException("Unexpected response format"));
-//                            }
-
-
+                            }
                         }
                         if (apiResponse instanceof APIErrorResponse) {
                             String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
@@ -1045,12 +1306,9 @@ public class TTSMainActivity extends AppCompatActivity {
 
                 }
 
-
-
-
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.e("Network Request", "Failed: " + t.getMessage());
+                    Log.e("Network Request", "Failed: " + t.getMessage()+"  "+t.getStackTrace());
 
                 }
             });

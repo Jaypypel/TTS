@@ -23,12 +23,15 @@ import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.JSONConfig;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.UserServiceInterface;
+import com.example.neptune.ttsapp.Util.DateConverter;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,107 +66,126 @@ public class TTSRegistrationActivity extends AppCompatActivity {
 //        StrictMode.setThreadPolicy(policy);
 
 
-        fullName = (EditText) findViewById(R.id.editTextName);
-        userName = (EditText) findViewById(R.id.editTextRegUserName);
-        password = (EditText) findViewById(R.id.editTextRegPassword);
-        retypePassword = (EditText) findViewById(R.id.editTextRetypePassword);
-        email = (EditText) findViewById(R.id.editTextEmail);
-        mobileNo = (EditText) findViewById(R.id.editTextMobileNo);
+        fullName =  findViewById(R.id.editTextName);
+        userName =  findViewById(R.id.editTextRegUserName);
+        password =  findViewById(R.id.editTextRegPassword);
+        retypePassword =  findViewById(R.id.editTextRetypePassword);
+        email =  findViewById(R.id.editTextEmail);
+        mobileNo =  findViewById(R.id.editTextMobileNo);
 
-        btnCancel = (Button) findViewById(R.id.buttonCancel);
-        btnSubmit = (Button) findViewById(R.id.buttonSubmit);
+        btnCancel =  findViewById(R.id.buttonCancel);
+        btnSubmit =  findViewById(R.id.buttonSubmit);
 
-        togglePassword = (ToggleButton) findViewById(R.id.reg_password_visibility);
-        toggleRetypePassword = (ToggleButton) findViewById(R.id.reg_retype_password_visibility);
+        togglePassword =  findViewById(R.id.reg_password_visibility);
+        toggleRetypePassword =  findViewById(R.id.reg_retype_password_visibility);
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBarInReg);
+        progressBar = findViewById(R.id.progressBarInReg);
         progressBar.setVisibility(View.INVISIBLE);
 
 
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View view) {
-                try {
-                    if (InternetConnectivity.isConnected() == true) {
-                        if (isValidFullName().isEmpty()) {
-                            fullName.setError("Full Name Cannot Be Empty");
-                        } else if (isValidUserId().isEmpty()) {
-                            userName.setError("User Name Cannot Be Empty");
-                        } else if (checkPassword().isEmpty() || checkPassword().length() < 8) {
-                            Log.d("Reg", "In checkPassword If");
-                            if (checkPassword().isEmpty()) {
-                                password.setError("Password Cannot Be Empty");
-                            }
-                            if (checkPassword().length() < 8 && !isValidPassword(checkPassword())) {
-                                password.setError("Please Enter Valid Password");
-                            }
-                        } else if (isValidEmail().isEmpty()) {
-                            email.setError("Email Cannot Be Empty");
-                        } else if (isValidMobileNo().isEmpty()) {
-                            mobileNo.setError("Mobile No Cannot Be Empty");
-                        } else {
-                            Log.d("Reg", "In else");
-                            progressBar.setVisibility(View.VISIBLE);
-                         //   String result = registerUser(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo(), delegationTime());
-                            User userRegistration = new User(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo());
-                            appExecutors.getNetworkIO().execute(() -> {
-                                Call<ResponseBody> userRegCall = userServiceInterface.registerUser(userRegistration);
-                                userRegCall.enqueue(new Callback<ResponseBody>() {
-                                    @Override
-                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                        runOnUiThread(() -> {
-                                            progressBar.setVisibility(View.INVISIBLE);
-//                                            if(response.isSuccessful() && response.body() !=null){
-//                                                Log.d("Network Request", "User registered successfully: " + response.body());
-//                                                Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-//                                                startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
-//                                                finish();
-//                                                return;
-//                                            }
-                                            APIResponse apiResponse = null;
-
-                                            try {
-                                               apiResponse = APIResponse.create(response);
-                                               if(apiResponse instanceof APISuccessResponse){
-                                                   String responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().toString();
-                                                   JSONConfig jsonConfig = new JSONConfig();
-                                                   String message = jsonConfig.extractMessageFromBodyFromJson(responseBody);
-                                                   Log.d("Network Request", "Result" + message);
-                                                   Toast.makeText(TTSRegistrationActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
-                                                   startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
-                                                   finish();
-                                                   return;
-                                               }
-                                               if(apiResponse instanceof APIErrorResponse){
-                                                   Log.e("Network Request", "Error: " + ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage());
-                                                   Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
-
-                                               }
-                                               if(apiResponse instanceof APIEmptyResponse){
-                                                   Log.d("Network Request", "Result: "+ apiResponse +"empty response");
-                                                   Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
-                                               }
-                                            }
-
-                                            catch (IOException e) {
-                                                throw new RuntimeException(e);
-                                            }
-
-                                        });
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                        appExecutors.getMainThread().execute(() -> {
-                                            Log.e("Network Request", "Failed to connect: " + t.getMessage());
-                                            progressBar.setVisibility(View.INVISIBLE);
-                                            Toast.makeText(TTSRegistrationActivity.this, "Error: "+t.getMessage(),Toast.LENGTH_LONG).show();
-                                        });
-                                    }
-
-
+        btnSubmit.setOnClickListener(view -> {
+            try {
+                if (InternetConnectivity.isConnected() == true) {
+                    if (isValidFullName().isEmpty()) {
+                        fullName.setError("Full Name Cannot Be Empty");
+                    } else if (isValidUserId().isEmpty()) {
+                        userName.setError("User Name Cannot Be Empty");
+                    } else if (checkPassword().isEmpty() || checkPassword().length() < 8) {
+                        Log.d("Reg", "In checkPassword If");
+                        if (checkPassword().isEmpty()) {
+                            password.setError("Password Cannot Be Empty");
+                        }
+                        if (checkPassword().length() < 8 && !isValidPassword(checkPassword())) {
+                            password.setError("Please Enter Valid Password");
+                        }
+                    } else if (isValidEmail().isEmpty()) {
+                        email.setError("Email Cannot Be Empty");
+                    } else if (isValidMobileNo().isEmpty()) {
+                        mobileNo.setError("Mobile No Cannot Be Empty");
+                    } else {
+                        Log.d("Reg", "In else");
+                        progressBar.setVisibility(View.VISIBLE);
+                     //   String result = registerUser(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo(), delegationTime());
+                        User userRegistration = new User(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo());
+                        appExecutors.getNetworkIO().execute(() -> {
+                            registerUser(userRegistration).thenAccept(result -> {
+                                if(result.equals("successful")){
+                                 appExecutors.getMainThread().execute(() -> {
+                                     Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
+                                     startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
+                                     finish();
+                                 });
+                                }else {
+                                    appExecutors.getNetworkIO().execute(() -> {
+                                        Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " + result, Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+                            }).exceptionally(e -> {
+                                appExecutors.getMainThread().execute(() -> {
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                    Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " +e.getMessage(), Toast.LENGTH_SHORT).show();
                                 });
+                                return null;
                             });
+                        });
+//                        appExecutors.getNetworkIO().execute(() -> {
+//                            Call<ResponseBody> userRegCall = userServiceInterface.registerUser(userRegistration);
+//                            userRegCall.enqueue(new Callback<ResponseBody>() {
+//                                @Override
+//                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                                    runOnUiThread(() -> {
+//                                        progressBar.setVisibility(View.INVISIBLE);
+////                                            if(response.isSuccessful() && response.body() !=null){
+////                                                Log.d("Network Request", "User registered successfully: " + response.body());
+////                                                Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
+////                                                startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
+////                                                finish();
+////                                                return;
+////                                            }
+//
+//
+//                                        try {
+//                                            APIResponse apiResponse = APIResponse.create(response);
+//                                           if(apiResponse instanceof APISuccessResponse){
+//                                               String responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
+//                                               JSONConfig jsonConfig = new JSONConfig();
+////                                                   String message = jsonConfig.extractMessageFromBodyFromJson(responseBody);
+//                                               Log.d("Network Request", "Result" + responseBody);
+//                                               Toast.makeText(TTSRegistrationActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
+//                                               startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
+//                                               finish();
+//                                               return;
+//                                           }
+//                                           if(apiResponse instanceof APIErrorResponse){
+//                                               Log.e("Network Request", "Error: " + ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage());
+//                                               Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
+//
+//                                           }
+//                                           if(apiResponse instanceof APIEmptyResponse){
+//                                               Log.d("Network Request", "Result: "+ apiResponse +"empty response");
+//                                               Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
+//                                           }
+//                                        }
+//
+//                                        catch (IOException e) {
+//                                            throw new RuntimeException(e);
+//                                        }
+//
+//                                    });
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                                    appExecutors.getMainThread().execute(() -> {
+//                                        Log.e("Network Request", "Failed to connect: " + t.getMessage());
+//                                        progressBar.setVisibility(View.INVISIBLE);
+//                                        Toast.makeText(TTSRegistrationActivity.this, "Error: "+t.getMessage(),Toast.LENGTH_LONG).show();
+//                                    });
+//                                }
+//
+//
+//                            });
+//                        });
 //                            if (result.equals("true")) {
 //                                Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_LONG).show();
 //                                Intent i = new Intent(getApplicationContext(), TTSLoginActivity.class);
@@ -173,29 +195,25 @@ public class TTSRegistrationActivity extends AppCompatActivity {
 //                                Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_LONG).show();
 //                                progressBar.setVisibility(View.INVISIBLE);
 //                            }
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
-                        progressBar.setVisibility(View.INVISIBLE);
                     }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else {
+                    Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
 
-
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
+
         });
 
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), TTSLoginActivity.class);
-                startActivity(i);
-                finish();
+        btnCancel.setOnClickListener(view -> {
+            Intent i = new Intent(getApplicationContext(), TTSLoginActivity.class);
+            startActivity(i);
+            finish();
 
-            }
         });
 
         // Code for show/hide togglePassword Button
@@ -218,25 +236,23 @@ public class TTSRegistrationActivity extends AppCompatActivity {
         });
 
         // Code for show/hide Password
-        togglePassword.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (togglePassword.isChecked()) {
-                    //Button is ON
-                    //Show Password
-                    password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+        togglePassword.setOnClickListener(v -> {
+            if (togglePassword.isChecked()) {
+                //Button is ON
+                //Show Password
+                password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
 
-                    // Code for set focus to right of text in EditText
-                    int pos = password.getText().length();
-                    password.setSelection(pos);
-                } else {
-                    //Button is OFF
-                    // hide password
-                    password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                // Code for set focus to right of text in EditText
+                int pos = password.getText().length();
+                password.setSelection(pos);
+            } else {
+                //Button is OFF
+                // hide password
+                password.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
-                    // Code for set focus to right of text in EditText
-                    int pos = password.getText().length();
-                    password.setSelection(pos);
-                }
+                // Code for set focus to right of text in EditText
+                int pos = password.getText().length();
+                password.setSelection(pos);
             }
         });
 
@@ -261,25 +277,23 @@ public class TTSRegistrationActivity extends AppCompatActivity {
         });
 
         // Code for show/hide Retype Password
-        toggleRetypePassword.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (toggleRetypePassword.isChecked()) {
-                    //Button is ON
-                    //Show Password
-                    retypePassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+        toggleRetypePassword.setOnClickListener(v -> {
+            if (toggleRetypePassword.isChecked()) {
+                //Button is ON
+                //Show Password
+                retypePassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
 
-                    // Code for set focus to right of text in EditText
-                    int pos = retypePassword.getText().length();
-                    retypePassword.setSelection(pos);
-                } else {
-                    //Button is OFF
-                    // hide password
-                    retypePassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                // Code for set focus to right of text in EditText
+                int pos = retypePassword.getText().length();
+                retypePassword.setSelection(pos);
+            } else {
+                //Button is OFF
+                // hide password
+                retypePassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
-                    // Code for set focus to right of text in EditText
-                    int pos = retypePassword.getText().length();
-                    retypePassword.setSelection(pos);
-                }
+                // Code for set focus to right of text in EditText
+                int pos = retypePassword.getText().length();
+                retypePassword.setSelection(pos);
             }
         });
     }
@@ -369,47 +383,57 @@ public class TTSRegistrationActivity extends AppCompatActivity {
         return mobile;
     }
 
-    private Timestamp delegationTime() {
-        Calendar calendar = Calendar.getInstance();
-        Timestamp delegationTimestamp = new Timestamp(calendar.getTime().getTime());
-        return delegationTimestamp;
+    private String delegationTime() {
+       return DateConverter.getCurrentDateTime();
     }
 
+    public CompletableFuture<String> registerUser(User inputUser){
+        CompletableFuture<String> future = new CompletableFuture<>();
+        Call<ResponseBody> call = userServiceInterface.registerUser(inputUser);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    APIResponse apiResponse = APIResponse.create(response);
+                    if (apiResponse instanceof APISuccessResponse){
+                        Log.e("update","going inside of api sucess block");
+                        String msg = ((APISuccessResponse<ResponseBody>) apiResponse)
+                                .getBody()
+                                .getMessage()
+                                .getAsString();
+                        future.complete(msg);
+                    }
 
+                    if (apiResponse instanceof APIErrorResponse){
+                        String msg = ((APIErrorResponse<String>) apiResponse).getErrorMessage();
+                        future.complete(msg);
+                    }
 
+                    if (apiResponse instanceof APIEmptyResponse){
+                        future.complete("empty response is received");
+                    }
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(e);
+                    Log.e("Response","Error : "+"unable to process request due to "+e.getMessage());
+                }
+                catch (IOException e) {
+                    future.completeExceptionally(e);
+                    Log.e("Response","Error : "+"unable to process request due to "+e.getMessage());
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(e);
+                    Log.e("Response","Error : "+"unable to process request due to "+e.getMessage());
+                }
+            }
 
-
-
-
-    //    // Method For Registration Of User
-//    public String registerUser(String fullName, String userName, String password, String email, String mobileNo,Timestamp createdOn){
-//        String result="false";
-//        int x = 0;
-//        Connection con;
-//
-//        try{
-//            con = DatabaseHelper.getDBConnection();
-//
-//            PreparedStatement ps = con.prepareStatement("insert into AUTHENTICATION(FULL_NAME,USER_ID,PASSWORD,EMAIL,MOBILE_NO,CREATED_ON) values(?,?,?,?,?,?)");
-//
-//            ps.setString(1, fullName);
-//            ps.setString(2, userName);
-//            ps.setString(3, password);
-//            ps.setString(4, email);
-//            ps.setString(5, mobileNo);
-//            ps.setTimestamp(6, createdOn);
-//
-//            x = ps.executeUpdate();
-//
-//            if(x==1){
-//                result = "true";
-//            }
-//
-//            ps.close();
-//            con.close();
-//        }
-//        catch(Exception e){ e.printStackTrace(); }
-//
-//        return result;
-//    }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                future.completeExceptionally(t);
+            }
+        });
+        return future;
+    }
 }
+
+

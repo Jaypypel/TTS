@@ -5,7 +5,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +22,22 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.DTO.TaskManagement;
+import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.ActivityServiceInterface;
+import com.example.neptune.ttsapp.Network.ProjectServiceInterface;
+import com.example.neptune.ttsapp.Network.ResponseBody;
+import com.example.neptune.ttsapp.Network.UserServiceInterface;
+import com.example.neptune.ttsapp.Util.DateConverter;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,9 +46,34 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.http.Query;
 
 
+@AndroidEntryPoint
 public class TTSProjectCRUDFragment extends Fragment {
+
+    @Inject
+    AppExecutors appExecutors;
+
+    @Inject
+    ProjectServiceInterface projectService;
+
+   @Inject
+    UserServiceInterface userService;
+
+   @Inject
+    ActivityServiceInterface activityService;
+   //@Inject
+   //@Inject
+
 
     public TTSProjectCRUDFragment() { }
 
@@ -76,25 +121,52 @@ public class TTSProjectCRUDFragment extends Fragment {
             }
         }, 10);
 
-
-
         projectCode=(AutoCompleteTextView) view.findViewById(R.id.editTextProjectCRUDProjectCode);
-        ArrayAdapter<String> projectCodeAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,getProjectCodeList());
-        projectCode.setAdapter(projectCodeAdapter);
+        getProjectCodes().thenAccept(result -> {
+            appExecutors.getMainThread().execute(() -> {
+                ArrayAdapter<String> projectCodeAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,result);
+                projectCode.setAdapter(projectCodeAdapter);
+            });
+        });
+//
+//        projectCode=(AutoCompleteTextView) view.findViewById(R.id.editTextProjectCRUDProjectCode);
+//        ArrayAdapter<String> projectCodeAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,getProjectCodeList());
+//        projectCode.setAdapter(projectCodeAdapter);
 
         projectName=(AutoCompleteTextView) view.findViewById(R.id.editTextProjectCRUDProjectName);
-        ArrayAdapter<String> projectNameAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,getProjectNameList());
-        projectName.setAdapter(projectNameAdapter);
+
+        getProjectNames().thenAccept(result -> {
+            ArrayList<String> projectNames = result;
+            Log.e("projectNames",""+projectNames);
+            appExecutors.getMainThread().execute(() -> {
+                ArrayAdapter<String> projectNameAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,result);
+                projectName.setAdapter(projectNameAdapter);
+            });
+
+
+        });
+//        ArrayAdapter<String> projectNameAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,getProjectNameList());
+//        projectName.setAdapter(projectNameAdapter);
 
         addProject=(Button)view.findViewById(R.id.buttonProjectCRUDAdd);
 
         if (InternetConnectivity.isConnected()) {
-            userSelect=(Spinner) view.findViewById(R.id.spinnerProjectCRUDUserSelect);
-            ArrayList users = getUserList();
-            users.add(0, "Select User");
-            ArrayAdapter<String> adapterMeasurable = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
-            adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            userSelect.setAdapter(adapterMeasurable);
+                        userSelect=(Spinner) view.findViewById(R.id.spinnerProjectCRUDUserSelect);
+            getUsernames().thenAccept(usernames -> {
+                ArrayList<String>  users = usernames;
+                users.add(0,"Select user");
+                ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
+                userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                userSelect.setAdapter(userSelectAdapter);
+            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                return null;
+            });
+//            userSelect=(Spinner) view.findViewById(R.id.spinnerProjectCRUDUserSelect);
+//            ArrayList users = getUserList();
+//            users.add(0, "Select User");
+//            ArrayAdapter<String> adapterMeasurable = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
+//            adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            userSelect.setAdapter(adapterMeasurable);
         }else { Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
@@ -104,10 +176,24 @@ public class TTSProjectCRUDFragment extends Fragment {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                    activityDataModels = getActivityList(getUser());
-                    ArrayAdapter<ActivityDataModel> activitySelectAdapter = new ArrayAdapter<ActivityDataModel>(getActivity(), android.R.layout.simple_spinner_item,activityDataModels);
-                    activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    activitySelect.setAdapter(activitySelectAdapter);
+                    appExecutors.getNetworkIO().execute(() -> {
+                        getActivities(getUser()).thenAccept(activities ->{
+                            activityDataModels = activities;
+                            ArrayAdapter<ActivityDataModel> activitySelectAdapter = new ArrayAdapter<ActivityDataModel>
+                                    (getActivity(), android.R.layout.simple_spinner_item,activityDataModels);
+                            activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            activitySelect.setAdapter(activitySelectAdapter);
+                        }).exceptionally(e -> {
+                            Toast.makeText(getActivity().getApplicationContext(),"Failed to get activities",Toast.LENGTH_LONG).show();
+                            return null;
+                        });
+                    });
+
+//                    activityDataModels = getActivityList(getUser());
+//                    ArrayAdapter<ActivityDataModel> activitySelectAdapter = new ArrayAdapter<ActivityDataModel>
+//                            (getActivity(), android.R.layout.simple_spinner_item,activityDataModels);
+//                    activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//                    activitySelect.setAdapter(activitySelectAdapter);
 
                 }
                 @Override
@@ -128,14 +214,36 @@ public class TTSProjectCRUDFragment extends Fragment {
                    else if (isProjectName().isEmpty()){projectName.setError("Project Name Be Empty");}
                    else
                    {
-                       String result = insertProject(getUser(), getAct(), isProjectCode(), isProjectName(), createdOn());
-                       if (result.equals("true")) {
-                           Toast.makeText(getActivity().getApplicationContext(), "Project Inserted ", Toast.LENGTH_LONG).show();
-                           projectCode.setText("");
-                           projectName.setText("");
-                       } else {
-                           Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
-                       }
+
+                       addProject(getUser(), getAct(), isProjectCode(), isProjectName(), createdOn()).thenAccept(isProjectAdded -> {
+                           if(isProjectAdded.equals("successful")){
+                               appExecutors.getMainThread().execute(() ->
+                               {
+                                   Toast.makeText(getActivity().getApplicationContext(), "Project Inserted ", Toast.LENGTH_LONG).show();
+                                   projectCode.setText("");
+                                   projectName.setText("");
+                               });
+                           }else {
+                               appExecutors.getMainThread().execute(() ->
+                               {
+                                   Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed ", Toast.LENGTH_LONG).show();
+
+                               });
+                           }
+                       }).exceptionally(e -> {
+                           Toast.makeText(getActivity().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+
+                           return null;
+                       });
+//
+//                       String result = insertProject(getUser(), getAct(), isProjectCode(), isProjectName(), createdOn());
+//                       if (result.equals("true")) {
+//                           Toast.makeText(getActivity().getApplicationContext(), "Project Inserted ", Toast.LENGTH_LONG).show();
+//                           projectCode.setText("");
+//                           projectName.setText("");
+//                       } else {
+//                           Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
+//                       }
                    }
                 }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
@@ -152,9 +260,12 @@ public class TTSProjectCRUDFragment extends Fragment {
         return userSelect.getSelectedItem().toString().trim();
     }
 
-    private String getAct()
+    private Long getAct()
     {
-        return activitySelect.getSelectedItem().toString().trim();
+        String activity = activitySelect.getSelectedItem().toString().trim();
+        return Long.valueOf(activity.split("-")[0]);
+
+
     }
 
     private String isProjectCode()
@@ -173,162 +284,205 @@ public class TTSProjectCRUDFragment extends Fragment {
 
     private String createdOn()
     {
-        Calendar calendar = Calendar.getInstance();
-        Timestamp delegationTimestamp = new Timestamp(calendar.getTime().getTime());
-        return delegationTimestamp.toString();
+//        Calendar calendar = Calendar.getInstance();
+//        Timestamp delegationTimestamp = new Timestamp(calendar.getTime().getTime());
+//        return delegationTimestamp.toString();
+        return DateConverter.getCurrentDateTime();
     }
 
-    // Getting Users List
-    public ArrayList<String> getUserList(){
+    public CompletableFuture<ArrayList<String>> getUsernames() {
+        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
 
-        ArrayList userNameList = new ArrayList();
+        appExecutors.getNetworkIO().execute(() -> {
+            Call<ResponseBody> usernamesResponse = userService.getUsernames();
+            usernamesResponse.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
 
-            PreparedStatement ps = con.prepareStatement("select * from AUTHENTICATION");
+                    try {
+                        APIResponse apiResponse =   APIResponse.create(response);
+                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
 
-            ResultSet rs = ps.executeQuery();
+                        if(result.isJsonArray()){
+                            JsonArray usernames = result.getAsJsonArray();
+                            ArrayList<String> list = gson.fromJson(usernames, listType);
+                            future.complete(list);
 
-            while (rs.next()) {
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
 
-                String s = rs.getString("USER_ID");
+                }
 
-                userNameList.add(s);
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.e("Network Request", "Failed: " + t.getMessage());
 
+                }
+            });
+
+        });
+
+        return future;
+    }
+public CompletableFuture<ArrayList<String>> getProjectNames() {
+        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+
+        appExecutors.getNetworkIO().execute(() -> {
+            Call<ResponseBody> call = projectService.getProjectNameList();
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+
+                    try {
+                        APIResponse apiResponse =   APIResponse.create(response);
+                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+
+                        if(result.isJsonArray()){
+                            JsonArray projectNames = result.getAsJsonArray();
+                            ArrayList<String> list = gson.fromJson(projectNames, listType);
+                            Log.e("ProjectNames", ""+list);
+                            future.complete(list);
+
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.e("Network Request", "Failed: " + t.getMessage());
+
+                }
+            });
+
+        });
+
+        return future;
+    }
+public CompletableFuture<ArrayList<String>> getProjectCodes() {
+        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+
+        appExecutors.getNetworkIO().execute(() -> {
+            Call<ResponseBody> call = projectService.getProjectCodesList();
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+
+                    try {
+                        APIResponse apiResponse =   APIResponse.create(response);
+                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+
+                        if(result.isJsonArray()){
+                            JsonArray projectCodes = result.getAsJsonArray();
+                            ArrayList<String> list = gson.fromJson(projectCodes, listType);
+                            future.complete(list);
+
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.e("Network Request", "Failed: " + t.getMessage());
+
+                }
+            });
+
+        });
+
+        return future;
+    }
+
+    public CompletableFuture<ArrayList<ActivityDataModel>> getActivities(String username) {
+        CompletableFuture<ArrayList<ActivityDataModel>> future = new CompletableFuture<>();
+
+        appExecutors.getNetworkIO().execute(() -> {
+            Call<ResponseBody> call = activityService.getActivities(username);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+
+                    try {
+                        APIResponse apiResponse =   APIResponse.create(response);
+                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<ActivityDataModel>>() {}.getType();
+
+                        if(result.isJsonArray()){
+                            JsonArray jsonArray = result.getAsJsonArray();
+                            ArrayList<ActivityDataModel> list = gson.fromJson(jsonArray, listType);
+                            future.complete(list);
+
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.e("Network Request", "Failed: " + t.getMessage());
+
+                }
+            });
+
+        });
+
+        return future;
+    }
+
+     private CompletableFuture<String> addProject(String username,
+                                                  Long activityId, String projectCode, String prjNme
+             ,String createdOn) {
+    CompletableFuture<String> future = new CompletableFuture<>();
+        Call<ResponseBody> call = projectService.addProject(username,
+                        activityId, projectCode, prjNme
+                , createdOn);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                APIResponse apiResponse = null;
+                try {
+                    apiResponse = APIResponse.create(response);
+                    if (apiResponse != null) {
+                        if (apiResponse instanceof APISuccessResponse) {
+                            String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+                           // JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();
+
+                            if ("successful".equals(message)) {
+                                future.complete(message);
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Exception("API request failed: " + response.code()));
+                }
             }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
 
-        return userNameList;
-
-    }
-
-    // Getting Activity List
-    public ArrayList<ActivityDataModel> getActivityList(String userId){
-
-        ArrayList<ActivityDataModel> activityList = new ArrayList();
-        ActivityDataModel activityDataModel;
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select DISTINCT * from ACTIVITY WHERE FK_AUTHENTICATION_USER_ID = ?");
-            ps.setString(1, userId);
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                activityDataModel = new ActivityDataModel();
-
-                activityDataModel.setActivityId(rs.getString("ID"));
-                activityDataModel.setActivityName(rs.getString("NAME"));
-
-                activityList.add(activityDataModel);
-
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                future.completeExceptionally(t);
             }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return activityList;
-
-    }
-
-    // Getting Project Name List
-    public ArrayList<String> getProjectNameList(){
-
-        ArrayList projectNameList = new ArrayList();
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select DISTINCT NAME from PROJECT");
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                String s = rs.getString("NAME");
-
-                projectNameList.add(s);
-
-            }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return projectNameList;
-
-    }
-
-    // Getting Project Name List
-    public ArrayList<String> getProjectCodeList(){
-
-        ArrayList projectCodeList = new ArrayList();
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select DISTINCT CODE from PROJECT");
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                String s = rs.getString("CODE");
-
-                projectCodeList.add(s);
-
-            }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return projectCodeList;
-
-    }
-
-    // Insert Project Data into Table
-    public String insertProject(String userId, String activityId,String projectCode,String projectName,String createdOn){
-        String result="false";
-        int x = 0;
-        Connection con;
-
-        try{
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("insert into PROJECT(CODE,NAME,FK_ACTIVITY_ID,FK_AUTHENTICATION_USER_ID,CREATED_ON) values(?,?,?,?,?)");
-
-            ps.setString(1, projectCode);
-            ps.setString(2, projectName);
-            ps.setString(3, activityId);
-            ps.setString(4, userId);
-            ps.setString(5, createdOn);
-
-
-
-            x = ps.executeUpdate();
-
-            if(x==1){
-                result = "true";
-            }
-
-            ps.close();
-            con.close();
-        }
-        catch(Exception e){ e.printStackTrace(); }
-
-        return result;
-    }
-
+        });
+         return future;
+     }
 }

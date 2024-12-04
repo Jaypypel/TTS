@@ -4,17 +4,46 @@ import android.content.Intent;
 import android.os.StrictMode;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.Network.APIEmptyResponse;
+import com.example.neptune.ttsapp.Network.APIErrorResponse;
+import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.ResponseBody;
+import com.example.neptune.ttsapp.Network.TimeShareServiceInterface;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+@AndroidEntryPoint
 public class TTSTimeShareListActivity extends AppCompatActivity {
+
+    @Inject
+    AppExecutors appExecutor;
+
+    @Inject
+    TimeShareServiceInterface timeShareService;
 
     private ArrayList<TimeShareDataModel> dataModels;
 
@@ -23,8 +52,8 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
 
     private static TimeShareListCustomAdapter adapter;
 
-    private TaskDataModel taskAcceptedDetails,taskCompletedDetails,taskDelegatedDetails,
-            taskProcessingDetails, taskSenderApprovalItemDetails,taskReceiverApprovalItemDetails;
+    private TaskDataModel taskAcceptedDetails, taskCompletedDetails, taskDelegatedDetails,
+            taskProcessingDetails, taskSenderApprovalItemDetails, taskReceiverApprovalItemDetails;
 
     private Long taskId;
 
@@ -33,11 +62,11 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ttstime_share_list);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
 
-        listView=(ListView)findViewById(R.id.timeShareList);
-        gotoTimeshare=(Button)findViewById(R.id.buttonGotoTimeshare);
+        listView =  findViewById(R.id.timeShareList);
+        gotoTimeshare =  findViewById(R.id.buttonGotoTimeshare);
 
         //Get Data from clicking on Task Accepted Tab ListView
         taskAcceptedDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskAcceptedItemDetails");
@@ -57,81 +86,118 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
         //Get Data from clicking on ShowTimeshare button in Task Receiver Approval
         taskReceiverApprovalItemDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskReceiverApprovalDetails");
 
-        if (taskAcceptedDetails!=null)
-        {
+        if (taskAcceptedDetails != null) {
             if (InternetConnectivity.isConnected()) {
                 taskId = taskAcceptedDetails.getId();
-                dataModels = getTimeShareList(taskId);
-                adapter= new TimeShareListCustomAdapter(dataModels,getApplicationContext());
-                listView.setAdapter(adapter);
-            }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+                getTimeShares(taskId).thenAccept(timeShares -> {
+                    dataModels = timeShares;
+                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
+                    listView.setAdapter(adapter);
+
+                }).exceptionally(e -> {
+                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    return null;
+                });
+
+            } else {
+                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+            }
 
 
-        }
-        else if (taskCompletedDetails!=null)
-        {
+        } else if (taskCompletedDetails != null) {
             if (InternetConnectivity.isConnected()) {
                 taskId = taskCompletedDetails.getId();
-                dataModels = getTimeShareList(taskId);
-                adapter= new TimeShareListCustomAdapter(dataModels,getApplicationContext());
-                listView.setAdapter(adapter);
-                gotoTimeshare.setVisibility(View.INVISIBLE);
+                getTimeShares(taskId).thenAccept(timeShares -> {
+                    dataModels = timeShares;
+                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
+                    listView.setAdapter(adapter);
+                    gotoTimeshare.setVisibility(View.INVISIBLE);
 
-            }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
-        }
-        else if (taskDelegatedDetails!=null)
-        {
+                }).exceptionally(e -> {
+                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    return null;
+                });
+
+            } else {
+                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+            }
+        } else if (taskDelegatedDetails != null) {
             if (InternetConnectivity.isConnected()) {
                 taskId = taskDelegatedDetails.getId();
-                dataModels = getTimeShareList(taskId);
-                adapter= new TimeShareListCustomAdapter(dataModels,getApplicationContext());
-                listView.setAdapter(adapter);
-                gotoTimeshare.setVisibility(View.INVISIBLE);
+                getTimeShares(taskId).thenAccept(timeShares -> {
+                    dataModels = timeShares;
+                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
+                    listView.setAdapter(adapter);
+                    gotoTimeshare.setVisibility(View.INVISIBLE);
 
-            }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
-        }
-        else if (taskProcessingDetails!=null)
-        {
+                }).exceptionally(e -> {
+                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    return null;
+                });
+
+
+            } else {
+                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+            }
+        } else if (taskProcessingDetails != null) {
             if (InternetConnectivity.isConnected()) {
                 taskId = taskProcessingDetails.getId();
-                dataModels = getTimeShareList(taskId);
-                adapter= new TimeShareListCustomAdapter(dataModels,getApplicationContext());
-                listView.setAdapter(adapter);
+                getTimeShares(taskId).thenAccept(timeShares -> {
+                    dataModels = timeShares;
+                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
+                    listView.setAdapter(adapter);
+                }).exceptionally(e -> {
+                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    return null;
+                });
 
-            }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
-        }
-        else if (taskSenderApprovalItemDetails!=null)
-        {
+            } else {
+                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+            }
+        } else if (taskSenderApprovalItemDetails != null) {
             if (InternetConnectivity.isConnected()) {
                 taskId = taskSenderApprovalItemDetails.getId();
-                dataModels = getTimeShareList(taskId);
-                adapter= new TimeShareListCustomAdapter(dataModels,getApplicationContext());
-                listView.setAdapter(adapter);
-                gotoTimeshare.setVisibility(View.INVISIBLE);
+                getTimeShares(taskId).thenAccept(timeShares -> {
+                    dataModels = timeShares;
+                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
+                    listView.setAdapter(adapter);
+                    gotoTimeshare.setVisibility(View.INVISIBLE);
 
-            }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
-        }
-        else
-        {
+                }).exceptionally(e -> {
+                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    return null;
+                });
+
+
+            } else {
+                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+            }
+        } else {
             if (InternetConnectivity.isConnected()) {
                 taskId = taskReceiverApprovalItemDetails.getId();
-                dataModels = getTimeShareList(taskId);
-                adapter= new TimeShareListCustomAdapter(dataModels,getApplicationContext());
-                listView.setAdapter(adapter);
-                gotoTimeshare.setVisibility(View.INVISIBLE);
+                getTimeShares(taskId).thenAccept(timeShares -> {
+                    dataModels = timeShares;
+                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
+                    listView.setAdapter(adapter);
+                    gotoTimeshare.setVisibility(View.INVISIBLE);
 
-            }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+                }).exceptionally(e -> {
+                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    return null;
+                });
+
+            } else {
+                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+            }
         }
 
         gotoTimeshare.setOnClickListener(v -> {
-            if (taskAcceptedDetails!=null) {
+            if (taskAcceptedDetails != null) {
                 Intent i = new Intent(getApplicationContext(), TTSTimeShareFormActivity.class);
                 i.putExtra("TaskAcceptedDetails", taskAcceptedDetails);
                 startActivity(i);
                 finish();
-            }
-            else
-            {
+            } else {
                 Intent i = new Intent(getApplicationContext(), TTSTimeShareFormActivity.class);
                 i.putExtra("TaskProcessingDetails", taskProcessingDetails);
                 startActivity(i);
@@ -145,46 +211,56 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() { finish(); }
-
-    // Getting Accepted Task List
-    public ArrayList <TimeShareDataModel> getTimeShareList(Long taskId){
-
-        ArrayList<TimeShareDataModel> timeShareList = new ArrayList();
-        TimeShareDataModel listDataModel;
-        Connection con;
-
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("SELECT TIME_SHARE.* FROM TASK_MANAGEMENT" +
-                    " RIGHT OUTER JOIN TIME_SHARE ON TASK_MANAGEMENT.ID = TIME_SHARE.FK_TASK_MANAGEMENT_ID WHERE TASK_MANAGEMENT.ID = ?");
-            ps.setLong(1, taskId);
+    public void onBackPressed() {
+        finish();
+    }
 
 
-            ResultSet rs = ps.executeQuery();
+    public CompletableFuture<ArrayList<TimeShareDataModel>> getTimeShares(Long taskId) {
+        CompletableFuture<ArrayList<TimeShareDataModel>> future = new CompletableFuture<>();
+        Call<ResponseBody> call = timeShareService.getTimeShares(taskId);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
+                    if (apiResponse instanceof APISuccessResponse) {
+                        JsonElement body = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type timeShareType = new TypeToken<ArrayList<TimeShareDataModel>>() {
+                        }.getType();
+                        if (body.isJsonArray()) {
+                            JsonArray content = body.getAsJsonArray();
+                            ArrayList<TimeShareDataModel> timeShares = gson.fromJson(content, timeShareType);
+                            future.complete(timeShares);
+                        }
+                        return;
+                    }
 
-            while (rs.next()) {
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String msg = ((APIErrorResponse) apiResponse).getErrorMessage();
+                        Log.e("Error", "" + msg);
+                        return;
+                    }
+                    if (apiResponse instanceof APIEmptyResponse) {
+                        Log.e("API Response", "" + "empty response");
+                    }
 
-                listDataModel = new TimeShareDataModel();
-
-
-                listDataModel.setTimeShareDate(rs.getString("DATE_OF_TIME_SHARE"));
-                listDataModel.setStartTime(rs.getString("START_TIME"));
-                listDataModel.setEndTime(rs.getString("END_TIME"));
-                listDataModel.setTimeDifference(rs.getString("TIME_DIFFERENCE"));
-                listDataModel.setTimeShareDescription(rs.getString("DESCRIPTION"));
-
-
-                timeShareList.add(listDataModel);
+                } catch (ClassCastException e) {
+                    Log.e("ClassCastException error", "Error : unable to cast due to " + e.getMessage());
+                } catch (IOException e) {
+                    Log.e("IO Excetpion error", "Error : " + e.getMessage());
+                } catch (RuntimeException e) {
+                    Log.e("Unnoticed Exception", "Error : " + "occured " + e.getMessage());
+                }
             }
 
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Response", "Request failed due to " + t.getMessage());
+            }
+        });
 
-        return timeShareList;
-
+        return future;
     }
 }

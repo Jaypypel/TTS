@@ -1,6 +1,7 @@
 package com.example.neptune.ttsapp;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,10 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
@@ -97,6 +102,16 @@ public class TaskAllocatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
         }
 
         viewHolder.txttaskAllocateOwnerName.setText(dataModel.getTaskDeligateOwnerUserID());
+//       if(dataModel.getDeligationDateTime() != null){
+//           Log.e("delegationDate from dataModel",dataModel.getDeligationDateTime());
+//           String d = dataModel.getDeligationDateTime();
+//           Log.e("delegationDate funciton"," "+extractDate(d));
+//       }else{
+//           Log.e("delegationDate", "is null ");
+//           Log.e("taskAllocationModle", ""+dataModel);
+//
+//       }
+
         viewHolder.txttaskAllocateTaskDate.setText(extractDate(dataModel.getDeligationDateTime()));
         viewHolder.txttaskAllocateTaskName.setText(dataModel.getTaskName());
         viewHolder.txttaskAllocateTaskStatus.setText(dataModel.getStatus());
@@ -107,17 +122,33 @@ public class TaskAllocatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
 
     private String extractDate(String timestamp)
     {
-        String dateStr = null;
+        String currentDate = "";
         try
         {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = sdf.parse(timestamp);
+//            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+//            Date date = sdf.parse(timestamp);
+//
+//            SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yy");
+//            dateStr = sdf2.format(date);
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//            Date date = sdf.parse(timestamp);
+//
+//            // Format for display
+//            SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yy");
+//            dateStr = sdf2.format(date);
 
-            SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yy");
-            dateStr = sdf2.format(date);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+            ZonedDateTime dateTimeInIst = ZonedDateTime.of(LocalDateTime.parse(timestamp, formatter), ZoneId.of("Asia/Kolkata"));
+            Log.e("dateIst",""+dateTimeInIst);
+            DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            currentDate = dateTimeInIst.format(dateformatter);
+//            currentDate = String.valueOf(dateTimeInIst);
+            Log.e("currentDate",""+currentDate);
+
+
         }catch (Exception e){e.printStackTrace();}
 
-        return dateStr;
+        return currentDate;
     }
 
 }

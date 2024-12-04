@@ -4,19 +4,50 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import androidx.appcompat.app.AppCompatActivity;
+
+
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.EnumStatus.Status;
+import com.example.neptune.ttsapp.Network.APIErrorResponse;
+import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.ResponseBody;
+import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
+
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.concurrent.CompletableFuture;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+@AndroidEntryPoint
 public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
+
+    @Inject
+    TaskHandlerInterface taskHandlerInterface;
+
+    @Inject
+    AppExecutors appExecutors;
+
+
+    Status completed = Status.Completed;
+    Status approval = Status.Approved;
+    Status inProcess = Status.In_Process;
 
     public TTSTaskDelegateListItemDetailsActivity() { }
 
@@ -25,8 +56,6 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
     private Button TDLIDComplete,TDLIDDisplayTimeShares,TDLIDProcessing;
 
     private ListView TDLIDlistView;
-
-    private boolean result=false;
 
     private TaskDataModel taskDelegateListItemDetails,taskAcceptedItemDetails,taskProcessingItemDetails,
             taskSenderApprovalItemDetails, taskReceiverApprovalItemDetails ;
@@ -41,41 +70,44 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
 
-        TDLIDDate=(TextView)findViewById(R.id.textViewTDLIDDate);
-        TDLIDUserName=(TextView)findViewById(R.id.textViewTDLIDUser);
-        TDLIDReceivedUserName =(TextView)findViewById(R.id.textViewTDLIDReceivedUser);
-        TDLIDActivityName=(TextView)findViewById(R.id.textViewTDLIDActName);
-        TDLIDTaskName=(TextView)findViewById(R.id.textViewTDLIDTaskName);
-        TDLIDProjCode=(TextView)findViewById(R.id.textViewTDLIDProjNo);
-        TDLIDProjName=(TextView)findViewById(R.id.textViewTDLIDProjName);
-        TDLIDExpectedDate=(TextView)findViewById(R.id.textViewTDLIDExpDate);
-        TDLIDExpectedTime=(TextView)findViewById(R.id.textViewTDLIDExpTime);
-        TDLIDDescription=(TextView)findViewById(R.id.textViewTDLIDDescription);
-        TDLIDlistView=(ListView)findViewById(R.id.listMeasurableTDLID);
-        TDLIDComplete =(Button)findViewById(R.id.buttonTDLIDComplete);
-        TDLIDDisplayTimeShares =(Button)findViewById(R.id.buttonTDLIDDisplayTimeShares);
-        TDLIDProcessing =(Button)findViewById(R.id.buttonTDLIDProcessing);
+        TDLIDDate=findViewById(R.id.textViewTDLIDDate);
+        TDLIDUserName=findViewById(R.id.textViewTDLIDUser);
+        TDLIDReceivedUserName =findViewById(R.id.textViewTDLIDReceivedUser);
+        TDLIDActivityName=findViewById(R.id.textViewTDLIDActName);
+        TDLIDTaskName=findViewById(R.id.textViewTDLIDTaskName);
+        TDLIDProjCode=findViewById(R.id.textViewTDLIDProjNo);
+        TDLIDProjName=findViewById(R.id.textViewTDLIDProjName);
+        TDLIDExpectedDate=findViewById(R.id.textViewTDLIDExpDate);
+        TDLIDExpectedTime=findViewById(R.id.textViewTDLIDExpTime);
+        TDLIDDescription=findViewById(R.id.textViewTDLIDDescription);
+        TDLIDlistView=findViewById(R.id.listMeasurableTDLID);
+        TDLIDComplete =findViewById(R.id.buttonTDLIDComplete);
+        TDLIDDisplayTimeShares =findViewById(R.id.buttonTDLIDDisplayTimeShares);
+        TDLIDProcessing =findViewById(R.id.buttonTDLIDProcessing);
 
-        TDLIDMeasurableLabel=(TextView)findViewById(R.id.textViewTDLIDMeasurableLabel);
+        TDLIDMeasurableLabel=findViewById(R.id.textViewTDLIDMeasurableLabel);
 
             // Getting Details From Delegated Task
             taskDelegateListItemDetails  = (TaskDataModel) getIntent().getSerializableExtra("TaskDelegatedItemDetails");
             delegatedMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("TaskDelegatedMeasurableList");
+            Log.e("taskDelegateListItemDetails","-"+taskDelegateListItemDetails);
 
             // Getting Details From Accepted Task
             taskAcceptedItemDetails =  (TaskDataModel) getIntent().getSerializableExtra("TaskAcceptedItemDetails");
-
+            Log.e("taskAcceptedItemDetails","-"+taskAcceptedItemDetails);
             // Getting Details From Processing Task
             taskProcessingItemDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskProcessingItemDetails");
             processingMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("TaskProcessingMeasurableDetails");
-
+            Log.e("taskProcessingItemDetails","-"+taskProcessingItemDetails);
             // Getting Details From Sender Approval Task
             taskSenderApprovalItemDetails = (TaskDataModel) getIntent().getSerializableExtra("senderTaskApprovalItemDetails");
             senderApprovalMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("senderTaskApprovalMeasurableList");
+            Log.e("taskSenderApprovalItemDetails","-"+taskSenderApprovalItemDetails);
 
             // Getting Details From Receiver Approval Task
             taskReceiverApprovalItemDetails = (TaskDataModel) getIntent().getSerializableExtra("receiverTaskApprovalItemDetails");
             receiverApprovalMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("receiverTaskApprovalMeasurableList");
+            Log.e("taskReceiverApprovalItemDetails","-"+taskReceiverApprovalItemDetails);
 
         if(taskDelegateListItemDetails!=null)
         {
@@ -94,7 +126,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 
             TDLIDProcessing.setVisibility(View.INVISIBLE);
 
-            if (taskDelegateListItemDetails.getStatus().equals("COMPLETED")) { TDLIDComplete.setVisibility(View.INVISIBLE); }
+            if (taskDelegateListItemDetails.getStatus().equals("Completed")) { TDLIDComplete.setVisibility(View.INVISIBLE); }
 
         }
         else if (taskAcceptedItemDetails!=null)
@@ -151,7 +183,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             TDLIDProcessing.setVisibility(View.INVISIBLE);
             TDLIDComplete.setVisibility(View.INVISIBLE);
         }
-        else
+        else if (taskReceiverApprovalItemDetails != null)
         {
             TDLIDDate.setText(taskReceiverApprovalItemDetails.getDeligationDateTime());
             TDLIDUserName.setText(taskReceiverApprovalItemDetails.getTaskDeligateOwnerUserID());
@@ -173,25 +205,46 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             TDLIDComplete.setOnClickListener(v -> {
                 if (taskDelegateListItemDetails != null)
                 {
-                    if (taskDelegateListItemDetails.getCompletedOn().equals("NO_COMPLETE")) {
+                    if (taskDelegateListItemDetails.getCompletedOn().equals("not_completed")) {
                         if (InternetConnectivity.isConnected()) {
-                            result = updateCompletedStatus(taskDelegateListItemDetails.getId());
-                            if (result) {
-                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Completed", Toast.LENGTH_LONG).show();
-                                finish();
-                            }
+                            updateTaskManagementStatus(taskDelegateListItemDetails.getId(),completed).thenAccept(isCompleted -> {
+                                Log.e("isCompleted after future resolves"," "+isCompleted);
+                                if(isCompleted){
+                                    Log.e("Complted"," "+isCompleted);
+
+                                    appExecutors.getMainThread().execute(() -> {
+                                        Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Completed", Toast.LENGTH_LONG).show();
+                                        finish();
+                                    });
+                                }else {
+                                    Log.e("Update failed", "Future resolved with false");
+                                }
+                            }).exceptionally( e -> {
+                                Log.e("Exception in CompletableFuture", e.getMessage());
+                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failed to update the task", Toast.LENGTH_LONG).show();
+                                return null;
+                            });
+
                         } else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show(); }
                     }
                 }
                 else if (taskProcessingItemDetails != null)
                 {
-                    if (taskProcessingItemDetails.getCompletedOn().equals("NO_COMPLETE")) {
+                    if (taskProcessingItemDetails.getCompletedOn().equals("not_completed")) {
                         if (InternetConnectivity.isConnected()) {
-                            result = updateApprovalCompletionStatus(taskProcessingItemDetails.getId());
-                            if (result) {
+
+                            updateTaskManagementStatus(taskDelegateListItemDetails.getId(),approval).thenAccept(isCompleted -> {
+                                if(isCompleted){
+                                    appExecutors.getMainThread().execute(() -> {
+                                        Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Completed", Toast.LENGTH_LONG).show();
+                                        finish();
+                                    });
+                                }
+                            }).exceptionally( e -> {
                                 Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Send For Approval Completion", Toast.LENGTH_LONG).show();
-                                finish();
-                            }
+                                return null;
+                            });
+
                         } else {
                             Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
                         }
@@ -199,13 +252,21 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                 }
                 else if (taskSenderApprovalItemDetails != null)
                 {
-                    if (taskSenderApprovalItemDetails.getCompletedOn().equals("NO_COMPLETE")) {
+                    if (taskSenderApprovalItemDetails.getCompletedOn().equals("not_completed")) {
                         if (InternetConnectivity.isConnected()) {
-                            result = updateCompletedStatus(taskSenderApprovalItemDetails.getId());
-                            if (result) {
-                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Completed", Toast.LENGTH_LONG).show();
-                                finish();
-                            }
+                            updateTaskManagementStatus(taskDelegateListItemDetails.getId(),completed).thenAccept(isCompleted -> {
+                                if(isCompleted){
+                                    appExecutors.getMainThread().execute(() -> {
+                                        Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Completed", Toast.LENGTH_LONG).show();
+                                        finish();
+                                    });
+                                }
+                            }).exceptionally( e -> {
+                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failed to update the task", Toast.LENGTH_LONG).show();
+                                return null;
+                            });
+
+
                         } else {
                             Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
                         }
@@ -214,11 +275,18 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                 else
                 {
                     if (InternetConnectivity.isConnected()) {
-                        result = updateCompletedStatus(taskReceiverApprovalItemDetails.getId());
-                        if (result) {
-                            Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Completed", Toast.LENGTH_LONG).show();
-                            finish();
-                        }
+
+                        updateTaskManagementStatus(taskDelegateListItemDetails.getId(),completed).thenAccept(isCompleted -> {
+                            if(isCompleted){
+                                appExecutors.getMainThread().execute(() -> {
+                                    Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Completed", Toast.LENGTH_LONG).show();
+                                    finish();
+                                });
+                            }
+                        }).exceptionally( e -> {
+                            Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failed to update the task", Toast.LENGTH_LONG).show();
+                            return null;
+                        });
                     } else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show(); }
                 }
             });
@@ -254,12 +322,18 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             TDLIDProcessing.setOnClickListener(v -> {
                 if (InternetConnectivity.isConnected())
                 {
-                    result =updateProcessingTimeStatus(taskAcceptedItemDetails.getId());
-                    if (result)
-                    {
-                        Toast.makeText(getApplicationContext(), "You Have Start Working on Task", Toast.LENGTH_LONG).show();
-                        finish();
-                    }
+                    updateTaskManagementStatus(taskDelegateListItemDetails.getId(),inProcess).thenAccept(isCompleted -> {
+                        if(isCompleted){
+                            appExecutors.getMainThread().execute(() -> {
+                                Toast.makeText(getApplicationContext(), "You Have Start Working on Task", Toast.LENGTH_LONG).show();
+                                finish();
+                            });
+                        }
+                    }).exceptionally( e -> {
+                        Toast.makeText(getApplicationContext(), "Failed to update the task", Toast.LENGTH_LONG).show();
+                        return null;
+                    });
+
                 }
             });
 
@@ -269,93 +343,51 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 //    public void onBackPressed() { finish(); }
 
 
-    public boolean updateCompletedStatus(Long taskId){
+    public CompletableFuture<Boolean> updateTaskManagementStatus(Long taskId, Enum obj){
+            CompletableFuture<Boolean> isUpdated = new CompletableFuture<>();
 
-        Connection con;
-        int x = 0;
+            Call<ResponseBody> call = taskHandlerInterface.updateTaskManagementStatus(taskId,obj.name());
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    Log.e("response",":-"+response);
+                    try {
+                        APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
+                        Log.e("apiResponse",":-"+apiResponse);
 
-        try {
-            con = DatabaseHelper.getDBConnection();
+                        if (apiResponse instanceof APISuccessResponse){
 
-            Calendar calendar = Calendar.getInstance();
-            Timestamp completeTimestamp = new Timestamp(calendar.getTime().getTime());
+                            String msg = ((APISuccessResponse<ResponseBody> ) apiResponse).getBody().getMessage().getAsString();
+                            Log.e("msg",":-"+msg);
+                            if(msg.equals("updated")){
+                                Log.e("task updated"," return true");
 
-            PreparedStatement ps = con.prepareStatement("UPDATE TASK_MANAGEMENT SET STATUS =?,COMPLETION_ON=? WHERE ID = ?");
+                                isUpdated.complete(true);
+                                return;
+                            }
+                        }
 
-            ps.setString(1, "COMPLETED");
-            ps.setString(2, completeTimestamp.toString());
-            ps.setLong(3,taskId);
-            x=ps.executeUpdate();
+                        if (apiResponse instanceof APIErrorResponse){
+                            APIErrorResponse<ResponseBody> apiErrorResponse = new APIErrorResponse(response.message());
+                            String msg = apiErrorResponse.getErrorMessage();
+                            Log.e("Error","due to "+msg );
+                        }
+                    } catch (IOException e) {
+                        Log.e("IO exception", "Facing issue to update data as IO exception occurred");
+                    } catch ( ClassCastException e){
+                        Log.e("ClassCast exception", "Unable to convert apiResponse into apiSuccessResponse");
+                    }
+                    isUpdated.complete(false); // Ensure fallback
+                }
 
-            if(x==1){ result = true; }
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.e("Error","Failed to make request due to "+t.getMessage());
+                    isUpdated.complete(false);
+                }
+            });
 
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
 
-        return result;
-
+        return isUpdated;
     }
-
-    public boolean updateApprovalCompletionStatus(Long taskId){
-
-        Connection con;
-        int x = 0;
-
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            Calendar calendar = Calendar.getInstance();
-            Timestamp approveTimestamp = new Timestamp(calendar.getTime().getTime());
-
-            PreparedStatement ps = con.prepareStatement("UPDATE TASK_MANAGEMENT SET STATUS =?,APPROVAL_ON =? WHERE ID = ?");
-
-            ps.setString(1, "APPROVAL");
-            ps.setString(2, approveTimestamp.toString());
-            ps.setLong(3,taskId);
-            x=ps.executeUpdate();
-
-            if(x==1){ result = true; }
-
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return result;
-
-    }
-
-
-
-    // Update the Time and status when Processing the Task
-    public boolean updateProcessingTimeStatus(Long taskId){
-        Connection con;
-        int x = 0;
-
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            Calendar calendar = Calendar.getInstance();
-            Timestamp processTimestamp = new Timestamp(calendar.getTime().getTime());
-
-            PreparedStatement ps = con.prepareStatement("UPDATE TASK_MANAGEMENT SET STATUS =?, PROCESSING_ON =? WHERE ID =?");
-
-            ps.setString(1, "IN_PROCESS");
-            ps.setString(2, processTimestamp.toString());
-            ps.setLong(3,taskId);
-            x=ps.executeUpdate();
-
-            if(x==1){ result = true; }
-
-            ps.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return result;
-
-    }
-
-
 }

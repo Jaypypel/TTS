@@ -2,27 +2,27 @@ package com.example.neptune.ttsapp;
 
 public class ActivityDataModel {
 
-    private String activityId;
-    private String activityName;
+    private String id;
+    private String name;
 
-    public String getActivityId() {
-        return activityId;
+    public String getid() {
+        return id;
     }
 
-    public void setActivityId(String activityId) {
-        this.activityId = activityId;
+    public void setid(String id) {
+        this.id = id;
     }
 
-    public String getActivityName() {
-        return activityName;
+    public String getname() {
+        return name;
     }
 
-    public void setActivityName(String activityName) {
-        this.activityName = activityName;
+    public void setname(String name) {
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return this.activityId + "-" + this.activityName;
+        return this.id + "-" + this.name;
     }
 }

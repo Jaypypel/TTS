@@ -23,6 +23,7 @@ public  class APIResponse<T>{
             linkheader.put("link", response.headers().get("link"));
             return new APISuccessResponse<>(body, linkheader);
         }
+
         String msg = null;
         if (response.errorBody() != null){
             try {

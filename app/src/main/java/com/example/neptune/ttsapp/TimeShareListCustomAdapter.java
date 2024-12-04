@@ -85,13 +85,19 @@ public class TimeShareListCustomAdapter extends ArrayAdapter<TimeShareDataModel>
             viewHolder = (ViewHolder) convertView.getTag();
             result=convertView;
         }
+        String timeShareDate = dataModel != null ? dataModel.getTimeShareDate() : "Not found";
+        String timeSharesStartTime = dataModel != null ? dataModel.getStartTime() : "Not found";
+        String timeShareEndTime = dataModel != null ? dataModel.getEndTime() : "Not found";
+        String timeShareTimeDiff = dataModel != null ? dataModel.getTimeDifference() : "Not found";
+        String timeShareDescription = dataModel != null ? dataModel.getTimeShareDescription() : "Not found";
 
-        viewHolder.timeShareDate.setText(dataModel.getTimeShareDate());
-        viewHolder.timeShareStartTime.setText(dataModel.getStartTime());
-        viewHolder.timeShareEndTime.setText(dataModel.getEndTime());
-        viewHolder.timeShareTimeDiff.setText(dataModel.getTimeDifference());
-        viewHolder.timeShareDescription.setText(dataModel.getTimeShareDescription());
 
-        return convertView;
+        viewHolder.timeShareDate.setText(timeShareDate);
+        viewHolder.timeShareStartTime.setText(timeSharesStartTime);
+        viewHolder.timeShareEndTime.setText(timeShareEndTime);
+        viewHolder.timeShareTimeDiff.setText(timeShareTimeDiff);
+        viewHolder.timeShareDescription.setText(timeShareDescription);
+
+        return result;
     }
 }

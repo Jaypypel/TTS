@@ -53,46 +53,43 @@ public class TTSTimeShareListFragment extends Fragment {
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         userId = sessionManager.getUserID();
-        user=(TextView)view.findViewById(R.id.textViewTimeShareListFragmentUser);
+        user=view.findViewById(R.id.textViewTimeShareListFragmentUser);
         user.setText(userId);
 
-        date=(TextView)view.findViewById(R.id.textViewTimeShareListFragmentDate);
+        date=view.findViewById(R.id.textViewTimeShareListFragmentDate);
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy   hh:mm a");
         Date date1 = new Date();
         String currentDate = formatter.format(date1);
         date.setText("Date & Time:  " +currentDate);
 
-        startDate=(EditText)view.findViewById(R.id.editTextStartDate);
-        endDate=(EditText)view.findViewById(R.id.editTextEndDate);
-        getTimeShares=(Button)view.findViewById(R.id.buttonDisplayTimeShares);
-        timeShareList=(ListView)view.findViewById(R.id.timeShareList);
+        startDate=view.findViewById(R.id.editTextStartDate);
+        endDate=view.findViewById(R.id.editTextEndDate);
+        getTimeShares=view.findViewById(R.id.buttonDisplayTimeShares);
+        timeShareList=view.findViewById(R.id.timeShareList);
 
 
-        getTimeShares.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (InternetConnectivity.isConnected())
+        getTimeShares.setOnClickListener(v -> {
+            if (InternetConnectivity.isConnected())
+            {
+                dataModels = getTimeShareList(userId, getStartDate(), getEndDate());
+                Log.d("TimeShareList",dataModels.toString());
+                if (dataModels.isEmpty())
                 {
-                    dataModels = getTimeShareList(userId, getStartDate(), getEndDate());
-                    Log.d("TimeShareList",dataModels.toString());
-                    if (dataModels.isEmpty())
-                    {
-                        Toast.makeText(getActivity(), "No Data Found", Toast.LENGTH_LONG).show();
-                    }
-                    else
-                     {
-                        adapter = new TimeShareListCustomAdapter(dataModels, getActivity());
-                        timeShareList.setAdapter(adapter);
-                        startDate.setText("");
-                        endDate.setText("");
-                        Toast.makeText(getActivity(), "Getting TimeShares Successfully", Toast.LENGTH_LONG).show();
-                     }
-
+                    Toast.makeText(getActivity(), "No Data Found", Toast.LENGTH_LONG).show();
                 }
                 else
-                {
-                    Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
-                }
+                 {
+                    adapter = new TimeShareListCustomAdapter(dataModels, getActivity());
+                    timeShareList.setAdapter(adapter);
+                    startDate.setText("");
+                    endDate.setText("");
+                    Toast.makeText(getActivity(), "Getting TimeShares Successfully", Toast.LENGTH_LONG).show();
+                 }
+
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
             }
         });
 

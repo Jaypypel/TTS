@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.fragment.app.Fragment;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +15,39 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.Network.APIErrorResponse;
+import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.ResponseBody;
+import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
+import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+@AndroidEntryPoint
 public class TTSTaskCommittedListFragment extends Fragment {
+
+    @Inject
+    AppExecutors appExecutors;
+
+    @Inject
+    TaskHandlerInterface taskHandler;
 
     public TTSTaskCommittedListFragment() { }
 
@@ -41,15 +67,15 @@ public class TTSTaskCommittedListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ttstask_committed_list, container, false);
 
-        listView=(ListView)view.findViewById(R.id.processingTaskList);
+        listView=view.findViewById(R.id.processingTaskList);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         userId = sessionManager.getUserID();
-        user=(TextView)view.findViewById(R.id.textViewProcessingListUser);
+        user=view.findViewById(R.id.textViewProcessingListUser);
         user.setText(userId);
 
-        date=(TextView)view.findViewById(R.id.textViewProcessingListDate);
-        time=(TextView)view.findViewById(R.id.textViewProcessingListTime);
+        date=view.findViewById(R.id.textViewProcessingListDate);
+        time=view.findViewById(R.id.textViewProcessingListTime);
 
         final Handler someHandler = new Handler(Looper.getMainLooper());
         someHandler.postDelayed(new Runnable()
@@ -72,11 +98,21 @@ public class TTSTaskCommittedListFragment extends Fragment {
         }, 10);
 
 
+
         //Get Data From Database for Processing Task And set to the ListView
         if (InternetConnectivity.isConnected()) {
-            dataModels = getProcessingTaskList(getUserId(),"IN_PROCESS");
-            adapter= new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
-            listView.setAdapter(adapter);
+
+            appExecutors.getNetworkIO().execute(() -> {
+                getProcessingTasks(getUserId(),"In-Process").thenAccept(tasks -> {
+                    dataModels = tasks;
+                    adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
+                    listView.setAdapter(adapter);
+                }).exceptionally(e-> {
+                    Toast.makeText(getActivity().getApplicationContext(),"Failed to fetch tasks",Toast.LENGTH_LONG).show();
+                    return null;
+                });
+            });
+
         }else { Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
         listView.setOnItemClickListener((parent, view1, position, id) -> {
@@ -101,55 +137,66 @@ public class TTSTaskCommittedListFragment extends Fragment {
         return sessionManager.getUserID();
     }
 
-    // Getting Accepted Task List
-    public ArrayList <TaskDataModel> getProcessingTaskList(String receivedUserID, String status){
+    public CompletableFuture<ArrayList<TaskDataModel>> getProcessingTasks(String receivedUsername, String status){
+        CompletableFuture<ArrayList<TaskDataModel>> future = new CompletableFuture<>();
+        Call<ResponseBody> call = taskHandler.getTasksByTaskOwnerUsernameAndStatus(receivedUsername,status);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                ArrayList<TaskDataModel> tasks = new ArrayList<>();
+                TaskDataModel task;
+                try{
+                    APIResponse apiResponse = APIResponse.create(response);
+                    if(apiResponse instanceof APISuccessResponse){
+                        JsonArray bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonArray();
+                        for (JsonElement item: bodyContent
+                        ) {
+                            JsonObject taskObj = item.getAsJsonObject();
+                            task = new TaskDataModel();
+                            task.setId(taskObj.get("id").getAsLong());
+                            JsonObject usr = taskObj.get("taskOwnerUserID").getAsJsonObject();
+                            task.setTaskDeligateOwnerUserID(usr.get("username").getAsString());
+                            task.setActivityName(taskObj.get("activityName").getAsString());
+                            task.setTaskName(taskObj.get("taskName").getAsString());
+                            task.setProjectNo(taskObj.get("projectCode").getAsString());
+                            task.setProjectName(taskObj.get("projectName").getAsString());
+                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
+                            task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
+                            task.setDescription(taskObj.get("description").getAsString());
+                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
+                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
+                            task.setSeenOn(taskObj.get("taskSeenOn").getAsString());
+                            task.setAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
+                            task.setStatus(taskObj.get("status").getAsString());
+                            tasks.add(task);
 
-        ArrayList<TaskDataModel> taskList = new ArrayList();
-        TaskDataModel listDataModel;
-        Connection con;
+                        }future.complete(tasks);
+                    }
 
-        try {
-            con = DatabaseHelper.getDBConnection();
+                    if (apiResponse instanceof APIErrorResponse){
+                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new RuntimeException("Error while fetching taskList :"+msg+"ResponseCode :"+response.code()));
+                    }
 
-            PreparedStatement ps = con.prepareStatement("select * from TASK_MANAGEMENT where FK_AUTHENTICATION_RECEIVED_USER_ID=? and STATUS=?");
-            ps.setString(1, receivedUserID);
-            ps.setString(2,status);
-
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                listDataModel = new TaskDataModel();
-
-
-                listDataModel.setId(rs.getLong("ID"));
-                listDataModel.setTaskDeligateOwnerUserID(rs.getString("FK_AUTHENTICATION_OWNER_USER_ID"));
-                listDataModel.setActivityName(rs.getString("ACTIVITY_NAME"));
-                listDataModel.setTaskName(rs.getString("TASK_NAME"));
-                listDataModel.setProjectNo(rs.getString("PROJECT_ID"));
-                listDataModel.setProjectName(rs.getString("PROJECT_NAME"));
-                listDataModel.setExpectedDate(rs.getString("EXPECTED_DATE"));
-                listDataModel.setExpectedTotalTime(rs.getString("EXPECTED_TOTAL_TIME"));
-                listDataModel.setDescription(rs.getString("DESCRIPTION"));
-                listDataModel.setActualTotalTime(rs.getString("ACTUAL_TOTAL_TIME"));
-                listDataModel.setDeligationDateTime(rs.getTimestamp("DELEGATION_ON").toString());
-                listDataModel.setSeenOn(rs.getString("SEEN_ON"));
-                listDataModel.setAcceptedOn(rs.getString("ACCEPTED_ON"));
-                listDataModel.setCompletedOn(rs.getString("COMPLETION_ON"));
-                listDataModel.setStatus(rs.getString("STATUS"));
-
-
-                taskList.add(listDataModel);
+                    if(apiResponse instanceof APIErrorResponse){
+                        future.completeExceptionally(new Throwable("Response is empty"));
+                    }
+                } catch (IOException e) {
+                    future.completeExceptionally(e);
+                }
             }
 
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                future.completeExceptionally(t);
+                Log.e("Error", "Request Failed: " + t.getMessage(), t);
+            }
+        });
 
-        return taskList;
+        return future;
     }
+
+
 
     // Getting Measurables List
     public ArrayList<MeasurableListDataModel> getProcessingTaskMeasurableList(Long taskId){

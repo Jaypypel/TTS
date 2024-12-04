@@ -18,6 +18,12 @@ public class MeasurableListDataModel implements Serializable {
         this.measurableUnit = measurableUnit;
     }
 
+//    public MeasurableListDataModel(String id, String measurableName) {
+//
+//        this.id = id;
+//        this.measurableName = measurableName;
+//    }
+
 
     @Override
     public String toString() { return this.id + "-" + this.measurableName; }

@@ -21,7 +21,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class TTSAdminActivity extends AppCompatActivity {
 
     private String[] mNavigationDrawerItemTitles;

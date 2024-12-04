@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 //import androidx.fragment.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,21 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.ActivityServiceInterface;
+import com.example.neptune.ttsapp.Network.ResponseBody;
+import com.example.neptune.ttsapp.Network.UserServiceInterface;
+import com.example.neptune.ttsapp.Util.DateConverter;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,9 +44,29 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+@AndroidEntryPoint
 public class TTSActivityCRUDFragment extends Fragment {
+
+    @Inject
+    AppExecutors appExecutors;
+
+    @Inject
+    UserServiceInterface userService;
+
+    @Inject
+    ActivityServiceInterface activityService;
 
     public TTSActivityCRUDFragment() { }
 
@@ -80,11 +116,21 @@ public class TTSActivityCRUDFragment extends Fragment {
 
         userSelect=(Spinner) view.findViewById(R.id.spinnerActCRUDUserSelect);
         if (InternetConnectivity.isConnected()== true) {
-            ArrayList users = getUserList();
-            users.add(0, "Select User");
-            ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
-            userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            userSelect.setAdapter(userSelectAdapter);
+
+            getUsernames().thenAccept(usernames -> {
+               ArrayList<String>  users = usernames;
+                //users.add(0,"Select user");
+                ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
+                userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                userSelect.setAdapter(userSelectAdapter);
+            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update usernames", Toast.LENGTH_LONG).show();
+                return null;
+            });
+
+
+//            ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
+//            userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            userSelect.setAdapter(userSelectAdapter);
         }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
@@ -93,12 +139,18 @@ public class TTSActivityCRUDFragment extends Fragment {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     // Set AutoCompleteTextView
-                    if (InternetConnectivity.isConnected() == true) {
+                    if (InternetConnectivity.isConnected()) {
 
                         activityName.setText("");
-
-                        ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, getActivityList(getUser()));
-                        activityName.setAdapter(activityNameAdapter);
+                        getActivityNameByUsername(getUser()).thenAccept(activityNames -> {
+                            Log.e("activityNames",""+activityNames);
+                            ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, activityNames);
+                            activityName.setAdapter(activityNameAdapter);
+                        }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update activity names", Toast.LENGTH_LONG).show();
+                                    return null;
+                                });
+//                        ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, getActivityList(getUser()));
+//                        activityName.setAdapter(activityNameAdapter);
 
                     } else {
                         Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
@@ -113,30 +165,47 @@ public class TTSActivityCRUDFragment extends Fragment {
         addActivity=(Button)view.findViewById(R.id.buttonActCRUDAddAct);
 
 
-        addActivity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        addActivity.setOnClickListener(v -> {
 
-                try
+            try
+            {
+                if (InternetConnectivity.isConnected()== true)
                 {
-                    if (InternetConnectivity.isConnected()== true)
-                    {
-                        if(isActivityName().isEmpty()){activityName.setError("Activity Name Be Empty");}
-                        else
-                            {
-                                String result = insertActivity(getUser(), isActivityName(), createdOn());
-                                if (result.equals("true")) {
-                                    Toast.makeText(getActivity().getApplicationContext(), "Activity Inserted ", Toast.LENGTH_LONG).show();
-                                    activityName.setText("");
-                                } else {
-                                    Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                    }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+                    if(isActivityName().isEmpty()){activityName.setError("Activity Name Be Empty");}
+                    else
+                        {
+                            addActivity(getUser(),isActivityName(),createdOn()).thenAccept(isActivityAdded -> {
+                                if(isActivityAdded.equals("successful")){
+                                    appExecutors.getMainThread().execute(() ->
+                                    {
+                                        Toast.makeText(getActivity().getApplicationContext(), "Activity Inserted ", Toast.LENGTH_LONG).show();
+                                        activityName.setText("");
+                                    });
+                                }else {
+                                    appExecutors.getMainThread().execute(() ->
+                                    {
+                                        Toast.makeText(getActivity().getApplicationContext(), "insertion failed ", Toast.LENGTH_LONG).show();
 
-                }
-                catch (Exception e){e.printStackTrace();}
+                                    });
+                                }
+                            }).exceptionally(e -> {
+                                Toast.makeText(getActivity().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+
+                                return null;
+                            });
+
+//                            String result = insertActivity(getUser(), isActivityName(), createdOn());
+//                            if (result.equals("true")) {
+//                                Toast.makeText(getActivity().getApplicationContext(), "Activity Inserted ", Toast.LENGTH_LONG).show();
+//                                activityName.setText("");
+//                            } else {
+//                                Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
+//                            }
+                        }
+                }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+
             }
+            catch (Exception e){e.printStackTrace();}
         });
 
 
@@ -160,103 +229,133 @@ public class TTSActivityCRUDFragment extends Fragment {
 
     private String createdOn()
     {
-        Calendar calendar = Calendar.getInstance();
-        Timestamp delegationTimestamp = new Timestamp(calendar.getTime().getTime());
-        return delegationTimestamp.toString();
+       return DateConverter.getCurrentDateTime();
     }
 
-    // Getting Users List
-    public ArrayList<String> getUserList(){
+    private CompletableFuture<String> addActivity(String username, String activityName, String createdOn) {
+        CompletableFuture<String> result = new CompletableFuture<>();
+        //it is used for to message & dts Id from ResponseBody object
+        appExecutors.getNetworkIO().execute(() -> {
+            Call<ResponseBody> call = activityService.addActivity(username,activityName,createdOn);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    APIResponse apiResponse = null;
+                    try {
+                        apiResponse = APIResponse.create(response);
+                        if (apiResponse != null) {
+                            if (apiResponse instanceof APISuccessResponse) {
+                                String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
 
-        ArrayList userNameList = new ArrayList();
+                                if ("successful".equals(message)) {
+                                    result.complete(message);
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        result.completeExceptionally(new Exception("API request failed: " + response.code()));
+                    }
 
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
+                }
 
-            PreparedStatement ps = con.prepareStatement("select * from AUTHENTICATION");
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                String s = rs.getString("USER_ID");
-
-                userNameList.add(s);
-
-            }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return userNameList;
-    }
-
-
-    // Getting Activity List
-    public ArrayList<String> getActivityList(String userId){
-
-        ArrayList<String> activityList = new ArrayList();
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select DISTINCT NAME from ACTIVITY WHERE FK_AUTHENTICATION_USER_ID = ?");
-            ps.setString(1, userId);
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                String s = rs.getString("NAME");
-
-                activityList.add(s);
-
-            }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return activityList;
-
-    }
-
-    // Insert Other Activity Data into Table
-    public String insertActivity(String userId, String activityName,String createdOn){
-        String result="false";
-        int x = 0;
-        Connection con;
-
-        try{
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("insert into ACTIVITY(NAME,FK_AUTHENTICATION_USER_ID,CREATED_ON) values(?,?,?)");
-
-            ps.setString(1, activityName);
-            ps.setString(2, userId);
-            ps.setString(3, createdOn);
-
-
-
-            x = ps.executeUpdate();
-
-            if(x==1){
-                result = "true";
-            }
-
-            ps.close();
-            con.close();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    result.completeExceptionally(t);
+                }
+            });
+        });
 
         return result;
     }
 
+
+
+    public CompletableFuture<ArrayList<String>> getUsernames() {
+        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+
+        appExecutors.getNetworkIO().execute(() -> {
+            Call<ResponseBody> usernamesResponse = userService.getUsernames();
+            usernamesResponse.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+
+                    try {
+                        APIResponse apiResponse =   APIResponse.create(response);
+                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+
+                        if(result.isJsonArray()){
+                            JsonArray usernames = result.getAsJsonArray();
+                            ArrayList<String> list = gson.fromJson(usernames, listType);
+                            future.complete(list);
+
+                        }
+                    } catch (RuntimeException e) {
+                        Log.e("Error", ""+e.getMessage());
+                    } catch (IOException e) {
+                        Log.e("Error", ""+e.getMessage());
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.e("Network Request", "Failed: " + t.getMessage());
+
+                }
+            });
+
+        });
+
+        return future;
+    }
+
+    public CompletableFuture<ArrayList<String>> getActivityNameByUsername(String username) {
+        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+
+        appExecutors.getNetworkIO().execute(() -> {
+            Call<ResponseBody> call = activityService.getActivitiesNamebyUsername(username);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+
+                    try {
+                        APIResponse apiResponse =   APIResponse.create(response);
+                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+
+                        if(result.isJsonArray()){
+                            JsonArray activityNames = result.getAsJsonArray();
+                            ArrayList<String> list = gson.fromJson(activityNames, listType);
+                            future.complete(list);
+
+                        }
+                    }
+                    catch (ClassCastException e) {
+                        Log.e("Error", ""+e.getMessage());
+                    }
+                    catch (RuntimeException e) {
+                        Log.e("Error", ""+e.getMessage());
+                    } catch (IOException e) {
+                        Log.e("Error", ""+e.getMessage());
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.e("Network Request", "Failed: " + t.getMessage());
+
+                }
+            });
+
+        });
+
+        return future;
+    }
 }

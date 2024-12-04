@@ -1,6 +1,7 @@
 package com.example.neptune.ttsapp;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,11 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -105,7 +111,20 @@ public class TaskDelegatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
 
 
         viewHolder.txttaskDeligateReceivedName.setText(dataModel.getTaskReceivedUserId());
+//        if(dataModel.getDeligationDateTime() != null){
+//            viewHolder.txttaskDeligateTaskDate.setText(extractDate(dataModel.getDeligationDateTime()));
+//        }
         viewHolder.txttaskDeligateTaskDate.setText(extractDate(dataModel.getDeligationDateTime()));
+//        viewHolder.txttaskDeligateTaskDate.setText("25-08-2001");
+               if(dataModel.getDeligationDateTime() != null){
+           Log.e("delegationDate from dataModel",dataModel.getDeligationDateTime());
+           String d = dataModel.getDeligationDateTime();
+           Log.e("delegationDate funciton"," "+extractDate(d));
+       }else{
+           Log.e("delegationDate", "is null ");
+           Log.e("taskAllocationModle", ""+dataModel);
+
+       }
         viewHolder.txttaskDeligateTaskName.setText(dataModel.getTaskName());
         viewHolder.txttaskDeligateTaskStatus.setText(dataModel.getStatus());
 
@@ -116,16 +135,14 @@ public class TaskDelegatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
 
     private String extractDate(String timestamp)
     {
-        String dateStr = null;
-        try
-        {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = sdf.parse(timestamp);
+        String currentDate= "";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+        ZonedDateTime ist = ZonedDateTime.of(LocalDateTime.parse(timestamp,dateTimeFormatter), ZoneId.of("Asia/Kolkata"));
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        currentDate = ist.format(dateFormatter);
 
-            SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yy");
-            dateStr = sdf2.format(date);
-        }catch (Exception e){e.printStackTrace();}
 
-        return dateStr;
+
+        return currentDate;
     }
 }

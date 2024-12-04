@@ -4,7 +4,11 @@ package com.example.neptune.ttsapp;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +16,41 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.Network.APIErrorResponse;
+import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.ResponseBody;
+import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
+@AndroidEntryPoint
 public class TTSTaskCountFragment extends Fragment {
+
+    @Inject
+    TaskHandlerInterface taskHandler;
+
+    @Inject
+    AppExecutors appExecutors;
 
     public TTSTaskCountFragment() { }
 
@@ -37,19 +67,19 @@ public class TTSTaskCountFragment extends Fragment {
     {   // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ttstask_count, container, false);
 
-        tvPendingTask = (TextView) view.findViewById(R.id.textViewPendingTask);
-        tvAcceptedTask = (TextView) view.findViewById(R.id.textViewAcceptedTask);
-        tvCompletedTask = (TextView) view.findViewById(R.id.textViewCompletedTask);
-        tvApprovalTask = (TextView) view.findViewById(R.id.textViewApprovalTask);
+        tvPendingTask = view.findViewById(R.id.textViewPendingTask);
+        tvAcceptedTask = view.findViewById(R.id.textViewAcceptedTask);
+        tvCompletedTask = view.findViewById(R.id.textViewCompletedTask);
+        tvApprovalTask = view.findViewById(R.id.textViewApprovalTask);
 
-        user = (TextView) view.findViewById(R.id.textViewTaskCountUser);
+        user = view.findViewById(R.id.textViewTaskCountUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         user.setText(sessionManager.getUserID());
 
-        date = (TextView) view.findViewById(R.id.textViewTaskCountDate);
-        time = (TextView) view.findViewById(R.id.textViewTaskCountTime);
+        date = view.findViewById(R.id.textViewTaskCountDate);
+        time = view.findViewById(R.id.textViewTaskCountTime);
 
-        listView = (ListView)view.findViewById(R.id.taskList);
+        listView = view.findViewById(R.id.taskList);
 
         final Handler someHandler = new Handler(Looper.getMainLooper());
         someHandler.postDelayed(new Runnable()
@@ -71,34 +101,68 @@ public class TTSTaskCountFragment extends Fragment {
             }
         }, 10);
 
-
-
         if (InternetConnectivity.isConnected()) {
             try {
                 user.setText(sessionManager.getUserID());
 
-                String pendingTaskCount = Integer.toString(getPendingTaskCount(sessionManager.getUserID()));
-                tvPendingTask.setText("Pending Task      :  " + pendingTaskCount);
+                // Execute network tasks asynchronously
+                CompletableFuture<String> pendingTasksFuture = countPendingTaskByUser(sessionManager.getUserID());
+                CompletableFuture<String> acceptedTasksFuture = countAcceptedTaskByUser(sessionManager.getUserID());
+                CompletableFuture<String> approvedTasksFuture = countApprovedTaskByUser(sessionManager.getUserID());
+                CompletableFuture<String> completedTasksFuture = countCompletedTaskByUser(sessionManager.getUserID());
 
-                String acceptedTaskCount = Integer.toString(getAcceptedTaskCount(sessionManager.getUserID()));
-                tvAcceptedTask.setText("In Process Task   :  " + acceptedTaskCount);
+                // Combine all futures
+                CompletableFuture<Void> allTasksFuture = CompletableFuture.allOf(
+                        pendingTasksFuture, acceptedTasksFuture, approvedTasksFuture, completedTasksFuture
+                );
 
-                String approvalTaskCount = Integer.toString(getApprovalTaskCount(sessionManager.getUserID()));
-                tvApprovalTask.setText("Approval Task    :  " + approvalTaskCount);
+                // Process results once all futures are complete
+                allTasksFuture.thenRun(() -> {
+                    try {
+                        String pendingTasks = pendingTasksFuture.get();
+                        String acceptedTasks = acceptedTasksFuture.get();
+                        String approvedTasks = approvedTasksFuture.get();
+                        String completedTasks = completedTasksFuture.get();
 
-                String completedTaskCount = Integer.toString(getCompletedTaskCount(sessionManager.getUserID()));
-                tvCompletedTask.setText("Completed Task   :  " + completedTaskCount);
-
-            } catch (Exception e) { e.printStackTrace(); }
-
-        } else { Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show(); }
+                        // Update UI on the main thread
+                        appExecutors.getMainThread().execute(() -> {
+                            tvPendingTask.setText("Pending Task      :  " + pendingTasks);
+                            tvAcceptedTask.setText("Accepted Task     :  " + acceptedTasks);
+                            tvApprovalTask.setText("Approved Task     :  " + approvedTasks);
+                            tvCompletedTask.setText("Completed Task    :  " + completedTasks);
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        appExecutors.getMainThread().execute(() ->
+                                Toast.makeText(getActivity().getApplicationContext(),
+                                        "Failed to fetch task counts",
+                                        Toast.LENGTH_LONG).show()
+                        );
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
+        }
 
 
         //Get Data From Database for Accepted Task And set to the ListView
         if (InternetConnectivity.isConnected()) {
-            dataModels = getTaskList(sessionManager.getUserID());
-            adapter= new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
-            listView.setAdapter(adapter);
+            appExecutors.getNetworkIO().execute(() -> {
+                getAssignedTask(sessionManager.getUserID()).thenAccept(task -> {
+                    appExecutors.getMainThread().execute(() -> {
+                        dataModels = task;
+                        adapter = new TaskAllocatedListCustomAdapter(task,getActivity().getApplicationContext());
+                        listView.setAdapter(adapter);
+                    });
+                }).exceptionally(e -> {
+                    Toast.makeText(getActivity().getApplicationContext(),"Failed to get Tasks ",Toast.LENGTH_LONG).show();
+                    return null;
+                });
+            });
+
         }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
@@ -107,164 +171,207 @@ public class TTSTaskCountFragment extends Fragment {
         return view;
     }
 
+    public CompletableFuture<String> countAcceptedTaskByUser(String username){
+        CompletableFuture<String> count = new CompletableFuture<>();
+        Call<ResponseBody> call = taskHandler.getAcceptedTaskCount(username);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
+                Log.e("Response",""+response);
 
+                try{
+                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
+                    Log.e("apiResponse",""+apiResponse);
+                    if(apiResponse instanceof APISuccessResponse){
+                        String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
+                        Log.e("bodyContent","-response body - : "+bodyContent);
+                        count.complete(bodyContent);
+                    }else{
+                        apiResponse = APIErrorResponse.create(response);
+                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        count.completeExceptionally(new Throwable(msg));
+                    }
 
-    // Getting Pending Task Count
-    public int getPendingTaskCount(String userId){
-
-        int count = 0;
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM TASK_MANAGEMENT WHERE FK_AUTHENTICATION_RECEIVED_USER_ID= ? AND STATUS = ? ");
-            ps.setString(1, userId);
-            ps.setString(2, "PENDING");
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) { count = rs.getInt(1); }
-
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return count;
-
-    }
-
-    // Getting Accepted Task Count
-    public int getAcceptedTaskCount(String userId){
-
-        int count = 0;
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM TASK_MANAGEMENT WHERE FK_AUTHENTICATION_RECEIVED_USER_ID= ? AND STATUS = ? ");
-            ps.setString(1, userId);
-            ps.setString(2, "IN_PROCESS");
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) { count = rs.getInt(1); }
-
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return count;
-
-    }
-
-    // Getting Approval Task Count
-    public int getApprovalTaskCount(String userId){
-
-        int count = 0;
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM TASK_MANAGEMENT WHERE FK_AUTHENTICATION_RECEIVED_USER_ID= ? AND STATUS = ? ");
-            ps.setString(1, userId);
-            ps.setString(2, "APPROVAL");
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) { count = rs.getInt(1); }
-
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return count;
-
-    }
-
-    // Getting Completed Task Count
-    public int getCompletedTaskCount(String userId){
-
-        int count = 0;
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM TASK_MANAGEMENT WHERE FK_AUTHENTICATION_RECEIVED_USER_ID= ? AND STATUS = ? ");
-            ps.setString(1, userId);
-            ps.setString(2, "COMPLETED");
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) { count = rs.getInt(1); }
-
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return count;
-
-    }
-
-    // Getting  Task List
-    public ArrayList<TaskDataModel> getTaskList(String receivedUserID){
-
-        ArrayList<TaskDataModel> taskList = new ArrayList();
-        TaskDataModel listDataModel;
-        Connection con;
-
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select * from TASK_MANAGEMENT where FK_AUTHENTICATION_RECEIVED_USER_ID=? ");
-            ps.setString(1, receivedUserID);
-
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                listDataModel = new TaskDataModel();
-
-
-                listDataModel.setId(rs.getLong("ID"));
-                listDataModel.setTaskDeligateOwnerUserID(rs.getString("FK_AUTHENTICATION_OWNER_USER_ID"));
-                listDataModel.setActivityName(rs.getString("ACTIVITY_NAME"));
-                listDataModel.setTaskName(rs.getString("TASK_NAME"));
-                listDataModel.setProjectNo(rs.getString("PROJECT_ID"));
-                listDataModel.setProjectName(rs.getString("PROJECT_NAME"));
-                listDataModel.setExpectedDate(rs.getString("EXPECTED_DATE"));
-                listDataModel.setExpectedTotalTime(rs.getString("EXPECTED_TOTAL_TIME"));
-                listDataModel.setDescription(rs.getString("DESCRIPTION"));
-                listDataModel.setActualTotalTime(rs.getString("ACTUAL_TOTAL_TIME"));
-                listDataModel.setDeligationDateTime(rs.getTimestamp("DELEGATION_ON").toString());
-                listDataModel.setSeenOn(rs.getString("SEEN_ON"));
-                listDataModel.setAcceptedOn(rs.getString("ACCEPTED_ON"));
-                listDataModel.setStatus(rs.getString("STATUS"));
-
-
-                taskList.add(listDataModel);
+                } catch (IOException e) {
+                   Log.e("IOException","an IOExpception occured"+e.getMessage());
+                   count.completeExceptionally(new Exception("APIResponse failed : " + response.code()));
+                }
             }
 
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                count.completeExceptionally(t);
+            }
+        });
 
-        return taskList;
-
+        return count;
     }
+    public CompletableFuture<String> countPendingTaskByUser(String username){
+        CompletableFuture<String> count = new CompletableFuture<>();
+        Call<ResponseBody> call = taskHandler.getPendingTaskCount(username);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
+                Log.e("Response",""+response);
+
+                try{
+                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
+                    Log.e("apiResponse",""+apiResponse);
+                    if(apiResponse instanceof APISuccessResponse){
+                        String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
+                        Log.e("bodyContent","-response body - : "+bodyContent);
+                        count.complete(bodyContent);
+                    }else{
+                        apiResponse = APIErrorResponse.create(response);
+                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        count.completeExceptionally(new Throwable(msg));
+                    }
+
+                } catch (IOException e) {
+                   Log.e("IOException","an IOExpception occured"+e.getMessage());
+                   count.completeExceptionally(new Exception("APIResponse failed : " + response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                count.completeExceptionally(t);
+            }
+        });
+
+        return count;
+    }
+    public CompletableFuture<String> countApprovedTaskByUser(String username){
+        CompletableFuture<String> count = new CompletableFuture<>();
+        Call<ResponseBody> call = taskHandler.getApprovedTaskCount(username);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
+                Log.e("Response",""+response);
+
+                try{
+                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
+                    Log.e("apiResponse",""+apiResponse);
+                    if(apiResponse instanceof APISuccessResponse){
+                        String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
+                        Log.e("bodyContent","-response body - : "+bodyContent);
+                        count.complete(bodyContent);
+                    }else{
+                        apiResponse = APIErrorResponse.create(response);
+                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        count.completeExceptionally(new Throwable(msg));
+                    }
+
+                } catch (IOException e) {
+                   Log.e("IOException","an IOExpception occured"+e.getMessage());
+                   count.completeExceptionally(new Exception("APIResponse failed : " + response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                count.completeExceptionally(t);
+            }
+        });
+
+        return count;
+    }
+    public CompletableFuture<String> countCompletedTaskByUser(String username){
+        CompletableFuture<String> count = new CompletableFuture<>();
+        Call<ResponseBody> call = taskHandler.getCompletedTaskCount(username);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
+                Log.e("Response",""+response);
+
+                try{
+                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
+                    Log.e("apiResponse",""+apiResponse);
+
+                    if(apiResponse instanceof APISuccessResponse){
+
+                        String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
+                        Log.e("bodyContent","-response body - : "+bodyContent);
+                        count.complete(bodyContent);
+                    }else{
+                        apiResponse = APIErrorResponse.create(response);
+                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        count.completeExceptionally(new Throwable(msg));
+                    }
+
+                } catch (IOException e) {
+                    Log.e("IOException","an IOExpception occured"+e.getMessage());
+                   count.completeExceptionally(new Exception("APIResponse failed : " + response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                count.completeExceptionally(t);
+            }
+        });
+
+        return count;
+    }
+
+    public CompletableFuture<ArrayList<TaskDataModel>> getAssignedTask(String receivedUsername){
+        CompletableFuture<ArrayList<TaskDataModel>> future = new CompletableFuture<>();
+        Call<ResponseBody> call = taskHandler.getTaskList(receivedUsername);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                ArrayList<TaskDataModel> tasks = new ArrayList<>();
+                TaskDataModel task;
+                try{
+                    APIResponse apiResponse = APIResponse.create(response);
+                    if(apiResponse instanceof APISuccessResponse){
+                        JsonArray bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonArray();
+                        Log.e("bodyContent",""+bodyContent);
+                        for (JsonElement item: bodyContent
+                        ) {
+                            JsonObject taskObj = item.getAsJsonObject();
+                            task = new TaskDataModel();
+                            task.setId(taskObj.get("id").getAsLong());
+                            JsonObject usr = taskObj.get("taskReceivedUserID").getAsJsonObject();
+                            task.setTaskDeligateOwnerUserID(usr.get("username").getAsString());
+                            task.setActivityName(taskObj.get("activityName").getAsString());
+                            task.setTaskName(taskObj.get("taskName").getAsString());
+                            task.setProjectNo(taskObj.get("projectCode").getAsString());
+                            task.setProjectName(taskObj.get("projectName").getAsString());
+                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
+//                            task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
+                            task.setDescription(taskObj.get("description").getAsString());
+                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
+                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
+                            task.setSeenOn(taskObj.get("taskSeenOn").getAsString());
+                            task.setAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
+                            task.setStatus(taskObj.get("status").getAsString());
+                            tasks.add(task);
+
+                        }future.complete(tasks);
+                    }
+
+                    if (apiResponse instanceof APIErrorResponse){
+                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new RuntimeException("Error while fetching taskList :"+msg+"ResponseCode :"+response.code()));
+                    }
+
+                    if(apiResponse instanceof APIErrorResponse){
+                        future.completeExceptionally(new Throwable("Response is empty"));
+                    }
+                } catch (IOException e) {
+                    future.completeExceptionally(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                future.completeExceptionally(t);
+                Log.e("Error", "Request Failed: " + t.getMessage(), t);
+            }
+        });
+
+        return future;
+    }
+
 }

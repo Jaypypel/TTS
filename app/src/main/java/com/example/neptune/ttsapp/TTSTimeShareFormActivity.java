@@ -8,6 +8,7 @@ import android.os.StrictMode;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,21 +20,65 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.DTO.TimeShareDTO;
+import com.example.neptune.ttsapp.Network.APIEmptyResponse;
+import com.example.neptune.ttsapp.Network.APIErrorResponse;
+import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.JSONConfig;
+import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
+import com.example.neptune.ttsapp.Network.ResponseBody;
+import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
+import com.example.neptune.ttsapp.Network.TimeShareServiceInterface;
+import com.example.neptune.ttsapp.Util.DateConverter;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
+@AndroidEntryPoint
 public class TTSTimeShareFormActivity extends AppCompatActivity {
 
+    @Inject
+    AppExecutors appExecutor;
+
+    @Inject
+    MeasurableServiceInterface measurableService;
+
+    @Inject
+    TimeShareServiceInterface timeShareService;
+
+    @Inject
+    TaskHandlerInterface taskHandlerService;
 
     private EditText date,startTime,endTime,description,timeShareMeasurableQty,timeShareMeasurableUnit;
     private Button btnCancel,btnPreview,btnSubmit,addMeasurable;
@@ -59,38 +104,32 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
 
-        user=(TextView)findViewById(R.id.textViewUser);
+        user=findViewById(R.id.textViewUser);
         sessionManager = new SessionManager(getApplicationContext());
         user.setText(sessionManager.getUserID());
 
-        date=(EditText)findViewById(R.id.editTextDate);
+        date=findViewById(R.id.editTextDate);
 
-        activityName=(TextView)findViewById(R.id.TSTextViewActName);
-        taskName=(TextView)findViewById(R.id.TSTextViewTaskName);
-        projCode=(TextView)findViewById(R.id.TSTextViewProjNo);
-        projName=(TextView)findViewById(R.id.TSTextViewProjName);
-        startTime=(EditText)findViewById(R.id.editTextStartTime);
-        endTime=(EditText)findViewById(R.id.editTextEndTime);
-        description=(EditText)findViewById(R.id.editTextDescription);
+        activityName=findViewById(R.id.TSTextViewActName);
+        taskName=findViewById(R.id.TSTextViewTaskName);
+        projCode=findViewById(R.id.TSTextViewProjNo);
+        projName=findViewById(R.id.TSTextViewProjName);
+        startTime=findViewById(R.id.editTextStartTime);
+        endTime=findViewById(R.id.editTextEndTime);
+        description=findViewById(R.id.editTextDescription);
 
-        btnCancel=(Button)findViewById(R.id.buttonCancel);
-//        btnPreview=(Button)findViewById(R.id.buttonPreview);
-        btnSubmit=(Button)findViewById(R.id.buttonSubmit);
+        btnCancel=findViewById(R.id.buttonCancel);
 
-//        progressBar=(ProgressBar)findViewById(R.id.progressBarInTimeShare);
-//        progressBar.setVisibility(View.INVISIBLE);
+        btnSubmit=findViewById(R.id.buttonSubmit);
+
 
         // Code for Measurable list
         listView=(ListView)findViewById(R.id.listTimeShareMeasurable);
-        addMeasurable=(Button)findViewById(R.id.buttonTimeShareMeasurableAdd);
-        timeShareMeasurableQty=(EditText)findViewById(R.id.editTextTimeShareMeasurableQty);
-        timeShareMeasurableUnit=(EditText)findViewById(R.id.editTextTimeShareMeasurableUnit);
+        addMeasurable=findViewById(R.id.buttonTimeShareMeasurableAdd);
+        timeShareMeasurableQty=findViewById(R.id.editTextTimeShareMeasurableQty);
+        timeShareMeasurableUnit=findViewById(R.id.editTextTimeShareMeasurableUnit);
 
-            //Get Data When Task Accept click on ACCEPT button In Task Allocated details
-//            allocatedTaskDetails  = (TaskDataModel) getIntent().getSerializableExtra("TaskDetails");
 
-            //Get Data from clicking on Task Accepted Tab ListView
-//            acceptedTaskDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskAcceptedDetails");
 
             processingTaskDetails =(TaskDataModel) getIntent().getSerializableExtra("TaskProcessingDetails");
 
@@ -106,13 +145,25 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
         //Code For set measurable list to spinner
             if (InternetConnectivity.isConnected()) {
-//                progressBar.setVisibility(View.VISIBLE);
-                measurables = getDeligationMeasurableList(processingDelegationTaskId);
-                spinnerMeasurableName = (Spinner)findViewById(R.id.spinnerTimeShareMeasurable);
-                ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(this, android.R.layout.simple_spinner_item,measurables);
-                adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinnerMeasurableName.setAdapter(adapterMeasurable);
-//                progressBar.setVisibility(View.INVISIBLE);
+
+
+                appExecutor.getNetworkIO().execute(() -> {
+                    getAllocatedMeasurableList(processingDelegationTaskId).thenAccept(measurableList -> {
+                        runOnUiThread(() -> {
+                            measurables = measurableList;
+                            spinnerMeasurableName = (Spinner)findViewById(R.id.spinnerTimeShareMeasurable);
+                            ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(this, android.R.layout.simple_spinner_item,measurables);
+                            adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            spinnerMeasurableName.setAdapter(adapterMeasurable);
+
+                        });
+                    }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
+                        appExecutor.getMainThread().execute(() ->
+                                Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
+                        return null;
+                    });
+                });
+
             }else {Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
@@ -125,8 +176,27 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
         {
             try
             {
-                // your handler code here
-                measurableListDataModels.add(new MeasurableListDataModel(spinnerMeasurableName.getSelectedItem().toString(), timeShareMeasurableQty.getText().toString(), timeShareMeasurableUnit.getText().toString()));
+                String tmeShrMsrble =  spinnerMeasurableName.getSelectedItem().toString() != null ? spinnerMeasurableName.getSelectedItem().toString(): "undefined";
+                String tmeShreMsrbleQty = timeShareMeasurableQty.getText().toString();
+
+                String tmeShreMsrblUnit = timeShareMeasurableUnit.getText().toString();
+
+                String[]   parts = tmeShrMsrble.split("-");
+                Log.e("parts",""+parts);
+
+                String numberPart = parts[0].split("\\.")[0]; // Cast to int to remove decimal
+                Log.e("numberPart",""+numberPart);
+                // Extract the word part
+                String wordPart = parts[1];
+                Log.e("wordPart",""+wordPart);
+
+                MeasurableListDataModel m = new MeasurableListDataModel();
+                m.setId(numberPart);
+                m.setMeasurableName(wordPart);
+                m.setMeasurableQty(tmeShreMsrbleQty);
+                m.setMeasurableUnit(tmeShreMsrblUnit);
+
+                measurableListDataModels.add(m);
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getApplicationContext());
                 listView.setAdapter(measurableListCustomAdapter);
                 clear();
@@ -148,17 +218,36 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                     {
                         Toast.makeText(getApplicationContext(), "Wait For Inserting TimeShare", Toast.LENGTH_LONG).show();
 //                            progressBar.setVisibility(View.VISIBLE);
-                        String result = insertTimeShare(getMaxTimeShareTaskId(), processingDelegationTaskId, isDateValid(), isStartTimeValid(), isEndTimeValid(), timeDifference(), isDescriptionValid(), delegationTime(), measurableListDataModels);
-                            if (result.equals("true"))
-                            {
-                                insertActualTotalTime(processingDelegationTaskId, totalTime());
-                                Toast.makeText(getApplicationContext(), "Time Share Inserted ", Toast.LENGTH_LONG).show();
-                                clearAll();
-//                                Intent i = new Intent(getApplicationContext(), TTSMainActivity.class);
-//                                startActivity(i);
-                                finish();
+                        TimeShareDTO timeShare = new TimeShareDTO();
+                        timeShare.setTaskHandlerId(processingDelegationTaskId);
+                        timeShare.setDate(isDateValid());
+                        timeShare.setStartTime(isStartTimeValid());
+                        timeShare.setEndTime(isEndTimeValid());
+                        timeShare.setTimeDifference(timeDifference());
+                        timeShare.setDescription(isDescriptionValid());
+                        timeShare.setCreatedOn(delegationTime());
+                        appExecutor.getNetworkIO().execute(() -> {
+                            addTimeShare(timeShare).thenCompose(result -> {
+                                Long id = Long.valueOf(result.get(1));
+                                return addTimeShareMeasurables(5L,measurableListDataModels).thenAccept(finalResult -> {
+                                    if (finalResult) {
+                                        appExecutor.getMainThread().execute(() -> {
+                                            Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
+                                            clearAll();
+                                           // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                                        });
+                                    }
+                                });
+                            }).exceptionally(e -> {
+                                appExecutor.getMainThread().execute(() -> {
+                                   // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                                    Toast.makeText(getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
+                                });
+                                return null;
 
-                            } else { Toast.makeText(getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show(); }
+                            }).join();
+                        });
+
                     }
                 }
                 else
@@ -370,11 +459,9 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
     //Validation End
 
     //Getting Current TimeStamp
-    private Timestamp delegationTime()
+    private String delegationTime()
     {
-        Calendar calendar = Calendar.getInstance();
-        Timestamp delegationTimestamp = new Timestamp(calendar.getTime().getTime());
-        return delegationTimestamp;
+        return DateConverter.getCurrentDateTime();
     }
 
     //Calculate Time Difference between startTime and endTime
@@ -403,8 +490,8 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
     }
 
     //Calculate Actual Total Time
-    private String totalTime(){
-        String oldActualTotalTime = getActualTotalTime(processingDelegationTaskId);
+    private String totalTime() throws ExecutionException, InterruptedException {
+        String oldActualTotalTime = getActualTotatTime(processingDelegationTaskId).get();
         String timeDifference =timeDifference();
         String newActualTotalTime = null;
             if(oldActualTotalTime.equals("NO_TIME")) { return timeDifference; }
@@ -465,146 +552,254 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
     }
 
 
-    // Getting Measurables List
-    public ArrayList<MeasurableListDataModel> getDeligationMeasurableList(Long timeShareId){
+    public CompletableFuture<ArrayList<MeasurableListDataModel>> getAllocatedMeasurableList(Long taskId){
+        CompletableFuture<ArrayList<MeasurableListDataModel>> future = new CompletableFuture<>();
+        Call<ResponseBody> call = measurableService.getAllocatedMeasurableList(taskId);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-        ArrayList<MeasurableListDataModel> measurableList = new ArrayList();
-        MeasurableListDataModel measurableListDataModel;
-
-        Connection con;
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            PreparedStatement ps = con.prepareStatement("select m.ID,m.NAME from MEASURABLES m where ID = ANY(select FK_MEASURABLE_ID from DELEGATION_MEASURABLES where FK_TASK_MANAGEMENT_ID = ?)");
-            ps.setLong(1, timeShareId);
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                measurableListDataModel= new MeasurableListDataModel();
-
-                measurableListDataModel.setId(rs.getString("ID"));
-                measurableListDataModel.setMeasurableName(rs.getString("NAME"));
-
-                measurableList.add(measurableListDataModel);
+                try {
+                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
+                    if(apiResponse instanceof APISuccessResponse){
+                        JsonElement bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type measurablesType = new TypeToken<ArrayList<MeasurableListDataModel>>(){}.getType();
+                        if(bodyContent.isJsonArray()){
+                            JsonArray content = bodyContent.getAsJsonArray();
+                            ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurablesType);
+                            future.complete(measurables);
+                        }
 
 
+                    }
+                    if (apiResponse instanceof APIErrorResponse){
+                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        Log.e("Server Response", "Error Received : "+ msg);
+                    }
+
+                    if(apiResponse instanceof APIErrorResponse){
+                        future.completeExceptionally(new Throwable("Response is empty"));
+                    }
+                } catch (IOException e) {
+                    Log.e("Error", "IOException occurred" + e.getMessage(), e);
+                    future.completeExceptionally(e);
+                }
             }
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        return measurableList;
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Error", "Request Failed: " + t.getMessage(), t);
+                future.completeExceptionally(t);
+            }
+        });
 
+        return future;
     }
 
 
-    //Insert Time Share
-    public String insertTimeShare(Long timeShareId,Long taskId,String date,String startTime,String endTime,String timeDifference,String description,Timestamp createdOn,ArrayList<MeasurableListDataModel> measurableList){
-        String result="false";
-        int x = 0;
-        Connection con;
+    public CompletableFuture<ArrayList<String>> addTimeShare(TimeShareDTO timeShareDTO){
+        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+        //it is used for to message & dts Id from ResponseBody object
+        ArrayList<String> messageAndId = new ArrayList<>();
+        appExecutor.getNetworkIO().execute(() -> {
+            Call<ResponseBody> call = timeShareService.addTimeShare(timeShareDTO);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-        try{
-            con = DatabaseHelper.getDBConnection();
-            PreparedStatement ps;
+                    try {
+                        APIResponse apiResponse = APIResponse.create(response);
+                        if (apiResponse != null) {
+                            if (apiResponse instanceof APISuccessResponse) {
+                                String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+                                JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();
+                                String dtsId = dtsobject.get("id").getAsString();
+                                if ("successful".equals(message)) {
+                                    messageAndId.add(message);
+                                    messageAndId.add(dtsId);
+                                    future.complete(messageAndId);
+                                }
+                            }
 
-            ps = con.prepareStatement("insert into TIME_SHARE(ID,FK_TASK_MANAGEMENT_ID,DATE_OF_TIME_SHARE,START_TIME,END_TIME,TIME_DIFFERENCE,DESCRIPTION,CREATED_ON) values(?,?,?,?,?,?,?,?)");
-
-            ps.setLong(1,timeShareId);
-            ps.setLong(2,taskId);
-            ps.setString(3, date);
-            ps.setString(4, startTime);
-            ps.setString(5, endTime);
-            ps.setString(6, timeDifference);
-            ps.setString(7, description);
-            ps.setTimestamp(8, createdOn);
-
-            x = ps.executeUpdate();
-            ps.close();
+                            if (apiResponse instanceof APIErrorResponse){
+                                String msg = ((APIErrorResponse) apiResponse).getErrorMessage();
+                                Log.e("Error","occurred"+msg);
+                            }
+                            if (apiResponse instanceof APIErrorResponse){
+                                Log.e("Response","response is empty");
+                            }
+                        }
 
 
-            String sql = "insert into TIME_SHARE_MEASURABLES(FK_TIME_SHARE_ID,FK_MEASURABLE_ID,MEASURABLE_QUANTITY,MEASURABLE_UNIT) values(?,?,?,?)";
-            PreparedStatement ps1 = con.prepareStatement(sql);
-            con.setAutoCommit(false);
-            for (MeasurableListDataModel mList:measurableList)
-            {
-                ps1.setLong(1,timeShareId);
-                ps1.setLong(2, Long.parseLong(mList.getMeasurableName().replaceAll("[^0-9]", "")));
-                ps1.setString(3, mList.getMeasurableQty());
-                ps1.setString(4, mList.getMeasurableUnit());
+                    }
+                    catch (ClassCastException e){
+                        Log.e("Error","Not getting the response in required format due to "+e.getMessage());
+                    }
+                    catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    }
+                    catch (RuntimeException e){
+                        Log.e("Unnoticed Exception", "Any unidentified error occured "+e.getMessage());
+                    }
 
-                ps1.addBatch();
+                }
 
-            }
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    future.completeExceptionally(t);
+                }
+            });
+        });
 
-            int[] x1=ps1.executeBatch();
-
-            if (x==1 ||  x1.length>0){
-                result = "true";
-            }
-
-            con.commit();
-            ps1.close();
-            con.close();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-
-        return result;
+        return future;
     }
 
+    public CompletableFuture<Boolean> addTimeShareMeasurables(Long timeShareId, List<MeasurableListDataModel> measurableListDataModel){
+        CompletableFuture<Boolean> future  = new CompletableFuture<>();
+        if(measurableListDataModel.isEmpty()) {
+            future.complete(false);
+            return future;
+        }
+        AtomicInteger pendingTasks = new AtomicInteger(measurableListDataModels.size());
+        AtomicBoolean allSuccessful = new AtomicBoolean(true);
+        for (MeasurableListDataModel m: measurableListDataModel
+        ) {
+
+            appExecutor.getNetworkIO().execute(() -> {
+                Long measurableId = Long.valueOf(m.getId().split("\\.")[0]);
+                Long measurableQty =  Long.valueOf(m.getMeasurableQty());
+                String measurableUnit =  String.valueOf(m.getMeasurableUnit());
+                Call<ResponseBody> call = measurableService.addTimeShareMeasurable(timeShareId,measurableId, measurableQty,measurableUnit);
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        Log.d("Debug", "Response received for addDailyTimeShareMeasurables"+response.body());
+                        APIResponse apiResponse = null;
+                        try {
+                            apiResponse = APIResponse.create(response);
+                            if (apiResponse != null) {
+                                if (apiResponse instanceof APISuccessResponse) {
+                                    String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+                                    Log.d("Debug", "Message from API: " + message);
+                                    if (!"successful".equals(message)) {
+                                        Log.d("Debug", "Measurable completed with success");
+                                        allSuccessful.set(false);
+                                    }
+                                }else {
+                                    Log.e("Result", "apiresponse is nul");
+                                    allSuccessful.set(false);
+
+                                }
+                            }
+                        } catch (IOException e) {
+
+                            Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                            allSuccessful.set(false);
+                        }
+                        finally {
+                            if (pendingTasks.decrementAndGet() == 0){
+                                future.complete(allSuccessful.get());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Log.e("IOException", "Exception occurred: " + t.getMessage(), t);
+                        allSuccessful.set(false);
+                        if (pendingTasks.decrementAndGet() == 0) {
+                            future.complete(false);
+                        }
+                    }
+                });
+            });
+        }
+        return future;
+    }
 
     //Getting Actual Total Time
-    public String getActualTotalTime(Long deligationTaskId) {
-        String result = null;
-        Connection con;
 
-        try {
-            con = DatabaseHelper.getDBConnection();
+    public CompletableFuture<String> getActualTotatTime(Long AssignedTaskId){
+            CompletableFuture<String> future = new CompletableFuture<>();
+            Call call = taskHandlerService.getActualTotalTime(AssignedTaskId);
+            call.enqueue(new Callback() {
+                @Override
+                public void onResponse(Call call, Response response) {
+                    try {
+                        APIResponse<Response> apiResponse = APIResponse.create(response);
+                        if (apiResponse instanceof  APISuccessResponse){
+                            String actualTotalTime = ((APISuccessResponse<Response>) apiResponse).getBody().getBody().getAsString();
+                            future.complete(actualTotalTime);
+                        }
 
-            PreparedStatement ps = con.prepareStatement("select ACTUAL_TOTAL_TIME from TASK_MANAGEMENT where ID=?");
-            ps.setLong(1, deligationTaskId);
+                        if (apiResponse instanceof APIErrorResponse){
+                            String msg = ((APIErrorResponse<Response>) apiResponse).getErrorMessage();
+                            Log.e("Error",""+msg);
+                        }
+                        if (apiResponse instanceof APIEmptyResponse ) {
+                            Log.e("Response","empty response is receive");
+                        }
+                    }
+                    catch (ClassCastException e){
+                        Log.e("Error","Not getting the response in required format due to "+e.getMessage());
+                    }
+                    catch (IOException e) {
+                        Log.e("Error","IO Exception occured "+e.getMessage()+"while getting actual time");
+                    }
 
-            ResultSet rs = ps.executeQuery();
+                    catch (RuntimeException e){
+                        Log.e("Unnoticed Exception", "Any unidentified error occured "+e.getMessage());
+                    }
+                }
 
-            if (rs.next()) { result=rs.getString("ACTUAL_TOTAL_TIME"); }
+                @Override
+                public void onFailure(Call call, Throwable t) {
 
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return result;
+                }
+            });
+            return future;
     }
 
 
-    //Inserting Actual Total Time
-    public void insertActualTotalTime(Long delegationTaskId,String actualTotalTime) {
+    public CompletableFuture<String> updateActualTotatTime(Long assignedTaskId,String newActualTotalTime){
+        CompletableFuture<String> future = new CompletableFuture<>();
+        Call call = taskHandlerService.updateActualTotalTime(assignedTaskId,newActualTotalTime);
+        call.enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                try {
+                    APIResponse<Response> apiResponse = APIResponse.create(response);
+                    if (apiResponse instanceof  APISuccessResponse){
+                        String msg = ((APISuccessResponse<Response>) apiResponse).getBody().getMessage().getAsString();
+                        future.complete(msg);
+                    }
 
-        Connection con;
+                    if (apiResponse instanceof APIErrorResponse){
+                        String msg = ((APIErrorResponse<Response>) apiResponse).getErrorMessage();
+                        Log.e("Error",""+msg);
+                    }
+                    if (apiResponse instanceof APIEmptyResponse ) {
+                        Log.e("Response","empty response is receive");
+                    }
+                }
+                catch (ClassCastException e){
+                    Log.e("Error","Not getting the response in required format due to "+e.getMessage());
+                }
+                catch (IOException e) {
+                    Log.e("Error","IO Exception occured "+e.getMessage()+"while getting actual time");
+                }
 
-        try {
-            con = DatabaseHelper.getDBConnection();
+                catch (RuntimeException e){
+                    Log.e("Unnoticed Exception", "Any unidentified error occured "+e.getMessage());
+                }
+            }
 
-            PreparedStatement ps = con.prepareStatement("UPDATE TASK_MANAGEMENT SET ACTUAL_TOTAL_TIME = ? WHERE ID = ?");
-            ps.setString(1, actualTotalTime);
-            ps.setLong(2, delegationTaskId);
-            ps.executeUpdate();
+            @Override
+            public void onFailure(Call call, Throwable t) {
 
-            ps.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+            }
+        });
+        return future;
     }
-
 }

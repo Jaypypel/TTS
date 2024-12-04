@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class TTSTaskModificationListItemDetailsActivity extends AppCompatActivity {
 
     private TextView TMLIDDate,TMLIDActivityName,TMLIDTaskName,TMLIDProjCode,TMLIDProjName,TMLIDExpectedDate,TMLIDExpectedTime,TMLIDDescription,TMLIDModificationDescription,TMLIDUserName,TMLIDReceivedUserName,TMLIDMeasurableLabel;
@@ -28,18 +31,18 @@ public class TTSTaskModificationListItemDetailsActivity extends AppCompatActivit
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ttstask_modification_list_item_details);
 
-        TMLIDDate=(TextView)findViewById(R.id.textViewTMLIDDate);
-        TMLIDUserName=(TextView)findViewById(R.id.textViewTMLIDUser);
-        TMLIDReceivedUserName =(TextView)findViewById(R.id.textViewTMLIDReceivedUser);
-        TMLIDActivityName=(TextView)findViewById(R.id.textViewTMLIDActName);
-        TMLIDTaskName=(TextView)findViewById(R.id.textViewTMLIDTaskName);
-        TMLIDProjCode=(TextView)findViewById(R.id.textViewTMLIDProjNo);
-        TMLIDProjName=(TextView)findViewById(R.id.textViewTMLIDProjName);
-        TMLIDExpectedDate=(TextView)findViewById(R.id.textViewTMLIDExpDate);
-        TMLIDExpectedTime=(TextView)findViewById(R.id.textViewTMLIDExpTime);
-        TMLIDDescription=(TextView)findViewById(R.id.textViewTMLIDDescription);
-        TMLIDModificationDescription=(TextView)findViewById(R.id.textViewTMLIDModificationDescription);
-        TMLIDlistView=(ListView)findViewById(R.id.listMeasurableTMLID);
+        TMLIDDate=findViewById(R.id.textViewTMLIDDate);
+        TMLIDUserName=findViewById(R.id.textViewTMLIDUser);
+        TMLIDReceivedUserName =findViewById(R.id.textViewTMLIDReceivedUser);
+        TMLIDActivityName=findViewById(R.id.textViewTMLIDActName);
+        TMLIDTaskName=findViewById(R.id.textViewTMLIDTaskName);
+        TMLIDProjCode=findViewById(R.id.textViewTMLIDProjNo);
+        TMLIDProjName=findViewById(R.id.textViewTMLIDProjName);
+        TMLIDExpectedDate=findViewById(R.id.textViewTMLIDExpDate);
+        TMLIDExpectedTime=findViewById(R.id.textViewTMLIDExpTime);
+        TMLIDDescription=findViewById(R.id.textViewTMLIDDescription);
+        TMLIDModificationDescription=findViewById(R.id.textViewTMLIDModificationDescription);
+        TMLIDlistView=findViewById(R.id.listMeasurableTMLID);
 //        TMLIDReAssign =(Button)findViewById(R.id.buttonTMLIDGotoTaskManagement);
 
 
