@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class MeasurableListDataModel implements Serializable {
 
     private String id;
-    private String measurableName;
+    private String name;
     private String measurableQty;
     private String measurableUnit;
 
@@ -13,7 +13,7 @@ public class MeasurableListDataModel implements Serializable {
 
     public MeasurableListDataModel(String measurableName, String measurableQty, String measurableUnit) {
 
-        this.measurableName = measurableName;
+        this.name = measurableName;
         this.measurableQty = measurableQty;
         this.measurableUnit = measurableUnit;
     }
@@ -26,7 +26,7 @@ public class MeasurableListDataModel implements Serializable {
 
 
     @Override
-    public String toString() { return this.id + "-" + this.measurableName; }
+    public String toString() { return this.id + "-" + this.name; }
 
     public String getId() {
         return id;
@@ -37,11 +37,11 @@ public class MeasurableListDataModel implements Serializable {
     }
 
     public String getMeasurableName() {
-        return measurableName;
+        return name;
     }
 
     public void setMeasurableName(String measurableName) {
-        this.measurableName = measurableName;
+        this.name = measurableName;
     }
 
     public String getMeasurableQty() {

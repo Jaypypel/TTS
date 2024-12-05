@@ -31,6 +31,9 @@ import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Network.TimeShareServiceInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -47,6 +50,10 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -132,6 +139,14 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
 
             processingTaskDetails =(TaskDataModel) getIntent().getSerializableExtra("TaskProcessingDetails");
+            acceptedTaskDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskAcceptedDetails");
+
+            if (acceptedTaskDetails !=null){
+                activityName.setText(acceptedTaskDetails.getActivityName());
+                taskName.setText(acceptedTaskDetails.getTaskName());
+                projCode.setText(acceptedTaskDetails.getProjectNo());
+                projName.setText(acceptedTaskDetails.getProjectName());
+            }
 
             if (processingTaskDetails!=null)
             {
@@ -148,7 +163,8 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
 
                 appExecutor.getNetworkIO().execute(() -> {
-                    getAllocatedMeasurableList(processingDelegationTaskId).thenAccept(measurableList -> {
+                    getAllocatedMeasurableList(acceptedTaskDetails.getId()).thenAccept(measurableList -> {
+                        Log.e("measurableList"," "+measurableList);
                         runOnUiThread(() -> {
                             measurables = measurableList;
                             spinnerMeasurableName = (Spinner)findViewById(R.id.spinnerTimeShareMeasurable);
@@ -195,10 +211,10 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                 m.setMeasurableName(wordPart);
                 m.setMeasurableQty(tmeShreMsrbleQty);
                 m.setMeasurableUnit(tmeShreMsrblUnit);
-
                 measurableListDataModels.add(m);
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getApplicationContext());
                 listView.setAdapter(measurableListCustomAdapter);
+                Log.e("measurablesTS",""+measurableListDataModels);
                 clear();
             }catch (Exception e){e.printStackTrace();}
         });
@@ -229,7 +245,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                         appExecutor.getNetworkIO().execute(() -> {
                             addTimeShare(timeShare).thenCompose(result -> {
                                 Long id = Long.valueOf(result.get(1));
-                                return addTimeShareMeasurables(5L,measurableListDataModels).thenAccept(finalResult -> {
+                                return addTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
                                     if (finalResult) {
                                         appExecutor.getMainThread().execute(() -> {
                                             Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
@@ -292,64 +308,134 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
         endTime.setFocusable(false);
 
         //Date Picker start
-        date.setOnClickListener(v -> {
+//        date.setOnClickListener(v -> {
+//
+//            //To show current date in the datePicker
+//            Calendar mcurrentDate=Calendar.getInstance();
+//            mYear=mcurrentDate.get(Calendar.YEAR);
+//            mMonth=mcurrentDate.get(Calendar.MONTH);
+//            mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
+//
+//            DatePickerDialog mDatePicker=new DatePickerDialog(TTSTimeShareFormActivity.this, new DatePickerDialog.OnDateSetListener() {
+//
+//                @Override
+//                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+//                    date.setText(convertDateTime(dayOfMonth) + "-" + convertDateTime((month+1))  + "-" + year);
+//                }
+//            },mYear, mMonth, mDay);
+//            mDatePicker.getDatePicker().setCalendarViewShown(false);
+//            mDatePicker.setTitle("Select date");
+//            mDatePicker.show();
+//
+//            });
 
-            //To show current date in the datePicker
-            Calendar mcurrentDate=Calendar.getInstance();
-            mYear=mcurrentDate.get(Calendar.YEAR);
-            mMonth=mcurrentDate.get(Calendar.MONTH);
-            mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
+            date.setOnClickListener(v -> {
+                MaterialDatePicker<Long> datePicker = MaterialDatePicker
+                        .Builder
+                        .datePicker()
+                        .setTitleText("Select Date")
+                        .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                        .build();
 
-            DatePickerDialog mDatePicker=new DatePickerDialog(TTSTimeShareFormActivity.this, new DatePickerDialog.OnDateSetListener() {
+                datePicker.show(getSupportFragmentManager(),"Date_Picker");
+                datePicker.addOnPositiveButtonClickListener(selection -> {
+                    Log.e("Date",""+datePicker.getHeaderText());
+                    LocalDate selectedDate = Instant
+                            .ofEpochMilli(selection)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
 
-                @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    date.setText(convertDateTime(dayOfMonth) + "-" + convertDateTime((month+1))  + "-" + year);
-                }
-            },mYear, mMonth, mDay);
-            mDatePicker.getDatePicker().setCalendarViewShown(false);
-            mDatePicker.setTitle("Select date");
-            mDatePicker.show();
-
+                    DateTimeFormatter df =  DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    String formattedDate = selectedDate.format(df);
+                    date.setText(formattedDate);
+                });
             });
 
 
-        // Time Picker for Start Time
-        startTime.setOnClickListener(v -> {
-            final Calendar c = Calendar.getInstance();
-            mHour = c.get(Calendar.HOUR_OF_DAY);
-            mMinute = c.get(Calendar.MINUTE);
+            startTime.setOnClickListener(view -> {
+                MaterialTimePicker timePicker = new MaterialTimePicker
+                        .Builder()
+                        .setTimeFormat(TimeFormat.CLOCK_12H)
+                        .setHour(12)
+                        .setMinute(10)
+                        .setTitleText("Select Start Time")
+                        .build();
 
-            // Launch Time Picker Dialog
-            TimePickerDialog timePickerDialog = new TimePickerDialog(TTSTimeShareFormActivity.this,
-                    new TimePickerDialog.OnTimeSetListener() {
+                timePicker.show(getSupportFragmentManager(),"Time_Picker");
 
-                        @Override
-                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                            startTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute));
-                        }
-                    }, mHour, mMinute, true);
-            timePickerDialog.show();
-        });
+                timePicker.addOnPositiveButtonClickListener(selection -> {
+                    int hour = timePicker.getHour();
+                    int minute = timePicker.getMinute();
+
+                    // Determine AM/PM
+                    String amPm = (hour < 12) ? "AM" : "PM";
+
+                    // Convert to 12-hour format
+                    int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
+
+                    // Create formatted time string
+                    String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
+
+                    Log.d("StartTime",formattedTime);
+                    startTime.setText(formattedTime);
+                });
+
+            });
+
+            endTime.setOnClickListener(view -> {
+                MaterialTimePicker timePicker = new MaterialTimePicker
+                        .Builder()
+                        .setTimeFormat(TimeFormat.CLOCK_12H)
+                        .setHour(12)
+                        .setMinute(10)
+                        .setTitleText("Select End Time")
+                        .build();
+
+                timePicker.show(getSupportFragmentManager(),"Time_Picker");
+
+                timePicker.addOnPositiveButtonClickListener(selection -> {
+                    int hour = timePicker.getHour();
+                    int minute = timePicker.getMinute();
+
+                    // Determine AM/PM
+                    String amPm = (hour < 12) ? "AM" : "PM";
+
+                    // Convert to 12-hour format
+                    int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
+
+                    // Create formatted time string
+                    String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
+
+                    Log.d("EndTime",formattedTime);
+                    startTime.setText(formattedTime);
+                });
+
+            });
+
+//        // Time Picker for Start Time
+//        startTime.setOnClickListener(v -> {
+//            final Calendar c = Calendar.getInstance();
+//            mHour = c.get(Calendar.HOUR_OF_DAY);
+//            mMinute = c.get(Calendar.MINUTE);
+//
+//            // Launch Time Picker Dialog
+//            TimePickerDialog timePickerDialog = new TimePickerDialog(TTSTimeShareFormActivity.this,
+//                    (view, hourOfDay, minute) -> startTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute)), mHour, mMinute, true);
+//            timePickerDialog.show();
+//        });
 
 
         // Time Picker for End Time
-        endTime.setOnClickListener(v -> {
-            final Calendar c = Calendar.getInstance();
-            mHour = c.get(Calendar.HOUR_OF_DAY);
-            mMinute = c.get(Calendar.MINUTE);
-
-            // Launch Time Picker Dialog
-            TimePickerDialog timePickerDialog = new TimePickerDialog(TTSTimeShareFormActivity.this,
-                    new TimePickerDialog.OnTimeSetListener() {
-                        @Override
-                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-
-                            endTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute));
-                        }
-                    }, mHour, mMinute, true);
-            timePickerDialog.show();
-        });
+//        endTime.setOnClickListener(v -> {
+//            final Calendar c = Calendar.getInstance();
+//            mHour = c.get(Calendar.HOUR_OF_DAY);
+//            mMinute = c.get(Calendar.MINUTE);
+//
+//            // Launch Time Picker Dialog
+//            TimePickerDialog timePickerDialog = new TimePickerDialog(TTSTimeShareFormActivity.this,
+//                    (view, hourOfDay, minute) -> endTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute)), mHour, mMinute, true);
+//            timePickerDialog.show();
+//        });
 
 
             endTime.addTextChangedListener(new TextWatcher() {

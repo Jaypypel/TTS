@@ -85,117 +85,67 @@ public class TTSRegistrationActivity extends AppCompatActivity {
 
         btnSubmit.setOnClickListener(view -> {
             try {
-                if (InternetConnectivity.isConnected() == true) {
-                    if (isValidFullName().isEmpty()) {
-                        fullName.setError("Full Name Cannot Be Empty");
-                    } else if (isValidUserId().isEmpty()) {
-                        userName.setError("User Name Cannot Be Empty");
-                    } else if (checkPassword().isEmpty() || checkPassword().length() < 8) {
-                        Log.d("Reg", "In checkPassword If");
-                        if (checkPassword().isEmpty()) {
-                            password.setError("Password Cannot Be Empty");
-                        }
-                        if (checkPassword().length() < 8 && !isValidPassword(checkPassword())) {
-                            password.setError("Please Enter Valid Password");
-                        }
-                    } else if (isValidEmail().isEmpty()) {
-                        email.setError("Email Cannot Be Empty");
-                    } else if (isValidMobileNo().isEmpty()) {
-                        mobileNo.setError("Mobile No Cannot Be Empty");
-                    } else {
-                        Log.d("Reg", "In else");
-                        progressBar.setVisibility(View.VISIBLE);
-                     //   String result = registerUser(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo(), delegationTime());
-                        User userRegistration = new User(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo());
-                        appExecutors.getNetworkIO().execute(() -> {
-                            registerUser(userRegistration).thenAccept(result -> {
-                                if(result.equals("successful")){
-                                 appExecutors.getMainThread().execute(() -> {
-                                     Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-                                     startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
-                                     finish();
-                                 });
-                                }else {
-                                    appExecutors.getNetworkIO().execute(() -> {
-                                        Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " + result, Toast.LENGTH_SHORT).show();
-                                    });
-                                }
-                            }).exceptionally(e -> {
-                                appExecutors.getMainThread().execute(() -> {
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                    Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " +e.getMessage(), Toast.LENGTH_SHORT).show();
-                                });
-                                return null;
-                            });
-                        });
-//                        appExecutors.getNetworkIO().execute(() -> {
-//                            Call<ResponseBody> userRegCall = userServiceInterface.registerUser(userRegistration);
-//                            userRegCall.enqueue(new Callback<ResponseBody>() {
-//                                @Override
-//                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                                    runOnUiThread(() -> {
-//                                        progressBar.setVisibility(View.INVISIBLE);
-////                                            if(response.isSuccessful() && response.body() !=null){
-////                                                Log.d("Network Request", "User registered successfully: " + response.body());
-////                                                Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-////                                                startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
-////                                                finish();
-////                                                return;
-////                                            }
-//
-//
-//                                        try {
-//                                            APIResponse apiResponse = APIResponse.create(response);
-//                                           if(apiResponse instanceof APISuccessResponse){
-//                                               String responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
-//                                               JSONConfig jsonConfig = new JSONConfig();
-////                                                   String message = jsonConfig.extractMessageFromBodyFromJson(responseBody);
-//                                               Log.d("Network Request", "Result" + responseBody);
-//                                               Toast.makeText(TTSRegistrationActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
-//                                               startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
-//                                               finish();
-//                                               return;
-//                                           }
-//                                           if(apiResponse instanceof APIErrorResponse){
-//                                               Log.e("Network Request", "Error: " + ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage());
-//                                               Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
-//
-//                                           }
-//                                           if(apiResponse instanceof APIEmptyResponse){
-//                                               Log.d("Network Request", "Result: "+ apiResponse +"empty response");
-//                                               Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
-//                                           }
-//                                        }
-//
-//                                        catch (IOException e) {
-//                                            throw new RuntimeException(e);
-//                                        }
-//
-//                                    });
-//                                }
-//
-//                                @Override
-//                                public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                                    appExecutors.getMainThread().execute(() -> {
-//                                        Log.e("Network Request", "Failed to connect: " + t.getMessage());
-//                                        progressBar.setVisibility(View.INVISIBLE);
-//                                        Toast.makeText(TTSRegistrationActivity.this, "Error: "+t.getMessage(),Toast.LENGTH_LONG).show();
-//                                    });
-//                                }
-//
-//
-//                            });
-//                        });
-//                            if (result.equals("true")) {
-//                                Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_LONG).show();
-//                                Intent i = new Intent(getApplicationContext(), TTSLoginActivity.class);
-//                                startActivity(i);
-//                                finish();
-//                            } else {
-//                                Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_LONG).show();
-//                                progressBar.setVisibility(View.INVISIBLE);
-//                            }
+                if (InternetConnectivity.isConnected()) {
+
+//                    if (isValidFullName().isEmpty()) {
+//                        fullName.setError("Full Name Cannot Be Empty");
+//                        return;
+//                    } if (isValidUserId().isEmpty()) {
+//                        userName.setError("User Name Cannot Be Empty");
+//                        return;
+//                    }
+//                    if (checkPassword().isEmpty() || checkPassword().length() < 8) {
+//                        Log.d("Reg", "In checkPassword If");
+//                        if (checkPassword().isEmpty()) {
+//                            password.setError("Password Cannot Be Empty");
+//                            return;
+//                        }
+//                        if (checkPassword().length() < 8 && !isValidPassword(checkPassword())) {
+//                            password.setError("Please Enter Valid Password");
+//                            return;
+//                        }
+//                        return;
+//                    }
+//                    if (isValidEmail().isEmpty()) {
+//                        email.setError("Email Cannot Be Empty");
+//                        return;
+//                    }
+//                    if (isValidMobileNo().isEmpty()) {
+//                        mobileNo.setError("Mobile No Cannot Be Empty");
+//                        return;
+//                    }
+                    if (!isValidFullName() || !isValidUserId() || !checkPassword() || !isValidEmail() || !isValidMobileNo()) {
+                        runOnUiThread(() -> Toast
+                                .makeText(TTSRegistrationActivity
+                                        .this, "Details entered aren't validated, Please Entered Details Again", Toast.LENGTH_LONG)
+                                .show());
+                        return;
                     }
+                    Log.d("Reg", "In else");
+                    progressBar.setVisibility(View.VISIBLE);
+                    //   String result = registerUser(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo(), delegationTime());
+                    User userRegistration = new User(fName, uName, passwordck,mail,mobile);
+                    appExecutors.getNetworkIO().execute(() -> {
+                        registerUser(userRegistration).thenAccept(result -> {
+                            if(result.equals("successful")){
+                                appExecutors.getMainThread().execute(() -> {
+                                    Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_LONG).show();
+                                    startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
+                                    finish();
+                                });
+                            }else {
+                                appExecutors.getMainThread().execute(() -> {
+                                    Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " + result, Toast.LENGTH_LONG).show();
+                                });
+                            }
+                        }).exceptionally(e -> {
+                            appExecutors.getMainThread().execute(() -> {
+                                progressBar.setVisibility(View.INVISIBLE);
+                                Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " +e.getMessage(), Toast.LENGTH_LONG).show();
+                            });
+                            return null;
+                        });
+                    });
                 } else {
                     Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
                     progressBar.setVisibility(View.INVISIBLE);
@@ -298,59 +248,80 @@ public class TTSRegistrationActivity extends AppCompatActivity {
         });
     }
 
-
+    String fName;
     //Start Checking FullName valid Or Not
-    public String isValidFullName() {
-        String fName = fullName.getText().toString();
-        if (fName.isEmpty()) {
+    public boolean isValidFullName() {
+//        String fName = fullName.getText().toString().trim();
+        fName = fullName.getText().toString().trim();
+        if (fName.isEmpty() ) {
             fullName.setError("Full Name Cannot Be Empty");
+            return false;
         }
-        return fName;
+        if(fName.length()<=6){
+            fullName.setError("Enter Valid Full Name");
+            return false;
+        }
+        return true;
     }
-
+    String uName;
     //Start Checking UserID valid Or Not
-    public String isValidUserId() {
-        String uName = userName.getText().toString();
+    public boolean isValidUserId() {
+
+        uName = userName.getText().toString().trim();
         if (uName.isEmpty()) {
             userName.setError("User Name Cannot Be Empty");
+            return false;
         }
-        return uName;
+        if (uName.length() <=5){
+            fullName.setError("Enter Valid Full Name");
+            return false;
+        }
+        return true;
     }
 
+    String mail;
     //Start Checking Email valid Or Not
-    public String isValidEmail() {
-        String mail = email.getText().toString().trim().replaceAll("\\s+", "");
+    public boolean isValidEmail() {
+
+        mail = email.getText().toString().trim().replaceAll("\\s+", "");
         if (mail.isEmpty()) {
             email.setError("Email Cannot Be Empty");
-        } else {
-            String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
-            CharSequence inputStr = mail;
-            Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-            Matcher matcher = pattern.matcher(inputStr);
-            if (!matcher.matches()) {
-                email.setError("Email Is Not Valid");
-            }
+            return false;
         }
-        return mail;
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = mail;
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+        if (!matcher.matches()) {
+                email.setError("Email Is Not Valid");
+                return false;
+            }
+            return true;
     }
 
+
+
     //Start Checking Password valid Or Not
-    public static boolean isValidPassword(final String password) {
+    private  boolean isValidPassword(final String password) {
 
         final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{4,}$";
         Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();
     }
-
-    public String checkPassword() {
-        String passwordck = password.getText().toString().trim();
+    String passwordck;
+    public boolean checkPassword() {
+        //String passwordck = password.getText().toString().trim();
+        passwordck = password.getText().toString().trim();
         if (passwordck.isEmpty()) {
             password.setError("Password Cannot Be Empty");
-        } else if (passwordck.length() < 8 && !isValidPassword(passwordck)) {
-            password.setError("Please Enter Valid Password");
+            return false;
         }
-        return passwordck;
+        if (passwordck.length() < 8 && !isValidPassword(passwordck)) {
+             password.setError("Please Enter Valid Password");
+             return false;
+         }
+        return true;
     }
 
     public void isValidRetypePassword() {
@@ -366,10 +337,11 @@ public class TTSRegistrationActivity extends AppCompatActivity {
         }
 
     }
-
+    String mobile;
     //Start Checking MobileNo valid Or Not
-    public String isValidMobileNo() {
-        String mobile = mobileNo.getText().toString().trim().replaceAll("\\s+", "");
+    public boolean isValidMobileNo() {
+       // String mobile = mobileNo.getText().toString().trim().replaceAll("\\s+", "");
+        mobile  = mobileNo.getText().toString().trim().replaceAll("\\s+", "");
         String regexStr = "^[0-9]{10}$";
 
         Pattern pattern = Pattern.compile(regexStr);
@@ -377,10 +349,13 @@ public class TTSRegistrationActivity extends AppCompatActivity {
 
         if (mobile.isEmpty()) {
             mobileNo.setError("Mobile No Cannot Be Empty");
-        } else if (matcher.matches() == false) {
-            mobileNo.setError("Please Enter Valid Mobile Number");
+            return false;
         }
-        return mobile;
+        if (!matcher.matches()) {
+            mobileNo.setError("Please Enter Valid Mobile Number");
+            return false;
+        }
+        return true;
     }
 
     private String delegationTime() {

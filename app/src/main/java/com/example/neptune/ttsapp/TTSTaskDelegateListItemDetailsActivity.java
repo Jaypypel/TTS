@@ -59,7 +59,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 
     private TaskDataModel taskDelegateListItemDetails,taskAcceptedItemDetails,taskProcessingItemDetails,
             taskSenderApprovalItemDetails, taskReceiverApprovalItemDetails ;
-    ArrayList<MeasurableListDataModel> delegatedMeasurableList,processingMeasurableList,senderApprovalMeasurableList,receiverApprovalMeasurableList;
+    ArrayList<MeasurableListDataModel> delegatedMeasurableList,processingMeasurableList,senderApprovalMeasurableList,receiverApprovalMeasurableList,acceptedTaskMeasurales;
 
     private static MeasurableListCustomAdapter measurableListCustomAdapter;
 
@@ -93,7 +93,9 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             Log.e("taskDelegateListItemDetails","-"+taskDelegateListItemDetails);
 
             // Getting Details From Accepted Task
-            taskAcceptedItemDetails =  (TaskDataModel) getIntent().getSerializableExtra("TaskAcceptedItemDetails");
+            taskAcceptedItemDetails =  (TaskDataModel) getIntent().getSerializableExtra("acceptedTasks");
+            acceptedTaskMeasurales =  (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("acceptedTaskMeasurables");
+
             Log.e("taskAcceptedItemDetails","-"+taskAcceptedItemDetails);
             // Getting Details From Processing Task
             taskProcessingItemDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskProcessingItemDetails");
@@ -141,11 +143,12 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             TDLIDExpectedDate.setText(taskAcceptedItemDetails.getExpectedDate());
             TDLIDExpectedTime.setText(taskAcceptedItemDetails.getExpectedTotalTime());
             TDLIDDescription.setText(taskAcceptedItemDetails.getDescription());
-
+            measurableListCustomAdapter = new MeasurableListCustomAdapter(acceptedTaskMeasurales,getApplicationContext());
+            TDLIDlistView.setAdapter(measurableListCustomAdapter);
             TDLIDMeasurableLabel.setVisibility(View.INVISIBLE);
             TDLIDlistView.setVisibility(View.INVISIBLE);
             TDLIDComplete.setVisibility(View.INVISIBLE);
-            TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
+//            TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
         }
         else if (taskProcessingItemDetails!=null)
          {
@@ -292,6 +295,12 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             });
 
             TDLIDDisplayTimeShares.setOnClickListener(v -> {
+                if(taskAcceptedItemDetails != null) {
+                    Intent i = new Intent(getApplicationContext(),TTSTimeShareFormActivity.class);
+                    i.putExtra("TaskAcceptedDetails",taskAcceptedItemDetails);
+                    startActivity(i);
+                    return;
+                }
                 if (taskDelegateListItemDetails != null)
                 {
                     Intent i = new Intent(getApplicationContext(), TTSTimeShareListActivity.class);
@@ -322,7 +331,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             TDLIDProcessing.setOnClickListener(v -> {
                 if (InternetConnectivity.isConnected())
                 {
-                    updateTaskManagementStatus(taskDelegateListItemDetails.getId(),inProcess).thenAccept(isCompleted -> {
+                    updateTaskManagementStatus(taskAcceptedItemDetails.getId(),inProcess).thenAccept(isCompleted -> {
                         if(isCompleted){
                             appExecutors.getMainThread().execute(() -> {
                                 Toast.makeText(getApplicationContext(), "You Have Start Working on Task", Toast.LENGTH_LONG).show();
