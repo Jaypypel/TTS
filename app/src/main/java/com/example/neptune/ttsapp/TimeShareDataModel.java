@@ -4,18 +4,30 @@ import java.io.Serializable;
 
 public class TimeShareDataModel implements Serializable {
 
-    String timeShareDate;
+    String dateOfTimeShare;
     String startTime;
-    String endTime;
-    String timeDifference;
-    String timeShareDescription;
 
-    public String getTimeShareDate() {
-        return timeShareDate;
+    @Override
+    public String toString() {
+        return "TimeShareDataModel{" +
+                "dateOfTimeShare='" + dateOfTimeShare + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", timeDifference='" + timeDifference + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 
-    public void setTimeShareDate(String timeShareDate) {
-        this.timeShareDate = timeShareDate;
+    String endTime;
+    String timeDifference;
+    String description;
+
+    public String getdateOfTimeShare() {
+        return dateOfTimeShare;
+    }
+
+    public void setdateOfTimeShare(String dateOfTimeShare) {
+        this.dateOfTimeShare = dateOfTimeShare;
     }
 
     public String getStartTime() {
@@ -42,11 +54,11 @@ public class TimeShareDataModel implements Serializable {
         this.timeDifference = timeDifference;
     }
 
-    public String getTimeShareDescription() {
-        return timeShareDescription;
+    public String getdescription() {
+        return description;
     }
 
-    public void setTimeShareDescription(String timeShareDescription) {
-        this.timeShareDescription = timeShareDescription;
+    public void setdescription(String description) {
+        this.description = description;
     }
 }

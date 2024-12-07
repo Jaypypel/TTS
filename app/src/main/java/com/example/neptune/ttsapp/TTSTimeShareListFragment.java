@@ -98,25 +98,22 @@ public class TTSTimeShareListFragment extends Fragment {
         endDate.setFocusable(false);
 
         // Date Picker For Select Start Date
-        startDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //To show current date in the datepicker
-                Calendar mcurrentDate=Calendar.getInstance();
-                mYear=mcurrentDate.get(Calendar.YEAR);
-                mMonth=mcurrentDate.get(Calendar.MONTH);
-                mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
+        startDate.setOnClickListener(v -> {
+            //To show current date in the datepicker
+            Calendar mcurrentDate=Calendar.getInstance();
+            mYear=mcurrentDate.get(Calendar.YEAR);
+            mMonth=mcurrentDate.get(Calendar.MONTH);
+            mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        startDate.setText(dayOfMonth + "-" + (month+1)  + "-" + year);
-                    }
-                },mYear, mMonth, mDay);
-                mDatePicker.getDatePicker().setCalendarViewShown(false);
-                mDatePicker.setTitle("Select date");
-                mDatePicker.show();
-            }
+            DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view1, int year, int month, int dayOfMonth) {
+                    startDate.setText(dayOfMonth + "-" + (month+1)  + "-" + year);
+                }
+            },mYear, mMonth, mDay);
+            mDatePicker.getDatePicker().setCalendarViewShown(false);
+            mDatePicker.setTitle("Select date");
+            mDatePicker.show();
         });
 
 
@@ -185,11 +182,11 @@ public class TTSTimeShareListFragment extends Fragment {
                 listDataModel = new TimeShareDataModel();
 
 
-                listDataModel.setTimeShareDate(rs.getString("DATE_OF_TIME_SHARE"));
+                listDataModel.setdateOfTimeShare(rs.getString("DATE_OF_TIME_SHARE"));
                 listDataModel.setStartTime(rs.getString("START_TIME"));
                 listDataModel.setEndTime(rs.getString("END_TIME"));
                 listDataModel.setTimeDifference(rs.getString("TIME_DIFFERENCE"));
-                listDataModel.setTimeShareDescription(rs.getString("DESCRIPTION"));
+                listDataModel.setdescription(rs.getString("DESCRIPTION"));
 
 
                 timeShareList.add(listDataModel);

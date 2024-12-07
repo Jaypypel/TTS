@@ -20,6 +20,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -31,6 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -51,6 +53,7 @@ import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskServiceInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import com.google.gson.Gson;
@@ -121,7 +124,7 @@ public class TTSMainActivity extends AppCompatActivity {
 
 
 
-    ArrayList<DailyTimeShareMeasurable> dailyTimeShareMeasurableList = new ArrayList<>();
+
     DailyTimeShareDTO dailyTimeShareDTO;
 
 
@@ -187,26 +190,11 @@ public class TTSMainActivity extends AppCompatActivity {
         date = findViewById(R.id.textViewMainDate);
         time = findViewById(R.id.textViewMainTime);
 
+        appExecutor.getMainThread().execute(()-> {
+            date.setText(DateConverter.currentDate());
+            time.setText(DateConverter.currentTime());
+        });
 
-        final Handler someHandler = new Handler(getMainLooper());
-        someHandler.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-
-                SimpleDateFormat DateFormatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = new Date();
-                String currentDate = DateFormatter.format(date1);
-                date.setText("Date :  " +currentDate);
-
-                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-                Date time1 = new Date();
-                String currentTime = timeFormatter.format(time1);
-                time.setText("Time :  " +currentTime);
-                someHandler.postDelayed(this, 1000);
-            }
-        }, 10);
 
 
         // Code for Measurable list
@@ -253,16 +241,18 @@ public class TTSMainActivity extends AppCompatActivity {
         //Code For set measurable list to spinner
         if (InternetConnectivity.isConnected())
         {
-            timeShareDate.setText("");
-            timeShareStartTime.setText("");
-            timeShareEndTime.setText("");
-            timeShareDescription.setText("");
-            timeShareMeasurableQty.setText("");
-            timeShareProjCode.setText("");
-            timeShareActivityName.setText("");
-            timeShareTaskName.setText("");
-            timeShareProjName.setText("");
-            timeShareMeasurableUnit.setText("");
+//            appExecutor.getMainThread().execute(() -> {
+//                timeShareDate.setText("");
+//                timeShareStartTime.setText("");
+//                timeShareEndTime.setText("");
+//                timeShareDescription.setText("");
+//                timeShareMeasurableQty.setText("");
+//                timeShareProjCode.setText("");
+//                timeShareActivityName.setText("");
+//                timeShareTaskName.setText("");
+//                timeShareProjName.setText("");
+//                timeShareMeasurableUnit.setText("");
+//            });
 
             appExecutor.getNetworkIO().execute(() -> {
                 getActivityNames().thenAccept(activityNames -> {
@@ -306,11 +296,10 @@ public class TTSMainActivity extends AppCompatActivity {
 
             appExecutor.getNetworkIO().execute(() -> {
                 getMeasurableListAndUpdateUi().thenAccept(measurableListDataModels1 -> {
-                    runOnUiThread(() -> {
+                    appExecutor.getMainThread().execute(() -> {
                         ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(getBaseContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
                         adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         timeShareMeasurable.setAdapter(adapterMeasurable);
-
                     });
                 }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
                     appExecutor.getMainThread().execute(() ->
@@ -367,19 +356,43 @@ public class TTSMainActivity extends AppCompatActivity {
                 if (InternetConnectivity.isConnected())
                 {
 
-                    if (isDateValid().isEmpty()) { timeShareDate.setError("Date Cannot Be Empty"); }
-                    else if (!(sessionManager.getUserID().equals("Prerna") || sessionManager.getUserID().equals("YoKo")) && !isDateValid().equals(getTodayDate()))
-                            { Toast.makeText(getApplicationContext(), "Date Has Been Expired Contact to Admin", Toast.LENGTH_LONG).show(); }
-                    else if (isStartTimeValid().isEmpty()) { timeShareStartTime.setError("Start Time Cannot Be Empty"); }
-                    else if (isEndTimeValid().isEmpty()) { timeShareEndTime.setError("End Time Cannot Be Empty"); }
-                    else if (isTaskNameValid().isEmpty()) { timeShareTaskName.setError("Task Name Cannot Be Empty"); }
-                    else if (isProjectNameValid().isEmpty()) { timeShareProjName.setError("Project Name Cannot Be Empty"); }
-                    else if (isActivityNameValid().isEmpty()) { timeShareActivityName.setError("Activity Name Cannot Be Empty"); }
-                    else if (getConsumedTime().contains("-")) { Toast.makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show(); }
-                    else
-                         {
-                            timeShareSubmit.setBackgroundColor(Color.GRAY);
+                    if (isDateValid().isEmpty()) {
+                        timeShareDate.setError("Date Cannot Be Empty");
+                        return;
+                    }
+                    if (isStartTimeValid().equals(isEndTimeValid())){
+                       Snackbar snackbar = Snackbar.make(v, "Warning! Start and End Time are the same", Snackbar.LENGTH_LONG);
+                        View snackbarView = snackbar.getView();
+                        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
+                        params.gravity = Gravity.CENTER;
+                        snackbarView.setLayoutParams(params);
+                        snackbar.show();
+                        return;
+                    }
+                    if (Integer.valueOf(isStartTimeValid().split(":")[0]) < Integer.valueOf(isEndTimeValid().split(":")[0])){
+                        Snackbar.make(v, "Warning! Start time should be greater than End Time", Snackbar.LENGTH_LONG)
+                                .show();
+                        return;
+                    }
+                    if (!(sessionManager.getUserID().equals("Prerna") || sessionManager.getUserID().equals("YoKo")) && !isDateValid().equals(getTodayDate()))
+                            { Toast.makeText(getApplicationContext(), "Date Has Been Expired Contact to Admin", Toast.LENGTH_LONG).show();
+                            return;}
+                    if (isStartTimeValid().isEmpty()) { timeShareStartTime.setError("Start Time Cannot Be Empty");
+                    return;
+                    }
+                    if (isEndTimeValid().isEmpty()) { timeShareEndTime.setError("End Time Cannot Be Empty"); return; }
+                    if (isTaskNameValid().isEmpty()) { timeShareTaskName.setError("Task Name Cannot Be Empty"); return;}
+                     if (isProjectNameValid().isEmpty()) { timeShareProjName.setError("Project Name Cannot Be Empty");return; }
+               if (isActivityNameValid().isEmpty()) { timeShareActivityName.setError("Activity Name Cannot Be Empty");return; }
+                    if (getConsumedTime().contains("-")) { Toast.makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show(); return; }
 
+
+                    if (measurableListDataModels.isEmpty()){
+                        Toast.makeText(getApplicationContext(), "Measurable list is empty", Toast.LENGTH_LONG).show();
+                        timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                        return;
+                    }
+                    timeShareSubmit.setBackgroundColor(Color.GRAY);
 
                              String projectcode = !isProjectNameValid().isEmpty()? isProjectCodeValid(): "No code received";
                              Log.e("Project code", "printed"+projectcode);
@@ -402,6 +415,7 @@ public class TTSMainActivity extends AppCompatActivity {
                                             appExecutor.getMainThread().execute(() -> {
                                                 Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
                                                 clearAll();
+                                                clear();
                                                 timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
                                             });
                                         }
@@ -416,7 +430,7 @@ public class TTSMainActivity extends AppCompatActivity {
                                 }).join();
                             });
 
-                         }
+
                 } else {
                     Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
 

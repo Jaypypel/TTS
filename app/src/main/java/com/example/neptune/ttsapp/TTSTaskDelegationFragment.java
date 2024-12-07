@@ -38,6 +38,9 @@ import com.example.neptune.ttsapp.Network.ProjectServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -46,6 +49,8 @@ import java.io.IOException;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -81,8 +86,6 @@ public class TTSTaskDelegationFragment extends Fragment {
     ProjectServiceInterface projectServiceInterface;
 
     Status pending = Status.Pending;
-
-    public TTSTaskDelegationFragment() { }
 
     EditText taskDeliExpDate,taskDeliExpTime, taskDeliTotalTimeHH,taskDeliTotalTimeMM,taskDeliDescription, taskDeliMeasurableQty;
     AutoCompleteTextView taskDeliActivityName,taskDeliTaskName,taskDeliProjName, taskDeliUserName, taskDeliMeasurableUnit;
@@ -355,62 +358,118 @@ public class TTSTaskDelegationFragment extends Fragment {
 
         }catch (Exception e){e.printStackTrace();}
 
+        taskDeliProjName.setOnFocusChangeListener((v,hasFocus) -> {
+            if(!hasFocus){
+                String projectName = taskDeliProjName.getText().toString().trim();
+                if (!projectName.isEmpty())
+                {
+                    getProjectCodeAndUpdateUi(isProjectNameValid()).thenAccept(projectCode -> {
+                        appExecutor.getMainThread().execute(() -> {
+                            taskDeliProjCode.setText(projectCode);
 
+                        });
+                    }).exceptionally(e -> {
+                        Log.e("Project Code Error", "Failed to fetch project code: " + e.getMessage());
+                        appExecutor.getMainThread().execute(() -> {
+                            Toast.makeText(getActivity().getApplicationContext(), "Failed to fetch project code", Toast.LENGTH_LONG).show();
+                        });
+                        return null;
+                    });
+                }else {
+                    taskDeliProjName.setError("Project Name Cannot Be Empty");
+                    taskDeliProjCode.setError("Project Code Cannot Be Empty");
+                }
+            }
+        });
+
+        // Get Project Code Against Project Name And Set To Project Code TextView
 
 
         //  single click view Date and time pickers
         taskDeliExpDate.setFocusable(false);
         taskDeliExpTime.setFocusable(false);
 
+        taskDeliExpDate.setOnClickListener(v -> {
+            MaterialDatePicker<Long> datePicker = MaterialDatePicker
+                    .Builder
+                    .datePicker()
+                    .setTitleText("Select Date")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build();
+
+            datePicker.show(getChildFragmentManager(),"Date_Picker");
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                Log.e("Date",""+datePicker.getHeaderText());
+                LocalDate selectedDate = Instant
+                        .ofEpochMilli(selection)
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
+
+                DateTimeFormatter df =  DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                String formattedDate = selectedDate.format(df);
+                Log.e("fD",formattedDate);
+
+                taskDeliExpDate.setText(formattedDate);
+            });
+        });
+
         //Date Picker for Expected Date start
-        taskDeliExpDate.setOnClickListener((View v) -> {
+//        taskDeliExpDate.setOnClickListener((View v) -> {
+//
+//            //To show current date in the DatePicker
+//            Calendar mcurrentDate=Calendar.getInstance();
+//            mYear=mcurrentDate.get(Calendar.YEAR);
+//            mMonth=mcurrentDate.get(Calendar.MONTH);
+//            mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
+//
+//            DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), (view1, year, month, dayOfMonth) ->
+//                    taskDeliExpDate.setText(convertDateTime(dayOfMonth) + "-" + convertDateTime((month+1))  + "-" + year),mYear, mMonth, mDay);
+//            mDatePicker.getDatePicker().setCalendarViewShown(false);
+//            mDatePicker.setTitle("Select date");
+//            mDatePicker.show();
+//        });
 
-            //To show current date in the DatePicker
-            Calendar mcurrentDate=Calendar.getInstance();
-            mYear=mcurrentDate.get(Calendar.YEAR);
-            mMonth=mcurrentDate.get(Calendar.MONTH);
-            mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
+        taskDeliExpTime.setOnClickListener(v -> {
+            MaterialTimePicker timePicker = new MaterialTimePicker
+                    .Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_12H)
+                    .setHour(12)
+                    .setMinute(10)
+                    .setTitleText("Select Start Time")
+                    .build();
 
-            DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), (view1, year, month, dayOfMonth) ->
-                    taskDeliExpDate.setText(convertDateTime(dayOfMonth) + "-" + convertDateTime((month+1))  + "-" + year),mYear, mMonth, mDay);
-            mDatePicker.getDatePicker().setCalendarViewShown(false);
-            mDatePicker.setTitle("Select date");
-            mDatePicker.show();
+            timePicker.show(getChildFragmentManager(),"Time_Picker");
 
-            // Get Project Code Against Project Name And Set To Project Code TextView
-            String projectName = taskDeliProjName.getText().toString().trim();
+            timePicker.addOnPositiveButtonClickListener(selection -> {
+                int hour = timePicker.getHour();
+                int minute = timePicker.getMinute();
 
+                // Determine AM/PM
+                String amPm = (hour < 12) ? "AM" : "PM";
 
-            if (!projectName.isEmpty())
-            {
-                getProjectCodeAndUpdateUi(isProjectNameValid()).thenAccept(projectCode -> {
-                    appExecutor.getMainThread().execute(() -> {
-                        taskDeliProjCode.setText(projectCode);
+                // Convert to 12-hour format
+                int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
 
-                    });
-                }).exceptionally(e -> {
-                    Log.e("Project Code Error", "Failed to fetch project code: " + e.getMessage());
-                    appExecutor.getMainThread().execute(() -> {
-                        Toast.makeText(getActivity().getApplicationContext(), "Failed to fetch project code", Toast.LENGTH_LONG).show();
-                    });
-                    return null;
-                });
-            }else {
-                taskDeliProjCode.setError("Project Name Cannot Be Empty");
-            }
+                // Create formatted time string
+                String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
+
+                Log.d("StartTime",formattedTime);
+                taskDeliExpTime.setText(formattedTime);
+            });
+
         });
 
         // Time Picker for Expected Time
-        taskDeliExpTime.setOnClickListener(v -> {
-            final Calendar c = Calendar.getInstance();
-            mHour = c.get(Calendar.HOUR_OF_DAY);
-            mMinute = c.get(Calendar.MINUTE);
-
-            // Launch Time Picker Dialog
-            TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), (view12, hourOfDay, minute) ->
-                    taskDeliExpTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute)), mHour, mMinute, true);
-            timePickerDialog.show();
-        });
+//        taskDeliExpTime.setOnClickListener(v -> {
+//            final Calendar c = Calendar.getInstance();
+//            mHour = c.get(Calendar.HOUR_OF_DAY);
+//            mMinute = c.get(Calendar.MINUTE);
+//
+//            // Launch Time Picker Dialog
+//            TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), (view12, hourOfDay, minute) ->
+//                    taskDeliExpTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute)), mHour, mMinute, true);
+//            timePickerDialog.show();
+//        });
 
 
         taskDeliTotalTimeMM.addTextChangedListener(new TextWatcher() {
@@ -576,7 +635,7 @@ public class TTSTaskDelegationFragment extends Fragment {
         if (totalTimeHH.isEmpty()) {totalTimeHH = "00";}
         if (totalTimeMM.isEmpty()) {totalTimeMM = "00";}
 
-        return totalTimeHH + ":" + totalTimeMM;
+        return totalTimeHH + " hrs " + totalTimeMM+ " mins";
     }
 
     private String isDescriptionValid()

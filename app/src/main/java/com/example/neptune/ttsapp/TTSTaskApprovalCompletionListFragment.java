@@ -20,6 +20,7 @@ import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
+import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -53,8 +54,6 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
     @Inject
     MeasurableServiceInterface measurableService;
 
-    public TTSTaskApprovalCompletionListFragment() { }
-
     private TextView user,date,time;
 
     private ListView senderApprovalCompletionTaskList, receiverApprovalCompletionTaskList;
@@ -86,31 +85,36 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
         receiverApprovalCompletionTaskList =view.findViewById(R.id.receiverApprovalCompletionTaskList);
 
 
-        final Handler someHandler = new Handler(Looper.getMainLooper());
-        someHandler.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = new Date();
-                String currentDate = formatter.format(date1);
-                date.setText("Date :  " +currentDate);
 
-                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-                Date time1 = new Date();
-                String currentTime = timeFormatter.format(time1);
-                time.setText("Time :  " +currentTime);
-
-                someHandler.postDelayed(this, 1000);
-            }
-        }, 10);
+        appExecutors.getMainThread().execute(() -> {
+            date.setText("Date : "+DateConverter.currentDate());
+            time.setText("Time : "+DateConverter.currentTime());
+        });
+//        final Handler someHandler = new Handler(Looper.getMainLooper());
+//        someHandler.postDelayed(new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+//                Date date1 = new Date();
+//                String currentDate = formatter.format(date1);
+//                date.setText("Date :  " +currentDate);
+//
+//                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
+//                Date time1 = new Date();
+//                String currentTime = timeFormatter.format(time1);
+//                time.setText("Time :  " +currentTime);
+//
+//                someHandler.postDelayed(this, 1000);
+//            }
+//        }, 10);
 
 
         //Get Data From Database for Modification Task And set to the ListView
         if (InternetConnectivity.isConnected()) {
             appExecutors.getNetworkIO().execute(() -> {
-                getSendModificationTasks(getUserId(),"APPROVED").thenAccept(tasks -> {
+                getSendModificationTasks(getUserId(),"unapproved").thenAccept(tasks -> {
                     senderDataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity().getApplicationContext());
                     senderApprovalCompletionTaskList.setAdapter(adapter);
@@ -120,7 +124,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
                 });
             });
             appExecutors.getNetworkIO().execute(() -> {
-                getReceiveModificationTasks(getUserId(),"APPROVED").thenAccept(tasks -> {
+                getReceiveModificationTasks(getUserId(),"unapproved").thenAccept(tasks -> {
                     receiverDataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity().getApplicationContext());
                     receiverApprovalCompletionTaskList.setAdapter(adapter);
@@ -199,9 +203,11 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
 
 
 
-    public CompletableFuture<ArrayList<TaskDataModel>> getSendModificationTasks(String receivedUsername, String status){
+    public CompletableFuture<ArrayList<TaskDataModel>> getSendModificationTasks
+            (String receivedUsername, String status){
         CompletableFuture<ArrayList<TaskDataModel>> future = new CompletableFuture<>();
-        Call<ResponseBody> call = taskHandler.getTasksByTaskOwnerUsernameAndStatus(receivedUsername,status);
+        Call<ResponseBody> call = taskHandler.getTasksByTaskReceiveUsernameAndStatus(
+                receivedUsername,status);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -210,20 +216,23 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
                 try{
                     APIResponse apiResponse = APIResponse.create(response);
                     if(apiResponse instanceof APISuccessResponse){
-                        JsonArray bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonArray();
+                        JsonArray bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse)
+                                .getBody().getBody().getAsJsonArray();
                         for (JsonElement item: bodyContent
                         ) {
                             JsonObject taskObj = item.getAsJsonObject();
                             task = new TaskDataModel();
                             task.setId(taskObj.get("id").getAsLong());
-                            JsonObject usr = taskObj.get("taskOwnerUserID").getAsJsonObject();
+                            JsonObject usr = taskObj.get("taskReceivedUserID").getAsJsonObject();
                             task.setTaskDeligateOwnerUserID(usr.get("username").getAsString());
                             task.setActivityName(taskObj.get("activityName").getAsString());
                             task.setTaskName(taskObj.get("taskName").getAsString());
                             task.setProjectNo(taskObj.get("projectCode").getAsString());
                             task.setProjectName(taskObj.get("projectName").getAsString());
-                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
-                            task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
+                            task.setExpectedDate(taskObj.get("expectedDate").getAsString()
+                                    .split("T")[0]);
+//                            task.setExpectedTotalTime(taskObj.get("expectedTotalTime")
+//                                    .getAsString());
                             task.setDescription(taskObj.get("description").getAsString());
                             task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
                             task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
@@ -258,9 +267,9 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
         return future;
     }
 
-    public CompletableFuture<ArrayList<TaskDataModel>> getReceiveModificationTasks(String receivedUsername, String status){
+    public CompletableFuture<ArrayList<TaskDataModel>> getReceiveModificationTasks(String taskOwner, String status){
         CompletableFuture<ArrayList<TaskDataModel>> future = new CompletableFuture<>();
-        Call<ResponseBody> call = taskHandler.getTasksByTaskReceiveUsernameAndStatus(receivedUsername,status);
+        Call<ResponseBody> call = taskHandler.getTasksByTaskOwnerUsernameAndStatus(taskOwner,status);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -275,14 +284,16 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
                             JsonObject taskObj = item.getAsJsonObject();
                             task = new TaskDataModel();
                             task.setId(taskObj.get("id").getAsLong());
-                            JsonObject usr = taskObj.get("taskReceivedUserID").getAsJsonObject();
-                            task.setTaskDeligateOwnerUserID(usr.get("username").getAsString());
+                            JsonObject taskReceivedUserID = taskObj.get("taskReceivedUserID").getAsJsonObject();
+                            task.setTaskReceivedUserId(taskReceivedUserID.get("username").getAsString());
+                            JsonObject taskOwnerUserId = taskObj.get("taskOwnerUserID").getAsJsonObject();
+                            task.setTaskDeligateOwnerUserID(taskOwnerUserId.get("username").getAsString());
                             task.setActivityName(taskObj.get("activityName").getAsString());
                             task.setTaskName(taskObj.get("taskName").getAsString());
                             task.setProjectNo(taskObj.get("projectCode").getAsString());
                             task.setProjectName(taskObj.get("projectName").getAsString());
                             task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
-                            task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
+                          //  task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
                             task.setDescription(taskObj.get("description").getAsString());
                             task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
                             task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());

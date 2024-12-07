@@ -20,4 +20,11 @@ public class DateConverter {
         String currentDate = dateTimeInIst.format(formatter);
         return currentDate;
     }
+
+    public static String currentTime(){
+        ZonedDateTime dateTimeInIst = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+        String currentDate = dateTimeInIst.format(formatter);
+        return currentDate;
+    }
 }

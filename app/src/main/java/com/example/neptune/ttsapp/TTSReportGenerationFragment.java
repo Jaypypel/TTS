@@ -24,6 +24,7 @@ import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.UserServiceInterface;
+import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -93,25 +94,10 @@ public class TTSReportGenerationFragment extends Fragment {
         time=view.findViewById(R.id.textViewRGTime);
 
 
-        final Handler someHandler = new Handler(Looper.getMainLooper());
-        someHandler.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = new Date();
-                String currentDate = formatter.format(date1);
-                date.setText("Date :  " +currentDate);
-
-                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-                Date time1 = new Date();
-                String currentTime = timeFormatter.format(time1);
-                time.setText("Time :  " +currentTime);
-
-                someHandler.postDelayed(this, 1000);
-            }
-        }, 10);
+           appExecutors.getMainThread().execute(() -> {
+            date.setText(DateConverter.currentDate());
+            time.setText(DateConverter.currentTime());
+        });
 
         startDate=view.findViewById(R.id.editTextRGStartDate);
         endDate=view.findViewById(R.id.editTextRGEndDate);

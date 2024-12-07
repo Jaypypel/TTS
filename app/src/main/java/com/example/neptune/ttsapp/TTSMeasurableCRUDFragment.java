@@ -91,25 +91,10 @@ public class TTSMeasurableCRUDFragment extends Fragment {
         time=(TextView)view.findViewById(R.id.textViewMeasurableCRUDTime);
 
 
-        final Handler someHandler = new Handler(Looper.getMainLooper());
-        someHandler.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = new Date();
-                String currentDate = formatter.format(date1);
-                date.setText("Date :  " +currentDate);
-
-                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-                Date time1 = new Date();
-                String currentTime = timeFormatter.format(time1);
-                time.setText("Time :  " +currentTime);
-
-                someHandler.postDelayed(this, 1000);
-            }
-        }, 10);
+           appExecutors.getMainThread().execute(() -> {
+            date.setText(DateConverter.currentDate());
+            time.setText(DateConverter.currentTime());
+        });
 
 
         measurableName=(AutoCompleteTextView) view.findViewById(R.id.editTextMeasurableCRUDMeasurable);

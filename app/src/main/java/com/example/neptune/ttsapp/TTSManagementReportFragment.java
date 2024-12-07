@@ -3,10 +3,9 @@ package com.example.neptune.ttsapp;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+
 import androidx.fragment.app.Fragment;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.neptune.ttsapp.Util.DateConverter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,10 +26,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+
+@AndroidEntryPoint
 public class TTSManagementReportFragment extends Fragment {
 
-    public TTSManagementReportFragment() { }
+    @Inject
+    AppExecutors appExecutors;
 
     private SessionManager sessionManager;
 
@@ -70,25 +77,10 @@ public class TTSManagementReportFragment extends Fragment {
         getPATDetails =(Button) view.findViewById(R.id. buttonGetPATDetails);
 
 
-        final Handler someHandler = new Handler(Looper.getMainLooper());
-        someHandler.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = new Date();
-                String currentDate = formatter.format(date1);
-                date.setText("Date :  " +currentDate);
-
-                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-                Date time1 = new Date();
-                String currentTime = timeFormatter.format(time1);
-                time.setText("Time :  " +currentTime);
-
-                someHandler.postDelayed(this, 1000);
-            }
-        }, 10);
+           appExecutors.getMainThread().execute(() -> {
+            date.setText(DateConverter.currentDate());
+            time.setText(DateConverter.currentTime());
+        });
 
 
 

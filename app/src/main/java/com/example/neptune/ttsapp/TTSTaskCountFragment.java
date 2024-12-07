@@ -1,6 +1,7 @@
 package com.example.neptune.ttsapp;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,8 +20,10 @@ import android.widget.Toast;
 import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
+import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -48,6 +51,9 @@ public class TTSTaskCountFragment extends Fragment {
 
     @Inject
     TaskHandlerInterface taskHandler;
+
+    @Inject
+    MeasurableServiceInterface measurableService;
 
     @Inject
     AppExecutors appExecutors;
@@ -81,25 +87,10 @@ public class TTSTaskCountFragment extends Fragment {
 
         listView = view.findViewById(R.id.taskList);
 
-        final Handler someHandler = new Handler(Looper.getMainLooper());
-        someHandler.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = new Date();
-                String currentDate = formatter.format(date1);
-                date.setText("Date :  " +currentDate);
-
-                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-                Date time1 = new Date();
-                String currentTime = timeFormatter.format(time1);
-                time.setText("Time :  " +currentTime);
-
-                someHandler.postDelayed(this, 1000);
-            }
-        }, 10);
+           appExecutors.getMainThread().execute(() -> {
+            date.setText(DateConverter.currentDate());
+            time.setText(DateConverter.currentTime());
+        });
 
         if (InternetConnectivity.isConnected()) {
             try {
@@ -166,7 +157,21 @@ public class TTSTaskCountFragment extends Fragment {
         }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
-
+        listView.setOnItemClickListener((parent, v, position, id) -> {
+            TaskDataModel dataModel= dataModels.get(position);
+            getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
+                appExecutors.getMainThread().execute(() -> {
+                    Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
+                    i.putExtra("TaskProcessingItemDetails",dataModel);
+                    i.putExtra("TaskProcessingMeasurableDetails",measurables);
+                    startActivity(i);
+                });
+            }).exceptionally(e -> {
+                Log.e("Error", "Failed to get Tasks " );
+                Toast.makeText(getActivity().getApplicationContext(),"Failed to get the  accepted Tasks", Toast.LENGTH_LONG).show();
+                return  null;
+            });
+        });
 
         return view;
     }
@@ -332,7 +337,7 @@ public class TTSTaskCountFragment extends Fragment {
                             JsonObject taskObj = item.getAsJsonObject();
                             task = new TaskDataModel();
                             task.setId(taskObj.get("id").getAsLong());
-                            JsonObject usr = taskObj.get("taskReceivedUserID").getAsJsonObject();
+                            JsonObject usr = taskObj.get("taskOwnerUserID").getAsJsonObject();
                             task.setTaskDeligateOwnerUserID(usr.get("username").getAsString());
                             task.setActivityName(taskObj.get("activityName").getAsString());
                             task.setTaskName(taskObj.get("taskName").getAsString());
@@ -374,4 +379,49 @@ public class TTSTaskCountFragment extends Fragment {
         return future;
     }
 
+
+    public CompletableFuture<ArrayList<MeasurableListDataModel>> getAllocatedMeasurableList(Long taskId){
+        CompletableFuture<ArrayList<MeasurableListDataModel>> future = new CompletableFuture<>();
+        Call<ResponseBody> call = measurableService.getAllocatedMeasurableList(taskId);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                ArrayList<MeasurableListDataModel> measurables = new ArrayList<>();
+                MeasurableListDataModel measurable;
+                try {
+                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
+                    if(apiResponse instanceof  APISuccessResponse){
+                        JsonArray bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonArray();
+                        for (JsonElement e : bodyContent){
+                            JsonObject msrObj = e.getAsJsonObject();
+                            measurable = new MeasurableListDataModel();
+                            measurable.setId(msrObj.get("id").getAsString());
+                            measurable.setMeasurableName(msrObj.get("name").getAsString());
+                            measurables.add(measurable);
+                        }
+                        future.complete(measurables);
+                    }
+                    if (apiResponse instanceof APIErrorResponse){
+                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new RuntimeException("Error while fetching measurableList :"+msg+"ResponseCode :"+response.code()));
+                    }
+
+                    if(apiResponse instanceof APIErrorResponse){
+                        future.completeExceptionally(new Throwable("Response is empty"));
+                    }
+                } catch (IOException e) {
+                    Log.e("Error", "IOException occurred" + e.getMessage(), e);
+                    future.completeExceptionally(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Error", "Request Failed: " + t.getMessage(), t);
+                future.completeExceptionally(t);
+            }
+        });
+
+        return future;
+    }
 }

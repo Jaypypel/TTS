@@ -46,22 +46,29 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 
 
     Status completed = Status.Completed;
-    Status approval = Status.Approved;
+    Status approved = Status.Approved;
+    Status unapproved = Status.Unapproved;
     Status inProcess = Status.In_Process;
 
     public TTSTaskDelegateListItemDetailsActivity() { }
 
-    private TextView TDLIDDate,TDLIDActivityName,TDLIDTaskName,TDLIDProjCode,TDLIDProjName,TDLIDExpectedDate,TDLIDExpectedTime,TDLIDDescription,TDLIDUserName,TDLIDReceivedUserName,TDLIDMeasurableLabel;
+    private TextView TDLIDDate,TDLIDActivityName,TDLIDTaskName,TDLIDProjCode,TDLIDProjName,
+            TDLIDExpectedDate,TDLIDExpectedTime,TDLIDDescription,TDLIDUserName,
+            TDLIDReceivedUserName,TDLIDMeasurableLabel;
 
     private Button TDLIDComplete,TDLIDDisplayTimeShares,TDLIDProcessing;
 
     private ListView TDLIDlistView;
 
-    private TaskDataModel taskDelegateListItemDetails,taskAcceptedItemDetails,taskProcessingItemDetails,
+    private TaskDataModel taskDelegateListItemDetails,taskAcceptedItemDetails,
+            taskProcessingItemDetails,
             taskSenderApprovalItemDetails, taskReceiverApprovalItemDetails ;
-    ArrayList<MeasurableListDataModel> delegatedMeasurableList,processingMeasurableList,senderApprovalMeasurableList,receiverApprovalMeasurableList,acceptedTaskMeasurales;
+    ArrayList<MeasurableListDataModel> delegatedMeasurableList,processingMeasurableList,
+            senderApprovalMeasurableList,receiverApprovalMeasurableList,acceptedTaskMeasurales;
 
     private static MeasurableListCustomAdapter measurableListCustomAdapter;
+    private SessionManager sessionManager;
+
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +108,8 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             taskProcessingItemDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskProcessingItemDetails");
             processingMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("TaskProcessingMeasurableDetails");
             Log.e("taskProcessingItemDetails","-"+taskProcessingItemDetails);
+            Log.e("processingMeasurableList","-"+processingMeasurableList);
+
             // Getting Details From Sender Approval Task
             taskSenderApprovalItemDetails = (TaskDataModel) getIntent().getSerializableExtra("senderTaskApprovalItemDetails");
             senderApprovalMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("senderTaskApprovalMeasurableList");
@@ -134,7 +143,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
         else if (taskAcceptedItemDetails!=null)
         {
             TDLIDDate.setText(taskAcceptedItemDetails.getDeligationDateTime());
-            TDLIDUserName.setText(taskAcceptedItemDetails.getTaskDeligateOwnerUserID());
+            TDLIDUserName.setText(taskAcceptedItemDetails.getTaskReceivedUserId());
             TDLIDReceivedUserName.setText("From,  " + taskAcceptedItemDetails.getTaskDeligateOwnerUserID());
             TDLIDActivityName.setText(taskAcceptedItemDetails.getActivityName());
             TDLIDTaskName.setText(taskAcceptedItemDetails.getTaskName());
@@ -153,19 +162,23 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
         else if (taskProcessingItemDetails!=null)
          {
             TDLIDDate.setText(taskProcessingItemDetails.getDeligationDateTime());
-            TDLIDUserName.setText(taskProcessingItemDetails.getTaskDeligateOwnerUserID());
+            TDLIDUserName.setText("To, "+taskProcessingItemDetails.getTaskReceivedUserId());
             TDLIDReceivedUserName.setText("From,  " + taskProcessingItemDetails.getTaskDeligateOwnerUserID());
             TDLIDActivityName.setText(taskProcessingItemDetails.getActivityName());
             TDLIDTaskName.setText(taskProcessingItemDetails.getTaskName());
             TDLIDProjCode.setText(taskProcessingItemDetails.getProjectNo());
             TDLIDProjName.setText(taskProcessingItemDetails.getProjectName());
             TDLIDExpectedDate.setText(taskProcessingItemDetails.getExpectedDate());
-            TDLIDExpectedTime.setText(taskProcessingItemDetails.getExpectedTotalTime());
+          //  TDLIDExpectedTime.setText(taskProcessingItemDetails.getExpectedTotalTime());
+            TDLIDExpectedTime.setText(taskProcessingItemDetails.getActualTotalTime());
             TDLIDDescription.setText(taskProcessingItemDetails.getDescription());
             measurableListCustomAdapter = new MeasurableListCustomAdapter(processingMeasurableList, getApplicationContext());
             TDLIDlistView.setAdapter(measurableListCustomAdapter);
-
-            TDLIDComplete.setText("Approve");
+            if(taskProcessingItemDetails.getStatus().equals("approved")) TDLIDComplete.setText("Complete");
+            if (taskProcessingItemDetails.getStatus().equals("unapproved")
+                    && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
+                TDLIDComplete.setText("Approval Request");
+            }
             TDLIDProcessing.setVisibility(View.INVISIBLE);
          }
         else if (taskSenderApprovalItemDetails!=null)
@@ -188,8 +201,11 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
         }
         else if (taskReceiverApprovalItemDetails != null)
         {
+            if (getUserId().equals(taskReceiverApprovalItemDetails.getTaskDeligateOwnerUserID())) TDLIDComplete.setText("Approve Task");
+            else TDLIDComplete.setVisibility(View.INVISIBLE);
+
             TDLIDDate.setText(taskReceiverApprovalItemDetails.getDeligationDateTime());
-            TDLIDUserName.setText(taskReceiverApprovalItemDetails.getTaskDeligateOwnerUserID());
+            TDLIDUserName.setText("To, "+taskReceiverApprovalItemDetails.getTaskReceivedUserId());
             TDLIDReceivedUserName.setText("From,  " + taskReceiverApprovalItemDetails.getTaskDeligateOwnerUserID());
             TDLIDActivityName.setText(taskReceiverApprovalItemDetails.getActivityName());
             TDLIDTaskName.setText(taskReceiverApprovalItemDetails.getTaskName());
@@ -233,13 +249,33 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                 }
                 else if (taskProcessingItemDetails != null)
                 {
-                    if (taskProcessingItemDetails.getCompletedOn().equals("not_completed")) {
+                    if (taskProcessingItemDetails.getStatus().equals("In_Process")) {
                         if (InternetConnectivity.isConnected()) {
 
-                            updateTaskManagementStatus(taskDelegateListItemDetails.getId(),approval).thenAccept(isCompleted -> {
-                                if(isCompleted){
+                            updateTaskManagementStatus(taskProcessingItemDetails.getId(),unapproved).thenAccept(requestForApproval -> {
+                                if(requestForApproval){
                                     appExecutors.getMainThread().execute(() -> {
-                                        Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Completed", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Request forwarded to approve task", Toast.LENGTH_LONG).show();
+                                        finish();
+                                    });
+                                }
+                            }).exceptionally( e -> {
+                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Send For Approval Completion", Toast.LENGTH_LONG).show();
+                                return null;
+                            });
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    if (taskProcessingItemDetails.getStatus().equals(approved.name())) {
+                        if (InternetConnectivity.isConnected()) {
+
+                            updateTaskManagementStatus(taskProcessingItemDetails.getId(),completed).thenAccept(requestForApproval -> {
+                                if(requestForApproval){
+                                    appExecutors.getMainThread().execute(() -> {
+                                        Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task completed", Toast.LENGTH_LONG).show();
                                         finish();
                                     });
                                 }
@@ -275,14 +311,13 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                         }
                     }
                 }
-                else
-                {
+                if(taskReceiverApprovalItemDetails != null){
                     if (InternetConnectivity.isConnected()) {
 
-                        updateTaskManagementStatus(taskDelegateListItemDetails.getId(),completed).thenAccept(isCompleted -> {
+                        updateTaskManagementStatus(taskReceiverApprovalItemDetails.getId(),approved).thenAccept(isCompleted -> {
                             if(isCompleted){
                                 appExecutors.getMainThread().execute(() -> {
-                                    Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Completed", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Approved", Toast.LENGTH_LONG).show();
                                     finish();
                                 });
                             }
@@ -291,6 +326,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                             return null;
                         });
                     } else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show(); }
+
                 }
             });
 
@@ -306,22 +342,25 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                     Intent i = new Intent(getApplicationContext(), TTSTimeShareListActivity.class);
                     i.putExtra("TaskDelegatedDetails", taskDelegateListItemDetails);
                     startActivity(i);
+                    return;
                 }
-                else if (taskProcessingItemDetails != null)
+                if (taskProcessingItemDetails != null)
                 {
+
                     Intent i = new Intent(getApplicationContext(), TTSTimeShareListActivity.class);
                     i.putExtra("TaskProcessingDetails", taskProcessingItemDetails);
                     startActivity(i);
+                    return;
                 }
-                else if (taskSenderApprovalItemDetails != null)
+                if (taskSenderApprovalItemDetails != null)
                 {
                     Intent i = new Intent(getApplicationContext(), TTSTimeShareListActivity.class);
                     i.putExtra("TaskSenderApprovalDetails", taskSenderApprovalItemDetails);
                     startActivity(i);
+                    return;
                 }
-                else
-                {
-                    Intent i = new Intent(getApplicationContext(), TTSTimeShareListActivity.class);
+                if (taskReceiverApprovalItemDetails != null)
+                {    Intent i = new Intent(getApplicationContext(), TTSTimeShareListActivity.class);
                     i.putExtra("TaskReceiverApprovalDetails", taskReceiverApprovalItemDetails);
                     startActivity(i);
                 }
@@ -330,8 +369,8 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 
             TDLIDProcessing.setOnClickListener(v -> {
                 if (InternetConnectivity.isConnected())
-                {
-                    updateTaskManagementStatus(taskAcceptedItemDetails.getId(),inProcess).thenAccept(isCompleted -> {
+                {       Log.e("In-Process-Status"," "+inProcess.name());
+                       updateTaskManagementStatus(taskAcceptedItemDetails.getId(),inProcess).thenAccept(isCompleted -> {
                         if(isCompleted){
                             appExecutors.getMainThread().execute(() -> {
                                 Toast.makeText(getApplicationContext(), "You Have Start Working on Task", Toast.LENGTH_LONG).show();
@@ -351,7 +390,11 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 //    @Override
 //    public void onBackPressed() { finish(); }
 
-
+    private String getUserId()
+    {
+        sessionManager = new SessionManager(getApplicationContext());
+        return sessionManager.getUserID();
+    }
     public CompletableFuture<Boolean> updateTaskManagementStatus(Long taskId, Enum obj){
             CompletableFuture<Boolean> isUpdated = new CompletableFuture<>();
 

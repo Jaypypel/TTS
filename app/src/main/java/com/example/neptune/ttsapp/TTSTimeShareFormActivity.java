@@ -141,12 +141,12 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
             processingTaskDetails =(TaskDataModel) getIntent().getSerializableExtra("TaskProcessingDetails");
             acceptedTaskDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskAcceptedDetails");
 
-            if (acceptedTaskDetails !=null){
-                activityName.setText(acceptedTaskDetails.getActivityName());
-                taskName.setText(acceptedTaskDetails.getTaskName());
-                projCode.setText(acceptedTaskDetails.getProjectNo());
-                projName.setText(acceptedTaskDetails.getProjectName());
-            }
+//            if (acceptedTaskDetails !=null){
+//                activityName.setText(acceptedTaskDetails.getActivityName());
+//                taskName.setText(acceptedTaskDetails.getTaskName());
+//                projCode.setText(acceptedTaskDetails.getProjectNo());
+//                projName.setText(acceptedTaskDetails.getProjectName());
+//            }
 
             if (processingTaskDetails!=null)
             {
@@ -163,12 +163,12 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
 
                 appExecutor.getNetworkIO().execute(() -> {
-                    getAllocatedMeasurableList(acceptedTaskDetails.getId()).thenAccept(measurableList -> {
+                    getAllocatedMeasurableList(processingDelegationTaskId).thenAccept(measurableList -> {
                         Log.e("measurableList"," "+measurableList);
                         runOnUiThread(() -> {
                             measurables = measurableList;
-                            spinnerMeasurableName = (Spinner)findViewById(R.id.spinnerTimeShareMeasurable);
-                            ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(this, android.R.layout.simple_spinner_item,measurables);
+                            spinnerMeasurableName = findViewById(R.id.spinnerTimeShareMeasurable);
+                            ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, measurables);
                             adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                             spinnerMeasurableName.setAdapter(adapterMeasurable);
 
@@ -232,7 +232,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                     else if (timeDifference().contains("-")) { Toast.makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show(); }
                     else
                     {
-                        Toast.makeText(getApplicationContext(), "Wait For Inserting TimeShare", Toast.LENGTH_LONG).show();
+
 //                            progressBar.setVisibility(View.VISIBLE);
                         TimeShareDTO timeShare = new TimeShareDTO();
                         timeShare.setTaskHandlerId(processingDelegationTaskId);
@@ -407,7 +407,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                     String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
 
                     Log.d("EndTime",formattedTime);
-                    startTime.setText(formattedTime);
+                    endTime.setText(formattedTime);
                 });
 
             });
@@ -585,8 +585,8 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm");
                 format.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-                Date d1 = null;
-                Date d2 = null;
+                Date d1;
+                Date d2;
 
                 try {
                     d1 = format.parse(oldActualTotalTime);

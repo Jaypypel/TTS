@@ -81,8 +81,6 @@ public class TTSActivityCRUDFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ttsactivity_crud, container, false);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
 
         user=(TextView)view.findViewById(R.id.textViewActCRUDUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
@@ -90,27 +88,13 @@ public class TTSActivityCRUDFragment extends Fragment {
 
         date=(TextView)view.findViewById(R.id.textViewActCRUDDate);
         time=(TextView)view.findViewById(R.id.textViewActCRUDTime);
+        
+        
+        appExecutors.getMainThread().execute(() -> {
+            date.setText(DateConverter.currentDate());
+            time.setText(DateConverter.currentTime());
+        });
 
-
-        final Handler someHandler = new Handler(Looper.getMainLooper());
-        someHandler.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = new Date();
-                String currentDate = formatter.format(date1);
-                date.setText("Date :  " +currentDate);
-
-                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-                Date time1 = new Date();
-                String currentTime = timeFormatter.format(time1);
-                time.setText("Time :  " +currentTime);
-
-                someHandler.postDelayed(this, 1000);
-            }
-        }, 10);
 
         activityName =(AutoCompleteTextView) view.findViewById(R.id.editTextActCRUDActivity);
 

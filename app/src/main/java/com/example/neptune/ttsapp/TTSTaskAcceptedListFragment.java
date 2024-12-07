@@ -23,6 +23,7 @@ import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
+import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -88,25 +89,10 @@ public class TTSTaskAcceptedListFragment extends Fragment {
         date=view.findViewById(R.id.textViewAcceptedListDate);
         time=view.findViewById(R.id.textViewAcceptedListTime);
 
-        final Handler someHandler = new Handler(Looper.getMainLooper());
-        someHandler.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = new Date();
-                String currentDate = formatter.format(date1);
-                date.setText("Date :  " +currentDate);
-
-                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-                Date time1 = new Date();
-                String currentTime = timeFormatter.format(time1);
-                time.setText("Time :  " +currentTime);
-
-                someHandler.postDelayed(this, 1000);
-            }
-        }, 10);
+           appExecutors.getMainThread().execute(() -> {
+            date.setText(DateConverter.currentDate());
+            time.setText(DateConverter.currentTime());
+        });
 
         if (InternetConnectivity.isConnected()){
             appExecutors.getNetworkIO().execute(() -> {
@@ -286,7 +272,7 @@ public class TTSTaskAcceptedListFragment extends Fragment {
                             JsonObject taskObj = item.getAsJsonObject();
                             task = new TaskDataModel();
                             task.setId(taskObj.get("id").getAsLong());
-                            JsonObject usr = taskObj.get("taskReceivedUserID").getAsJsonObject();
+                            JsonObject usr = taskObj.get("taskOwnerUserID").getAsJsonObject();
                             task.setTaskDeligateOwnerUserID(usr.get("username").getAsString());
                             task.setActivityName(taskObj.get("activityName").getAsString());
                             task.setTaskName(taskObj.get("taskName").getAsString());

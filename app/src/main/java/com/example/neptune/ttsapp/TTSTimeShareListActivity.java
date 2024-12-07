@@ -91,6 +91,7 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                 taskId = taskAcceptedDetails.getId();
                 getTimeShares(taskId).thenAccept(timeShares -> {
                     dataModels = timeShares;
+                    Log.e("TimeShares",""+dataModels);
                     adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
                     listView.setAdapter(adapter);
 
@@ -108,7 +109,9 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
             if (InternetConnectivity.isConnected()) {
                 taskId = taskCompletedDetails.getId();
                 getTimeShares(taskId).thenAccept(timeShares -> {
+
                     dataModels = timeShares;
+                    Log.e("TimeShares",""+dataModels);
                     adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
                     listView.setAdapter(adapter);
                     gotoTimeshare.setVisibility(View.INVISIBLE);
@@ -126,6 +129,7 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                 taskId = taskDelegatedDetails.getId();
                 getTimeShares(taskId).thenAccept(timeShares -> {
                     dataModels = timeShares;
+                    Log.e("TimeShares",""+dataModels);
                     adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
                     listView.setAdapter(adapter);
                     gotoTimeshare.setVisibility(View.INVISIBLE);
@@ -143,6 +147,8 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
             if (InternetConnectivity.isConnected()) {
                 taskId = taskProcessingDetails.getId();
                 getTimeShares(taskId).thenAccept(timeShares -> {
+
+
                     dataModels = timeShares;
                     adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
                     listView.setAdapter(adapter);
@@ -159,6 +165,7 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                 taskId = taskSenderApprovalItemDetails.getId();
                 getTimeShares(taskId).thenAccept(timeShares -> {
                     dataModels = timeShares;
+                    Log.e("TimeShares",""+dataModels);
                     adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
                     listView.setAdapter(adapter);
                     gotoTimeshare.setVisibility(View.INVISIBLE);
@@ -177,6 +184,7 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                 taskId = taskReceiverApprovalItemDetails.getId();
                 getTimeShares(taskId).thenAccept(timeShares -> {
                     dataModels = timeShares;
+                    Log.e("TimeShares",""+dataModels);
                     adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
                     listView.setAdapter(adapter);
                     gotoTimeshare.setVisibility(View.INVISIBLE);

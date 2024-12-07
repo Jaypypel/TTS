@@ -5,6 +5,7 @@ import com.example.neptune.ttsapp.DTO.TimeShareDTO;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface TimeShareServiceInterface {
@@ -12,6 +13,6 @@ public interface TimeShareServiceInterface {
     @GET("timeshares/list/{taskId}")
     Call<ResponseBody> getTimeShares(@Path("taskId") Long taskId);
 
-    @GET("timeshares/timeshare")
+    @POST("timeshares/timeshare")
     Call<ResponseBody> addTimeShare(@Body TimeShareDTO timeShare);
 }

@@ -22,7 +22,7 @@ public interface TaskHandlerInterface {
     Call<ResponseBody> getTasksByTaskOwnerUsernameAndStatus(
             @Path("TaskOwnerUsername") String username, @Path("status") String status);
 
-    @GET("tasksm/{TaskOwnerUsername}/{status}/modified/list")
+    @GET("tasksm/list/accepted/{TaskOwnerUsername}/{status}")
     Call<ResponseBody> getTasksByTaskReceiveUsernameAndStatus(
             @Path("TaskOwnerUsername") String username, @Path("status") String status);
 

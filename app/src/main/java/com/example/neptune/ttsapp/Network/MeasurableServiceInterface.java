@@ -32,7 +32,7 @@ public interface MeasurableServiceInterface {
                                                @Query("mesrbUnit") String mesrbUnit);
 
 
-    @POST("timesharemeasurables/timesharemeasurable")
+    @POST("timesharemeasurables/add/timeharemeasurable")
     Call<ResponseBody> addTimeShareMeasurable(@Query("timeShareId") Long timeShareId,
                                               @Query("measuableId")  Long measuableId,
                                               @Query("measurableQuantity") Long measurableQuantity,

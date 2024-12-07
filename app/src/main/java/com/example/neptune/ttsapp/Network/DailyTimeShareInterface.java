@@ -11,11 +11,12 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface DailyTimeShareInterface {
     @POST("/dailyTimeShares/dailyTimeShare/")
     Call<ResponseBody> addDailyTimeShare(@Body DailyTimeShare dailyTimeShareDTO);
 
-    @GET("/dailyTimeShares/dailyTimeShareList/{username}/{dateOfTimeShare}")
-    Call<ResponseBody> getDailyTimeShareList(@Path("username") String username, @Path("dateOfTimeShare") String TSDate);
+    @GET("/dailyTimeShares/dailyTimeShareList/{username}")
+    Call<ResponseBody> getDailyTimeShareList(@Path("username") String username, @Query("dateOfTimeShare") String TSDate);
 }

@@ -21,6 +21,7 @@ import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
+import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -87,30 +88,15 @@ public class TTSTaskModificationListFragment extends Fragment {
         receiverModificationTaskList=view.findViewById(R.id.receiverModificationTaskList);
 
 
-        final Handler someHandler = new Handler(Looper.getMainLooper());
-        someHandler.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = new Date();
-                String currentDate = formatter.format(date1);
-                date.setText("Date :  " +currentDate);
-
-                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-                Date time1 = new Date();
-                String currentTime = timeFormatter.format(time1);
-                time.setText("Time :  " +currentTime);
-
-                someHandler.postDelayed(this, 1000);
-            }
-        }, 10);
+           appExecutors.getMainThread().execute(() -> {
+            date.setText(DateConverter.currentDate());
+            time.setText(DateConverter.currentTime());
+        });
 
 
         if (InternetConnectivity.isConnected()) {
             appExecutors.getNetworkIO().execute(() -> {
-                getSendModificationTaskList(getUserId(),"updated").thenAccept(tasks -> {
+                getSendModificationTaskList(getUserId(),"revised").thenAccept(tasks -> {
                     senderDataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity().getApplicationContext());
                     senderModificationTaskList.setAdapter(adapter);
@@ -120,7 +106,7 @@ public class TTSTaskModificationListFragment extends Fragment {
                 });
             });
             appExecutors.getNetworkIO().execute(() -> {
-                getReceiveModificationTaskList(getUserId(),"updated").thenAccept(tasks -> {
+                getReceiveModificationTaskList(getUserId(),"revised").thenAccept(tasks -> {
                     receiverDataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity().getApplicationContext());
                     receiverModificationTaskList.setAdapter(adapter);
@@ -187,7 +173,7 @@ public class TTSTaskModificationListFragment extends Fragment {
 
     public CompletableFuture<ArrayList<TaskDataModel>> getSendModificationTaskList(String taskOwnerUsername, String status){
         CompletableFuture<ArrayList<TaskDataModel>> future = new CompletableFuture<>();
-        Call<ResponseBody> call = taskHandlerInterface.getTasksByTaskOwnerUsernameAndStatus(taskOwnerUsername,status);
+        Call<ResponseBody> call = taskHandlerInterface.getTasksByTaskReceiveUsernameAndStatus(taskOwnerUsername,status);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -250,7 +236,7 @@ public class TTSTaskModificationListFragment extends Fragment {
 
     public CompletableFuture<ArrayList<TaskDataModel>> getReceiveModificationTaskList(String receivedUsername, String status){
         CompletableFuture<ArrayList<TaskDataModel>> future = new CompletableFuture<>();
-        Call<ResponseBody> call = taskHandlerInterface.getTasksByTaskReceiveUsernameAndStatus(receivedUsername,status);
+        Call<ResponseBody> call = taskHandlerInterface.getTasksByTaskOwnerUsernameAndStatus(receivedUsername,status);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -267,8 +253,10 @@ public class TTSTaskModificationListFragment extends Fragment {
                             JsonObject taskObj = item.getAsJsonObject();
                             task = new TaskDataModel();
                             task.setId(taskObj.get("id").getAsLong());
-                            JsonObject usr = taskObj.get("taskReceivedUserID").getAsJsonObject();
-                            task.setTaskReceivedUserId(usr.get("username").getAsString());
+                            JsonObject taskReceivedUserID = taskObj.get("taskReceivedUserID").getAsJsonObject();
+                            JsonObject taskOwnerUserID = taskObj.get("taskOwnerUserID").getAsJsonObject();
+                            task.setTaskReceivedUserId(taskReceivedUserID.get("username").getAsString());
+                            task.setTaskDeligateOwnerUserID(taskOwnerUserID.get("username").getAsString());
                             task.setActivityName(taskObj.get("activityName").getAsString());
                             task.setTaskName(taskObj.get("taskName").getAsString());
                             task.setProjectNo(taskObj.get("projectCode").getAsString());
