@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,6 +41,7 @@ import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import com.google.gson.JsonArray;
@@ -182,14 +185,32 @@ public class TTSTaskDelegationFragment extends Fragment {
                 // Extract the word part
                 String wordPart = parts[1];
                 Log.e("wordPart",""+wordPart);
+                if (tmeShreMsrbleQty.isEmpty()){
+                    taskDeliMeasurableQty.setError("Qty can't be blank");
+                    return;
+                }
 
-                MeasurableListDataModel m = new MeasurableListDataModel();
+                if (tmeShreMsrblUnit.isEmpty()){
+                    taskDeliMeasurableUnit.setError("Unit can't be blank");
+                    return;
+                }
+
+                    MeasurableListDataModel m = new MeasurableListDataModel();
                 m.setId(numberPart);
                 m.setMeasurableName(wordPart);
                 m.setMeasurableQty(tmeShreMsrbleQty);
                 m.setMeasurableUnit(tmeShreMsrblUnit);
+                if(!measurableListDataModels.contains(m)){
 
-                measurableListDataModels.add(m);
+                    measurableListDataModels.add(m);
+                }else {
+                    Snackbar snackbar = Snackbar.make(v, "Warning! measurable entry is already present", Snackbar.LENGTH_LONG);
+                    View snackbarView = snackbar.getView();
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
+                    params.gravity = Gravity.CENTER;
+                    snackbarView.setLayoutParams(params);
+                    snackbar.show();
+                }
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getActivity());
              listView.setAdapter(measurableListCustomAdapter);
                 clearMeasurableDetails();
@@ -210,6 +231,10 @@ public class TTSTaskDelegationFragment extends Fragment {
                     Log.e("TaskDelegate", "No internet connection");
                     Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_SHORT).show();
                     return; // Exit early if no internet
+                }
+                if(isProjectCodeValid().isEmpty()){
+                    taskDeliProjCode.setError("Project code need to be present");
+                    return;
                 }
 
                 // Validate UserName
@@ -563,7 +588,8 @@ public class TTSTaskDelegationFragment extends Fragment {
         taskDeliExpTime.setText("");
         taskDeliTotalTimeHH.setText("");
         taskDeliTotalTimeMM.setText("");
-        listView.setAdapter(null);
+        measurableListDataModels.removeAll(measurableListDataModels);
+        listView.setAdapter(new MeasurableListCustomAdapter(measurableListDataModels,getActivity().getApplicationContext()));
     }
 
     // Add leading 0 when input date or time is single No like 5

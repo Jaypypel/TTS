@@ -335,6 +335,17 @@ public class TTSMainActivity extends AppCompatActivity {
                 // Extract the word part
                 String wordPart = parts[1];
                 Log.e("wordPart",""+wordPart);
+                if (tmeShreMsrbleQty.isEmpty()){
+                    timeShareMeasurableQty.setError("Qty can't be blank");
+                    return;
+                }
+
+                if (tmeShreMsrblUnit.isEmpty()){
+                    timeShareMeasurableUnit.setError("Unit can't be blank");
+                    return;
+                }
+
+
 
                 MeasurableListDataModel m = new MeasurableListDataModel();
                 m.setId(numberPart);
@@ -342,7 +353,17 @@ public class TTSMainActivity extends AppCompatActivity {
                 m.setMeasurableQty(tmeShreMsrbleQty);
                 m.setMeasurableUnit(tmeShreMsrblUnit);
 
-                measurableListDataModels.add(m);
+
+                if(!measurableListDataModels.contains(m)){
+                    measurableListDataModels.add(m);
+                }else {
+                    Snackbar snackbar = Snackbar.make(v, "Warning! measurable entry is already present", Snackbar.LENGTH_LONG);
+                    View snackbarView = snackbar.getView();
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
+                    params.gravity = Gravity.CENTER;
+                    snackbarView.setLayoutParams(params);
+                    snackbar.show();
+                }
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getApplicationContext());
                 listView.setAdapter(measurableListCustomAdapter);
                 clear();
@@ -356,6 +377,10 @@ public class TTSMainActivity extends AppCompatActivity {
                 if (InternetConnectivity.isConnected())
                 {
 
+                    if(isProjectCodeValid().isEmpty()){
+                        timeShareProjCode.setError("Project code need to be entered");
+                        return;
+                    }
                     if (isDateValid().isEmpty()) {
                         timeShareDate.setError("Date Cannot Be Empty");
                         return;
@@ -518,7 +543,7 @@ public class TTSMainActivity extends AppCompatActivity {
 
         timeShareStartTime.setOnClickListener(view -> {
             MaterialTimePicker timePicker = new MaterialTimePicker
-                    .Builder()
+                    .Builder().setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
                     .setTimeFormat(TimeFormat.CLOCK_12H)
                     .setHour(12)
                     .setMinute(10)
@@ -563,7 +588,7 @@ public class TTSMainActivity extends AppCompatActivity {
 
         timeShareEndTime.setOnClickListener(view -> {
             MaterialTimePicker timePicker = new MaterialTimePicker
-                    .Builder()
+                    .Builder().setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
                     .setTimeFormat(TimeFormat.CLOCK_12H)
                     .setHour(12)
                     .setMinute(10)
@@ -894,8 +919,10 @@ public class TTSMainActivity extends AppCompatActivity {
         timeShareActivityName.setText("");
         timeShareTaskName.setText("");
         timeShareProjName.setText("");
-        listView.setAdapter(null);
+        measurableListDataModels.removeAll(measurableListDataModels);
+        listView.setAdapter(new MeasurableListCustomAdapter(measurableListDataModels,getApplicationContext()));
         timeShareMeasurableUnit.setText("");
+
     }
 
     // Clear the EditText of Measurable
@@ -1249,9 +1276,10 @@ public class TTSMainActivity extends AppCompatActivity {
                         }
                         if (apiResponse instanceof APIErrorResponse) {
                             String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            future.completeExceptionally(new Throwable(erMsg));
                             Log.e("Error Received", "" + erMsg);
                         }
-                        if (apiResponse instanceof APIErrorResponse) {
+                        if (apiResponse instanceof APIEmptyResponse) {
                             Log.e("Response", "is empty repsonse" + apiResponse);
                         }
                     } catch (IOException e) {

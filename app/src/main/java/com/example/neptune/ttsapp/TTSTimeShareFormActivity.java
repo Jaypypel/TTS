@@ -105,6 +105,8 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
     ArrayList<MeasurableListDataModel> measurables;
 
         @Override
+
+
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_ttstime_share_form);
@@ -471,6 +473,8 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
         startTime.setText("");
         endTime.setText("");
         description.setText("");
+        measurableListDataModels.removeAll(measurableListDataModels);
+        listView.setAdapter(new MeasurableListCustomAdapter(measurableListDataModels,getApplicationContext()));
     }
 
     // Add leading 0 when input date or time is single No like 5

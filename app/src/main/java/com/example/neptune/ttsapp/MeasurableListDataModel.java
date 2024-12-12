@@ -1,6 +1,7 @@
 package com.example.neptune.ttsapp;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class MeasurableListDataModel implements Serializable {
 
@@ -18,6 +19,18 @@ public class MeasurableListDataModel implements Serializable {
         this.measurableUnit = measurableUnit;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MeasurableListDataModel that = (MeasurableListDataModel) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(measurableQty, that.measurableQty) && Objects.equals(measurableUnit, that.measurableUnit);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, measurableQty, measurableUnit);
+    }
 //    public MeasurableListDataModel(String id, String measurableName) {
 //
 //        this.id = id;

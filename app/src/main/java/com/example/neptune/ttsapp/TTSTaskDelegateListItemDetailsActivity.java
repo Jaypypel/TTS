@@ -137,7 +137,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 
             TDLIDProcessing.setVisibility(View.INVISIBLE);
 
-            if (taskDelegateListItemDetails.getStatus().equals("Completed")) { TDLIDComplete.setVisibility(View.INVISIBLE); }
+            if (taskDelegateListItemDetails.getStatus().equals("")) { TDLIDComplete.setVisibility(View.INVISIBLE); }
 
         }
         else if (taskAcceptedItemDetails!=null)
@@ -174,11 +174,13 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             TDLIDDescription.setText(taskProcessingItemDetails.getDescription());
             measurableListCustomAdapter = new MeasurableListCustomAdapter(processingMeasurableList, getApplicationContext());
             TDLIDlistView.setAdapter(measurableListCustomAdapter);
-            if(taskProcessingItemDetails.getStatus().equals("approved")) TDLIDComplete.setText("Complete");
+
+            if(taskProcessingItemDetails.getStatus().equals("approved")) {TDLIDComplete.setText("Complete");}
             if (taskProcessingItemDetails.getStatus().equals("unapproved")
                     && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
                 TDLIDComplete.setText("Approval Request");
             }
+
             TDLIDProcessing.setVisibility(View.INVISIBLE);
          }
         else if (taskSenderApprovalItemDetails!=null)

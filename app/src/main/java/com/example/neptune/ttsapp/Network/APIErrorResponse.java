@@ -13,5 +13,4 @@ public class APIErrorResponse<T> extends APIResponse<T>{
         return errorMessage;
     }
 
-    //this.errorMessage = responseBody.getMessage().getAsString();
 }

@@ -24,8 +24,11 @@ public  class APIResponse<T>{
             return new APISuccessResponse<>(body, linkheader);
         }
 
-        String msg = null;
-        if (response.errorBody() != null){
+        String msg = "";
+        if (response.isSuccessful() && response.body() instanceof ResponseBody) {
+             msg =((ResponseBody)response.body()).getMessage().getAsString();
+             return new APIErrorResponse<>(msg);
+        } else  if (response.errorBody() != null && !(response.body() instanceof ResponseBody)){
             try {
                 msg = response.errorBody().string();
             } catch (Exception e) {
