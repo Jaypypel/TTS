@@ -456,7 +456,7 @@ public class TTSTaskDelegationFragment extends Fragment {
 
         taskDeliExpTime.setOnClickListener(v -> {
             MaterialTimePicker timePicker = new MaterialTimePicker
-                    .Builder()
+                    .Builder().setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
                     .setTimeFormat(TimeFormat.CLOCK_12H)
                     .setHour(12)
                     .setMinute(10)

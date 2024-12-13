@@ -9,11 +9,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -32,6 +34,7 @@ import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Network.TimeShareServiceInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import com.google.gson.Gson;
@@ -207,13 +210,32 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                 // Extract the word part
                 String wordPart = parts[1];
                 Log.e("wordPart",""+wordPart);
+                if (tmeShreMsrbleQty.isEmpty()){
+                    timeShareMeasurableQty.setError("Qty can't be blank");
+                    return;
+                }
+
+                if (tmeShreMsrblUnit.isEmpty()){
+                    timeShareMeasurableUnit.setError("Unit can't be blank");
+                    return;
+                }
 
                 MeasurableListDataModel m = new MeasurableListDataModel();
                 m.setId(numberPart);
                 m.setMeasurableName(wordPart);
                 m.setMeasurableQty(tmeShreMsrbleQty);
                 m.setMeasurableUnit(tmeShreMsrblUnit);
-                measurableListDataModels.add(m);
+
+                if(!measurableListDataModels.contains(m)){
+                    measurableListDataModels.add(m);
+                }else {
+                    Snackbar snackbar = Snackbar.make(v, "Warning! measurable entry is already present", Snackbar.LENGTH_LONG);
+                    View snackbarView = snackbar.getView();
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
+                    params.gravity = Gravity.CENTER;
+                    snackbarView.setLayoutParams(params);
+                    snackbar.show();
+                }
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getApplicationContext());
                 listView.setAdapter(measurableListCustomAdapter);
                 Log.e("measurablesTS",""+measurableListDataModels);
@@ -357,6 +379,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
             startTime.setOnClickListener(view -> {
                 MaterialTimePicker timePicker = new MaterialTimePicker
                         .Builder()
+                        .setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
                         .setTimeFormat(TimeFormat.CLOCK_12H)
                         .setHour(12)
                         .setMinute(10)
@@ -387,6 +410,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
             endTime.setOnClickListener(view -> {
                 MaterialTimePicker timePicker = new MaterialTimePicker
                         .Builder()
+                        .setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
                         .setTimeFormat(TimeFormat.CLOCK_12H)
                         .setHour(12)
                         .setMinute(10)

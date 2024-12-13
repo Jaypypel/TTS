@@ -14,18 +14,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.neptune.ttsapp.EnumStatus.Status;
+import com.example.neptune.ttsapp.Network.APIEmptyResponse;
 import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
+import com.example.neptune.ttsapp.Network.TimeShareServiceInterface;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
@@ -44,7 +52,8 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
     @Inject
     AppExecutors appExecutors;
 
-
+    @Inject
+    TimeShareServiceInterface timeShareService;
     Status completed = Status.Completed;
     Status approved = Status.Approved;
     Status unapproved = Status.Unapproved;
@@ -95,29 +104,39 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
         TDLIDMeasurableLabel=findViewById(R.id.textViewTDLIDMeasurableLabel);
 
             // Getting Details From Delegated Task
-            taskDelegateListItemDetails  = (TaskDataModel) getIntent().getSerializableExtra("TaskDelegatedItemDetails");
-            delegatedMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("TaskDelegatedMeasurableList");
+            taskDelegateListItemDetails  = (TaskDataModel) getIntent()
+                    .getSerializableExtra("TaskDelegatedItemDetails");
+            delegatedMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent()
+                    .getSerializableExtra("TaskDelegatedMeasurableList");
             Log.e("taskDelegateListItemDetails","-"+taskDelegateListItemDetails);
 
             // Getting Details From Accepted Task
-            taskAcceptedItemDetails =  (TaskDataModel) getIntent().getSerializableExtra("acceptedTasks");
-            acceptedTaskMeasurales =  (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("acceptedTaskMeasurables");
+            taskAcceptedItemDetails =  (TaskDataModel) getIntent()
+                    .getSerializableExtra("acceptedTasks");
+            acceptedTaskMeasurales =  (ArrayList<MeasurableListDataModel>) getIntent()
+                    .getSerializableExtra("acceptedTaskMeasurables");
 
             Log.e("taskAcceptedItemDetails","-"+taskAcceptedItemDetails);
             // Getting Details From Processing Task
-            taskProcessingItemDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskProcessingItemDetails");
-            processingMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("TaskProcessingMeasurableDetails");
+            taskProcessingItemDetails = (TaskDataModel) getIntent()
+                    .getSerializableExtra("TaskProcessingItemDetails");
+            processingMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent()
+                    .getSerializableExtra("TaskProcessingMeasurableDetails");
             Log.e("taskProcessingItemDetails","-"+taskProcessingItemDetails);
             Log.e("processingMeasurableList","-"+processingMeasurableList);
 
             // Getting Details From Sender Approval Task
-            taskSenderApprovalItemDetails = (TaskDataModel) getIntent().getSerializableExtra("senderTaskApprovalItemDetails");
-            senderApprovalMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("senderTaskApprovalMeasurableList");
+            taskSenderApprovalItemDetails = (TaskDataModel) getIntent()
+                    .getSerializableExtra("senderTaskApprovalItemDetails");
+            senderApprovalMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent()
+                    .getSerializableExtra("senderTaskApprovalMeasurableList");
             Log.e("taskSenderApprovalItemDetails","-"+taskSenderApprovalItemDetails);
 
             // Getting Details From Receiver Approval Task
-            taskReceiverApprovalItemDetails = (TaskDataModel) getIntent().getSerializableExtra("receiverTaskApprovalItemDetails");
-            receiverApprovalMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("receiverTaskApprovalMeasurableList");
+            taskReceiverApprovalItemDetails = (TaskDataModel) getIntent()
+                    .getSerializableExtra("receiverTaskApprovalItemDetails");
+            receiverApprovalMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent()
+                    .getSerializableExtra("receiverTaskApprovalMeasurableList");
             Log.e("taskReceiverApprovalItemDetails","-"+taskReceiverApprovalItemDetails);
 
         if(taskDelegateListItemDetails!=null)
@@ -174,12 +193,60 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             TDLIDDescription.setText(taskProcessingItemDetails.getDescription());
             measurableListCustomAdapter = new MeasurableListCustomAdapter(processingMeasurableList, getApplicationContext());
             TDLIDlistView.setAdapter(measurableListCustomAdapter);
+            getTimeShares(taskProcessingItemDetails.getId()).thenAccept(timeShares -> {
+            Log.e("timeshares",""+timeShares);
+                if (timeShares != null && !timeShares.isEmpty() &&
+                        taskProcessingItemDetails.getStatus().equals("In_Process") &&
+                        !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())) {
+                    Log.d("DEBUG", "timeShares != null: " + (timeShares != null));
+                    Log.d("DEBUG", "!timeShares.isEmpty(): " + (timeShares != null && !timeShares.isEmpty()));
+                    Log.d("DEBUG", "Status equals In_Process: " + taskProcessingItemDetails.getStatus().equals("In_Process"));
+                    Log.d("DEBUG", "DelegateOwnerUserID mismatch: " +
+                            !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId()));
+                    TDLIDComplete.setVisibility(View.VISIBLE);
+                    TDLIDComplete.setText("Approval Request");
 
-            if(taskProcessingItemDetails.getStatus().equals("approved")) {TDLIDComplete.setText("Complete");}
-            if (taskProcessingItemDetails.getStatus().equals("unapproved")
-                    && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
-                TDLIDComplete.setText("Approval Request");
+                } else {
+                    // Either timeShares is null or empty, or the other conditions failed
+                    TDLIDComplete.setVisibility(View.INVISIBLE);
+                }
+
+
+//                if(timeShares != null && taskProcessingItemDetails.getStatus().equals("In_Process") &&
+//                        !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())
+//                        && !timeShares.isEmpty()) {
+//                    TDLIDComplete.setVisibility(View.VISIBLE);
+//                    TDLIDComplete.setText("Approval Request");
+//                }else
+//                {
+//                    TDLIDComplete.setVisibility(View.INVISIBLE);}
+
+
+//                }else{
+////                    if(taskProcessingItemDetails.getStatus().equals("In_Process") &&
+////                        !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())) {
+//                    TDLIDComplete.setVisibility(View.VISIBLE);
+//                    TDLIDComplete.setText("BApproval Request");
+//                }
+//                if (taskProcessingItemDetails.getStatus().equals("Unapproved")){
+//                    TDLIDComplete.setVisibility(View.INVISIBLE);
+//                }
+            }).exceptionally(e -> {
+                Toast.makeText(getApplicationContext(),"Failed to fetch timeshares",Toast.LENGTH_LONG).show();
+                return null;
+            });
+            if(taskProcessingItemDetails.getStatus().equals("Approved")) {TDLIDComplete.setVisibility(View.VISIBLE); TDLIDComplete.setText("Complete");}else {
+                TDLIDComplete.setVisibility(View.INVISIBLE);
             }
+//                    if(taskProcessingItemDetails.getStatus().equals("In_Process") &&
+//                        !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())) {
+//                    TDLIDComplete.setVisibility(View.VISIBLE);
+//                    TDLIDComplete.setText("Approval Request");
+//                }
+//            else if (taskProcessingItemDetails.getStatus().equals("Unapproved")
+//                    && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
+//                TDLIDComplete.setText("Approval Request");
+//            }
 
             TDLIDProcessing.setVisibility(View.INVISIBLE);
          }
@@ -203,8 +270,10 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
         }
         else if (taskReceiverApprovalItemDetails != null)
         {
-            if (getUserId().equals(taskReceiverApprovalItemDetails.getTaskDeligateOwnerUserID())) TDLIDComplete.setText("Approve Task");
-            else TDLIDComplete.setVisibility(View.INVISIBLE);
+            if (getUserId().equals(taskReceiverApprovalItemDetails.getTaskDeligateOwnerUserID())
+                    && taskReceiverApprovalItemDetails.getStatus().equals("Unapproved"))
+            { TDLIDComplete.setText("Check  Approve Task");}
+            else {TDLIDComplete.setVisibility(View.INVISIBLE);}
 
             TDLIDDate.setText(taskReceiverApprovalItemDetails.getDeligationDateTime());
             TDLIDUserName.setText("To, "+taskReceiverApprovalItemDetails.getTaskReceivedUserId());
@@ -389,6 +458,59 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 
     }
 
+    public CompletableFuture<ArrayList<TimeShareDataModel>> getTimeShares(Long taskId) {
+        CompletableFuture<ArrayList<TimeShareDataModel>> future = new CompletableFuture<>();
+        Call<ResponseBody> call = timeShareService.getTimeShares(taskId);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
+                    if (apiResponse instanceof APISuccessResponse) {
+                        JsonElement body = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type timeShareType = new TypeToken<ArrayList<TimeShareDataModel>>() {
+                        }.getType();
+                        if (body.isJsonArray()) {
+                            JsonArray content = body.getAsJsonArray();
+                            ArrayList<TimeShareDataModel> timeShares = gson.fromJson(content, timeShareType);
+                            timeShares.removeIf(Objects::isNull);
+                            future.complete(timeShares);
+                        }
+                    }
+
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String msg = ((APIErrorResponse) apiResponse).getErrorMessage();
+                        Log.e("Error", "" + msg);
+                        future.completeExceptionally(new Throwable(msg));
+                        return;
+                    }
+                    if (apiResponse instanceof APIEmptyResponse) {
+                        Log.e("API Response", "" + "empty response");
+                        future.completeExceptionally(new Throwable("empty response"));
+                    }
+
+                } catch (ClassCastException e) {
+                    Log.e("ClassCastException error", "Error : unable to cast due to " + e.getMessage());
+                    future.completeExceptionally(new Throwable("class cannot be converted"));
+                } catch (IOException e) {
+                    Log.e("IO Excetpion error", "Error : " + e.getMessage());
+                    future.completeExceptionally(new Throwable("class cannot be converted"));
+                } catch (RuntimeException e) {
+                    Log.e("Unnoticed Exception", "Error : " + "occured " + e.getMessage());
+                    future.completeExceptionally(new Throwable("class cannot be converted"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Response", "Request failed due to " + t.getMessage());
+                future.completeExceptionally(t);
+            }
+        });
+
+        return future;
+    }
 //    @Override
 //    public void onBackPressed() { finish(); }
 
