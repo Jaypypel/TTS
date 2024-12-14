@@ -297,7 +297,7 @@ public class TTSMainActivity extends AppCompatActivity {
             appExecutor.getNetworkIO().execute(() -> {
                 getMeasurableListAndUpdateUi().thenAccept(measurableListDataModels1 -> {
                     appExecutor.getMainThread().execute(() -> {
-                        ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<MeasurableListDataModel>(getBaseContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
+                        ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
                         adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         timeShareMeasurable.setAdapter(adapterMeasurable);
                     });
@@ -411,11 +411,17 @@ public class TTSMainActivity extends AppCompatActivity {
                if (isActivityNameValid().isEmpty()) { timeShareActivityName.setError("Activity Name Cannot Be Empty");return; }
                     if (getConsumedTime().contains("-")) { Toast.makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show(); return; }
 
-
-                    if (measurableListDataModels.isEmpty()){
+                    Log.e("Debugging","measurableListDataModels : "+measurableListDataModels);
+                    Log.e("Debugginh","listVieww : "+listView);
+                    if (measurableListDataModels.isEmpty() && measurableListDataModels.containsAll(null) || listView == null){
+                        Log.e("Debugging","measurableListDataModels : "+measurableListDataModels);
+                        Log.e("Debugginh","listVieww : "+listView);
                         Toast.makeText(getApplicationContext(), "Measurable list is empty", Toast.LENGTH_LONG).show();
                         timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
                         return;
+                    }else {
+                        Log.e("Debugging","measurableListDataModels : "+measurableListDataModels);
+                        Log.e("Debugginh","listVieww : "+listView);
                     }
                     timeShareSubmit.setBackgroundColor(Color.GRAY);
 
@@ -993,9 +999,8 @@ public class TTSMainActivity extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                APIResponse apiResponse = null;
                 try {
-                    apiResponse = APIResponse.create(response);
+                    APIResponse apiResponse = APIResponse.create(response);
                     if (apiResponse != null) {
                         if (apiResponse instanceof APISuccessResponse) {
                             String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();

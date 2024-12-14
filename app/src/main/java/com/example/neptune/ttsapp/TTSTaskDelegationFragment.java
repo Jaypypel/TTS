@@ -110,7 +110,7 @@ public class TTSTaskDelegationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_ttstask_delegation, container, false);
+        View view = inflater.inflate(R.layout.a, container, false);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -283,6 +283,13 @@ public class TTSTaskDelegationFragment extends Fragment {
                     }
                 }
 
+                Log.e("Debugginh","listVieww : "+listView);
+                if (measurableListDataModels.isEmpty() ) {
+                    Log.e("Debugging", "measurableListDataModels : " + measurableListDataModels);
+                    Toast.makeText(getActivity().getApplicationContext(), "Measurable list is empty", Toast.LENGTH_LONG).show();
+                    taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
+                    return;
+                }
                 // Log that inputs are valid and proceeding with task creation
                 Log.d("TaskDelegate", "Valid inputs, proceeding with task creation");
 
@@ -388,12 +395,11 @@ public class TTSTaskDelegationFragment extends Fragment {
                 String projectName = taskDeliProjName.getText().toString().trim();
                 if (!projectName.isEmpty())
                 {
-                    getProjectCodeAndUpdateUi(isProjectNameValid()).thenAccept(projectCode -> {
-                        appExecutor.getMainThread().execute(() -> {
-                            taskDeliProjCode.setText(projectCode);
-
-                        });
-                    }).exceptionally(e -> {
+                    getProjectCodeViaItsName(isProjectNameValid()).thenAccept(projectCode -> appExecutor
+                            .getMainThread()
+                            .execute(() ->
+                                    taskDeliProjCode.setText(projectCode))
+                    ).exceptionally(e -> {
                         Log.e("Project Code Error", "Failed to fetch project code: " + e.getMessage());
                         appExecutor.getMainThread().execute(() -> {
                             Toast.makeText(getActivity().getApplicationContext(), "Failed to fetch project code", Toast.LENGTH_LONG).show();
@@ -672,15 +678,7 @@ public class TTSTaskDelegationFragment extends Fragment {
 
     private String delegationTime()
     {
-//        Date currentDate = new Date();
-//        SimpleDateFormat dateAndTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm a");
-//        dateAndTimeFormat.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
-//        String ISTFormat = dateAndTimeFormat.format(currentDate);
-//        return ISTFormat;
-//        ZonedDateTime dateTimeInIST = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
-//        DateTimeFormatter inOfPattern = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm a");
-//        String currentDateAndTime = dateTimeInIST.format(inOfPattern);
-//        return currentDateAndTime.trim();
+
         return  DateConverter.getCurrentDateTime();
     }
 
@@ -712,21 +710,26 @@ public class TTSTaskDelegationFragment extends Fragment {
                                     measurableListDataModels.add(m);
                                 }
                                 future.complete(measurableListDataModels);
-                                Log.d("Meaurable List", "list" + measurableListDataModels);
-
-
-
                             }
                         }
                         if (apiResponse instanceof APIErrorResponse) {
                             String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                            Log.e("Error Received", "" + erMsg);
+                            future.completeExceptionally(new Throwable(erMsg));
+
                         }
                         if (apiResponse instanceof APIErrorResponse) {
-                            Log.e("Response", "is empty repsonse" + apiResponse);
+                            future.completeExceptionally(new Throwable("empty response"));
                         }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    }
+                    catch (ClassCastException e){
+                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    }
+                    catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        future.completeExceptionally(new Throwable("Exception occured while performing input output of measurables due to" + e.getMessage()));
+                    }
+                    catch (RuntimeException e) {
+                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                     }
 
 
@@ -734,7 +737,7 @@ public class TTSTaskDelegationFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.e("Network Request", "Failed: " + t.getMessage()+"  "+t.getStackTrace());
+                    future.completeExceptionally(new Throwable(t.getMessage()));
 
                 }
             });
@@ -749,9 +752,9 @@ public class TTSTaskDelegationFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                APIResponse apiResponse = null;
+
                 try {
-                    apiResponse = APIResponse.create(response);
+                    APIResponse  apiResponse = APIResponse.create(response);
                     if (apiResponse != null) {
                         if (apiResponse instanceof APISuccessResponse) {
                             String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
@@ -763,16 +766,30 @@ public class TTSTaskDelegationFragment extends Fragment {
                                 future.complete(messageAndId);
                             }
                         }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            future.completeExceptionally(new Throwable(erMsg));
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            future.completeExceptionally(new Throwable("empty response"));
+                        }
                     }
-                } catch (IOException e) {
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
                     Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                    future.completeExceptionally(new Exception("API request failed: " + response.code()));
+                    future.completeExceptionally(new Throwable("Exception occured while performing input output of task due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                future.completeExceptionally(t);
+                future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
         return future;
@@ -782,7 +799,7 @@ public class TTSTaskDelegationFragment extends Fragment {
         CompletableFuture<Boolean> future  = new CompletableFuture<>();
         if(measurableListDataModel.isEmpty()) {
             future.complete(false);
-            return future;
+             future.completeExceptionally(new Throwable("measurables are not exits"));
         }
         AtomicInteger pendingTasks = new AtomicInteger(measurableListDataModels.size());
         AtomicBoolean allSuccessful = new AtomicBoolean(true);
@@ -797,8 +814,6 @@ public class TTSTaskDelegationFragment extends Fragment {
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                        Log.d("Debug", "Response received for addDailyTimeShareMeasurables"+response.body());
-
                         try {
                             APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
                             if (apiResponse != null) {
@@ -809,22 +824,29 @@ public class TTSTaskDelegationFragment extends Fragment {
                                         Log.d("Debug", "Measurable completed with success");
                                         allSuccessful.set(false);
                                     }
-                                }else {
+                                } else {
                                     Log.e("Result", "apiresponse is nul");
                                     allSuccessful.set(false);
 
                                 }
                             }
-                        } catch (IOException e) {
-
-                            Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                            allSuccessful.set(false);
                         }
+                        catch (ClassCastException e){
+                               future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                            }
+                        catch (IOException e) {
+                                Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                                future.completeExceptionally(new Throwable("Exception occured while performing input output of measurable due to" + e.getMessage()));
+                            }
+                        catch (RuntimeException e) {
+                                future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                            }
+
                         finally {
                             if (pendingTasks.decrementAndGet() == 0){
                                 future.complete(allSuccessful.get());
+                             }
                             }
-                        }
                     }
 
                     @Override
@@ -832,7 +854,7 @@ public class TTSTaskDelegationFragment extends Fragment {
                         Log.e("IOException", "Exception occurred: " + t.getMessage(), t);
                         allSuccessful.set(false);
                         if (pendingTasks.decrementAndGet() == 0) {
-                            future.complete(false);
+                            future.completeExceptionally(new Throwable(t.getMessage()));
                         }
                     }
                 });
@@ -842,7 +864,7 @@ public class TTSTaskDelegationFragment extends Fragment {
     }
 
 
-    public CompletableFuture<String> getProjectCodeAndUpdateUi(String projectName) {
+    public CompletableFuture<String> getProjectCodeViaItsName(String projectName) {
         CompletableFuture<String> future = new CompletableFuture<>();
         appExecutor.getNetworkIO().execute(() -> {
 
@@ -861,13 +883,21 @@ public class TTSTaskDelegationFragment extends Fragment {
                         }
                         if (apiResponse instanceof APIErrorResponse) {
                             String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                            Log.e("Error Received", erMsg);
+                            future.completeExceptionally(new Throwable(erMsg));
                         }
                         if (apiResponse instanceof APIErrorResponse) {
-                            Log.e("Response", "is empty repsonse" + apiResponse);
+                            future.completeExceptionally(new Throwable("empty response"));
                         }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    }
+                    catch (ClassCastException e){
+                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    }
+                    catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        future.completeExceptionally(new Throwable("Exception occured while performing input output of projectCode due to" + e.getMessage()));
+                    }
+                    catch (RuntimeException e) {
+                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                     }
 
                 }
@@ -875,7 +905,7 @@ public class TTSTaskDelegationFragment extends Fragment {
 
                 @Override
                 public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                    future.completeExceptionally(t);
+                    future.completeExceptionally(new Throwable(t.getMessage()));
 
                 }
             });

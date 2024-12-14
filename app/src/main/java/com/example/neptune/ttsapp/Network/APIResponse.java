@@ -25,7 +25,7 @@ public  class APIResponse<T>{
         }
 
         String msg = "";
-        if (response.isSuccessful() && response.body() instanceof ResponseBody) {
+        if (response.body() instanceof ResponseBody) {
              msg =((ResponseBody)response.body()).getMessage().getAsString();
              return new APIErrorResponse<>(msg);
         } else  if (response.errorBody() != null && !(response.body() instanceof ResponseBody)){
