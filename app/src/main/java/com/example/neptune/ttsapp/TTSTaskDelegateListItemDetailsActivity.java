@@ -156,8 +156,9 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 
             TDLIDProcessing.setVisibility(View.INVISIBLE);
 
-            if (taskDelegateListItemDetails.getStatus().equals("")) { TDLIDComplete.setVisibility(View.INVISIBLE); }
-
+        //    if (taskDelegateListItemDetails.getStatus().equals("")) { TDLIDComplete.setVisibility(View.INVISIBLE); }
+            // a user who assigned the task , can not complete the task by own, thus this code check the same
+            if (!taskDelegateListItemDetails.getTaskReceivedUserId().equals(getUserId())) TDLIDComplete.setVisibility(View.INVISIBLE);
         }
         else if (taskAcceptedItemDetails!=null)
         {
@@ -173,9 +174,12 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             TDLIDDescription.setText(taskAcceptedItemDetails.getDescription());
             measurableListCustomAdapter = new MeasurableListCustomAdapter(acceptedTaskMeasurales,getApplicationContext());
             TDLIDlistView.setAdapter(measurableListCustomAdapter);
-            TDLIDMeasurableLabel.setVisibility(View.INVISIBLE);
-            TDLIDlistView.setVisibility(View.INVISIBLE);
-            TDLIDComplete.setVisibility(View.INVISIBLE);
+            if (taskAcceptedItemDetails.getStatus().equals(Status.Accepted.name()) && !taskAcceptedItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
+                TDLIDProcessing.setVisibility(View.VISIBLE);
+                TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
+                TDLIDComplete.setVisibility(View.INVISIBLE);
+            }
+
 //            TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
         }
         else if (taskProcessingItemDetails!=null)
@@ -203,12 +207,55 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                     Log.d("DEBUG", "Status equals In_Process: " + taskProcessingItemDetails.getStatus().equals("In_Process"));
                     Log.d("DEBUG", "DelegateOwnerUserID mismatch: " +
                             !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId()));
-                    TDLIDComplete.setVisibility(View.VISIBLE);
-                    TDLIDComplete.setText("Approval Request");
+
+//                    Log.d("DEBUG", "setting visiblity of complete to be true " + (timeShares != null));
+//                    TDLIDComplete.setVisibility(View.VISIBLE);
+//                    Log.d("DEBUG", "TDLIDComplete visibility set to: " + TDLIDComplete.getVisibility());
+//                    TDLIDComplete.setText("ApRequest");
+//                    Log.d("DEBUG", "modifying comlete button text " + TDLIDComplete.getText());
+//                    TDLIDDisplayTimeShares.setVisibility(View.VISIBLE);
+//                    TDLIDProcessing.setVisibility(View.INVISIBLE);
+                    appExecutors.getMainThread().execute(() -> {
+                        TDLIDComplete.setVisibility(View.VISIBLE);
+                        TDLIDComplete.setText("ApRequest");
+                        TDLIDDisplayTimeShares.setVisibility(View.VISIBLE);
+                        TDLIDProcessing.setVisibility(View.INVISIBLE);
+                    });
 
                 } else {
-                    // Either timeShares is null or empty, or the other conditions failed
+                    TDLIDDisplayTimeShares.setVisibility(View.VISIBLE);
                     TDLIDComplete.setVisibility(View.INVISIBLE);
+                    TDLIDProcessing.setVisibility(View.INVISIBLE);
+                }
+
+
+                if(taskProcessingItemDetails.getStatus().equals(Status.Approved.name()) && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())) {TDLIDComplete.setVisibility(View.VISIBLE); TDLIDComplete.setText("Complete");
+                        Log.d("DEBUG", "check status processing task status " + (taskProcessingItemDetails.getStatus()));
+
+                        TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
+                        TDLIDProcessing.setVisibility(View.INVISIBLE);
+                    }
+
+                   else {
+                        // Either timeShares is null or empty, or the other conditions failed
+                        TDLIDComplete.setVisibility(View.INVISIBLE);
+                    }
+                   if (taskProcessingItemDetails.getStatus().equals(Status.Accepted.name()) && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
+                       TDLIDProcessing.setVisibility(View.VISIBLE);
+                       TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
+                   }
+
+                if (taskProcessingItemDetails.getStatus().equals(Status.Pending.name()) && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
+                    TDLIDProcessing.setVisibility(View.INVISIBLE);
+                    TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
+                    TDLIDComplete.setVisibility(View.INVISIBLE);
+                }
+
+                if (taskProcessingItemDetails.getStatus().equals("revised") && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
+                    TDLIDComplete.setVisibility(View.VISIBLE);
+                    TDLIDComplete.setText("ApRequest");
+                    TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
+                    TDLIDProcessing.setVisibility(View.INVISIBLE);
                 }
 
 
@@ -235,9 +282,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Failed to fetch timeshares",Toast.LENGTH_LONG).show();
                 return null;
             });
-            if(taskProcessingItemDetails.getStatus().equals("Approved")) {TDLIDComplete.setVisibility(View.VISIBLE); TDLIDComplete.setText("Complete");}else {
-                TDLIDComplete.setVisibility(View.INVISIBLE);
-            }
+//            if(taskProcessingItemDetails.getStatus().equals(Status.Accepted.name())) {TDLIDComplete.setVisibility(View.VISIBLE); TDLIDComplete.setText("Complete");}
 //                    if(taskProcessingItemDetails.getStatus().equals("In_Process") &&
 //                        !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())) {
 //                    TDLIDComplete.setVisibility(View.VISIBLE);
@@ -247,8 +292,11 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 //                    && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
 //                TDLIDComplete.setText("Approval Request");
 //            }
-
-            TDLIDProcessing.setVisibility(View.INVISIBLE);
+//
+//            TDLIDProcessing.setVisibility(View.INVISIBLE);
+//            if (taskProcessingItemDetails.getStatus().equals(Status.Pending.name()) ||
+//                    taskProcessingItemDetails.getStatus().equals(Status.Accepted.name())){
+//             TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE); }
          }
         else if (taskSenderApprovalItemDetails!=null)
         {
@@ -320,7 +368,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                 }
                 else if (taskProcessingItemDetails != null)
                 {
-                    if (taskProcessingItemDetails.getStatus().equals("In_Process")) {
+                    if (taskProcessingItemDetails.getStatus().equals("In_Process") || taskProcessingItemDetails.getStatus().equals("revised")) {
                         if (InternetConnectivity.isConnected()) {
 
                             updateTaskManagementStatus(taskProcessingItemDetails.getId(),unapproved).thenAccept(requestForApproval -> {

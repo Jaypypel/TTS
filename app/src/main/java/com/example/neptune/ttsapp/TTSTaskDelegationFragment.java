@@ -110,7 +110,7 @@ public class TTSTaskDelegationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.a, container, false);
+        View view = inflater.inflate(R.layout.fragment_ttstask_delegation, container, false);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -122,27 +122,6 @@ public class TTSTaskDelegationFragment extends Fragment {
 
         taskDeliDate=view.findViewById(R.id.textViewDate);
         time =  view.findViewById(R.id.textViewTime);
-
-        final Handler someHandler = new Handler(Looper.getMainLooper());
-        someHandler.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = new Date();
-                String currentDate = formatter.format(date1);
-                taskDeliDate.setText("Date :  " +currentDate);
-
-                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-                Date time1 = new Date();
-                String currentTime = timeFormatter.format(time1);
-                time.setText("Time :  " +currentTime);
-
-                someHandler.postDelayed(this, 1000);
-            }
-        }, 10);
-
 
 
         taskDeliUserName = view.findViewById(R.id.editTextTaskDeliUserName);
@@ -169,6 +148,11 @@ public class TTSTaskDelegationFragment extends Fragment {
         taskDeliMeasurableQty=view.findViewById(R.id.editTextTaskDeliQty);
         taskDeliMeasurableUnit = view.findViewById(R.id.editTextTaskDeliUnit);
 
+
+        appExecutor.getMainThread().execute(() -> {
+            taskDeliDate.setText("Date :  " +DateConverter.currentDate());
+            time.setText("Time :  " +DateConverter.currentTime());
+        });
 
         addMeasurable.setOnClickListener(v -> {
             try {
