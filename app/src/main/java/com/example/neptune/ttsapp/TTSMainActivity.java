@@ -34,6 +34,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -240,19 +241,24 @@ public class TTSMainActivity extends AppCompatActivity {
         //Code For set measurable list to spinner
         if (InternetConnectivity.isConnected())
         {
+            // Create a progress bar or loading spinner
+            ProgressBar loadingIndicator = findViewById(R.id.progressBarInMainPage);
 
-//            appExecutor.getMainThread().execute(() -> {
-//                timeShareDate.setText("");
-//                timeShareStartTime.setText("");
-//                timeShareEndTime.setText("");
-//                timeShareDescription.setText("");
-//                timeShareMeasurableQty.setText("");
-//                timeShareProjCode.setText("");
-//                timeShareActivityName.setText("");
-//                timeShareTaskName.setText("");
-//                timeShareProjName.setText("");
-//                timeShareMeasurableUnit.setText("");
-//            });
+            // Show loading before network calls
+            loadingIndicator.setVisibility(View.VISIBLE);
+
+            appExecutor.getMainThread().execute(() -> {
+                timeShareDate.setText("");
+                timeShareStartTime.setText("");
+                timeShareEndTime.setText("");
+                timeShareDescription.setText("");
+                timeShareMeasurableQty.setText("");
+                timeShareProjCode.setText("");
+                timeShareActivityName.setText("");
+                timeShareTaskName.setText("");
+                timeShareProjName.setText("");
+                timeShareMeasurableUnit.setText("");
+            });
             appExecutor.getNetworkIO().execute(() -> {
                 CompletableFuture<ArrayList<String>> activityNames = getActivityNames();
                 CompletableFuture<ArrayList<String>> projectNames = getProjectNames();
@@ -269,11 +275,15 @@ public class TTSMainActivity extends AppCompatActivity {
                         updateTaskNamesAdapter(taskNames.join());
                         updateProjectNamesAdapter(projectNames.join());
                         updateMeasurableObjectsAdapter(measurableObjects.join());
+
                     })
                 ).exceptionally(e -> {
-                    appExecutor.getMainThread().execute(() -> Toast
+                    appExecutor.getMainThread().execute(() -> {
+                            loadingIndicator.setVisibility(View.GONE);
+                            Toast
                             .makeText(getApplicationContext(),"Failed to load data",Toast.LENGTH_LONG)
-                            .show());
+                            .show();
+                    });
                     return null;
                 });
             });
