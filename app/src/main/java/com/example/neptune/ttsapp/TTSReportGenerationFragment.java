@@ -2,13 +2,17 @@ package com.example.neptune.ttsapp;
 
 
 import android.app.DatePickerDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
+
 import android.os.StrictMode;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +24,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.ReportServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.UserServiceInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
@@ -30,12 +36,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.File;
+
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,14 +52,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import jxl.Workbook;
-import jxl.WorkbookSettings;
-import jxl.write.Label;
-import jxl.write.NumberFormat;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableFont;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -68,7 +65,8 @@ public class TTSReportGenerationFragment extends Fragment {
     @Inject
     UserServiceInterface userService;
 
-//    public TTSReportGenerationFragment() { }
+    @Inject
+    ReportServiceInterface reportService;
 
     private EditText startDate,endDate;
     private TextView user,date,time;
@@ -109,19 +107,14 @@ public class TTSReportGenerationFragment extends Fragment {
 
             getUsernames().thenAccept(usernames -> {
                 ArrayList<String>  users = usernames;
-                //users.add(0,"Select user");
+                users.add(0,"Select user");
                 ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item,users);
                 userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinnerSelectUser.setAdapter(userSelectAdapter);
             }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update usernames", Toast.LENGTH_LONG).show();
                 return null;
             });
-//            ArrayList users = getUserList();
-//            users.add(0, "Select User");
-//            spinnerSelectUser = view.findViewById(R.id.spinnerRGSelectUser);
-//            ArrayAdapter<String> userAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
-//            userAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            spinnerSelectUser.setAdapter(userAdapter);
+
         }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
@@ -166,14 +159,30 @@ public class TTSReportGenerationFragment extends Fragment {
             {
                 if (InternetConnectivity.isConnected())
                 {
-                    if (isStartDateValid().isEmpty()){startDate.setError("Start Date Cannot Be Empty");}
-                    else if (isEndDateValid().isEmpty()){endDate.setError("Start Date Cannot Be Empty");}
-                    else
-                    {
-                        generateUserDTSExcelReport(getUserDTSReportDetails(isUserValid(), isStartDateValid(), isEndDateValid()));
+                    if (isStartDateValid().isEmpty()){startDate.setError("Start Date Cannot Be Empty");
+                        return;
+                    }
+                    if (isEndDateValid().isEmpty()){endDate.setError("Start Date Cannot Be Empty");
+                    return;
+                    }
+
+//                    if (isStartDateValid().equals(isEndDateValid())){
+//                        Toast.makeText(getActivity().getApplicationContext(), "Start and End can't be same", Toast.LENGTH_LONG).show();
+//                    }
+
+                    getReportByUsernameAndDateRange(isUserValid(),isStartDateValid(),isEndDateValid()).thenAccept(file -> {
+                        Log.e("file",  "running into future call");
+                        saveToPublicDownloads(getContext(),isUserValid()+ " Report "+ " For " +isStartDateValid() + " And " + isEndDateValid(),file);
+                        Log.e("Debugging",  "calling the save to public downloads");
+                    }).exceptionally(e -> {
+                        Toast.makeText(getActivity().getApplicationContext(), "Failed to get the file from the server ", Toast.LENGTH_LONG).show();
+                        Log.e("Error", "getting error : "+e.getMessage() +" cause : "+e.getCause()+" error : "+e);
+                        return null;
+                    });
+//                        generateUserDTSExcelReport(getUserDTSReportDetails(isUserValid(), isStartDateValid(), isEndDateValid()));
                         startDate.setText("");
                         endDate.setText("");
-                    }
+
                 }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
             } catch (Exception e){e.printStackTrace();}
@@ -264,295 +273,62 @@ public class TTSReportGenerationFragment extends Fragment {
         return future;
     }
 
-    // Getting Report Generation Details
-    public ArrayList <ReportGenerationDataModel> getUserReportDetails(String userID, String startDate,String endDate){
-
-        ArrayList<ReportGenerationDataModel> reportDetails = new ArrayList();
-        ReportGenerationDataModel reportGenerationDataModel;
-        Connection con;
-
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            String query = "SELECT TASK_MANAGEMENT.*,TIME_SHARE.*,TIME_SHARE_MEASURABLES.MEASURABLE_QUANTITY, TIME_SHARE_MEASURABLES.MEASURABLE_UNIT,MEASURABLES.NAME FROM TASK_MANAGEMENT " +
-                    "RIGHT OUTER JOIN TIME_SHARE ON TASK_MANAGEMENT.ID = TIME_SHARE.FK_TASK_MANAGEMENT_ID " +
-                    "LEFT JOIN TIME_SHARE_MEASURABLES ON TIME_SHARE.ID = TIME_SHARE_MEASURABLES.FK_TIME_SHARE_ID " +
-                    "LEFT JOIN MEASURABLES ON TIME_SHARE_MEASURABLES.FK_MEASURABLE_ID= MEASURABLES.ID " +
-                    "WHERE TASK_MANAGEMENT.FK_AUTHENTICATION_RECEIVED_USER_ID = ? AND TIME_SHARE.DATE_OF_TIME_SHARE BETWEEN ? AND ? ";
-
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, userID);
-            ps.setString(2,startDate);
-            ps.setString(3,endDate);
 
 
-            ResultSet rs = ps.executeQuery();
+    public CompletableFuture<byte[]> getReportByUsernameAndDateRange(String username, String startDate, String endDate){
+        CompletableFuture<byte[]> future = new CompletableFuture<>();
+        Call<okhttp3.ResponseBody> call = reportService.getDTSReportByUsernameAndDateRange(username,startDate,endDate);
+        call.enqueue(new Callback<okhttp3.ResponseBody>() {
+            @Override
+            public void onResponse(Call<okhttp3.ResponseBody> call, Response<okhttp3.ResponseBody> response) {
+                try {
+                    if (response.isSuccessful()) {
+                        byte[] fileDate = response.body().bytes();
+                        future.complete(fileDate);}
+                    else future.completeExceptionally(new Throwable("Failed to retrieve report"));
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
 
-            while (rs.next()) {
-
-                reportGenerationDataModel = new ReportGenerationDataModel();
-
-                reportGenerationDataModel.setTaskOwnerUser(rs.getString("FK_AUTHENTICATION_OWNER_USER_ID"));
-                reportGenerationDataModel.setTaskReceivedUser(rs.getString("FK_AUTHENTICATION_RECEIVED_USER_ID"));
-                reportGenerationDataModel.setActivityName(rs.getString("ACTIVITY_NAME"));
-                reportGenerationDataModel.setTaskName(rs.getString("TASK_NAME"));
-                reportGenerationDataModel.setProjectCode(rs.getString("PROJECT_ID"));
-                reportGenerationDataModel.setProjectName(rs.getString("PROJECT_NAME"));
-                reportGenerationDataModel.setActualTotalTime(rs.getString("ACTUAL_TOTAL_TIME"));
-                reportGenerationDataModel.setTimeShareDate(rs.getString("DATE_OF_TIME_SHARE"));
-                reportGenerationDataModel.setStartTime(rs.getString("START_TIME"));
-                reportGenerationDataModel.setEndTime(rs.getString("END_TIME"));
-                reportGenerationDataModel.setTimeDifference(rs.getString("TIME_DIFFERENCE"));
-                reportGenerationDataModel.setMeasurableName(rs.getString("NAME"));
-                reportGenerationDataModel.setMeasurableQty(rs.getString("MEASURABLE_QUANTITY"));
-                reportGenerationDataModel.setMeasurableUnit(rs.getString("MEASURABLE_UNIT"));
-                reportGenerationDataModel.setDescription(rs.getString("DESCRIPTION"));
-
-                reportDetails.add(reportGenerationDataModel);
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                } catch (IOException e) {
+                    future.completeExceptionally(new Throwable("Io excpetion occured  "+ e.getMessage() +   " its cause "+e.getCause()));
+                }
             }
 
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-        return reportDetails;
+            @Override
+            public void onFailure(Call<okhttp3.ResponseBody> call, Throwable t) {
+                future.completeExceptionally(new Throwable(t.getMessage()));
+            }
+        });
+
+        return future;
     }
 
+    private void saveToPublicDownloads(Context context, String fileName, byte[] fileData) {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+        values.put(MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel");
+        values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
 
-
-    // Getting Report Generation Details
-    public ArrayList <ReportDTSDataModel> getUserDTSReportDetails(String userID, String startDate,String endDate){
-
-        ArrayList<ReportDTSDataModel> reportDetails = new ArrayList();
-        ReportDTSDataModel reportDTSDataModel;
-        Connection con;
-
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            String query = "SELECT DAILY_TIME_SHARE.*,MEASURABLES.NAME,DAILY_TIME_SHARE_MEASURABLE.MEASURABLE_QUANTITY,DAILY_TIME_SHARE_MEASURABLE.MEASURABLE_UNIT FROM DAILY_TIME_SHARE\n" +
-                    "LEFT JOIN DAILY_TIME_SHARE_MEASURABLE ON DAILY_TIME_SHARE.ID = DAILY_TIME_SHARE_MEASURABLE.FK_TIME_SHARE_ID\n" +
-                    "LEFT JOIN MEASURABLES ON DAILY_TIME_SHARE_MEASURABLE.FK_MEASURABLE_ID = MEASURABLES.ID\n" +
-                    "WHERE DAILY_TIME_SHARE.FK_AUTHENTICATION_USER_ID = ? AND \n" +
-                    "DAILY_TIME_SHARE.DATE_OF_TIME_SHARE BETWEEN ? AND ? ";
-
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, userID);
-            ps.setString(2,startDate);
-            ps.setString(3,endDate);
-
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                reportDTSDataModel = new ReportDTSDataModel();
-
-                reportDTSDataModel.setTimeShareDate(rs.getString("DATE_OF_TIME_SHARE"));
-                reportDTSDataModel.setProjectCode(rs.getString("PROJECT_CODE"));
-                reportDTSDataModel.setProjectName(rs.getString("PROJECT_NAME"));
-                reportDTSDataModel.setActivityName(rs.getString("ACTIVITY_NAME"));
-                reportDTSDataModel.setTaskName(rs.getString("TASK_NAME"));
-                reportDTSDataModel.setStartTime(rs.getString("START_TIME"));
-                reportDTSDataModel.setEndTime(rs.getString("END_TIME"));
-                reportDTSDataModel.setConsumedTime(rs.getString("CONSUMED_TIME"));
-                reportDTSDataModel.setMeasurableName(rs.getString("NAME"));
-                reportDTSDataModel.setMeasurableQty(rs.getString("MEASURABLE_QUANTITY"));
-                reportDTSDataModel.setMeasurableUnit(rs.getString("MEASURABLE_UNIT"));
-                reportDTSDataModel.setDescription(rs.getString("DESCRIPTION"));
-
-                reportDetails.add(reportDTSDataModel);
+        ContentResolver resolver = context.getContentResolver();
+        Uri uri = resolver.insert(MediaStore.Files.getContentUri("external"), values);
+        if (uri == null) {
+            Toast.makeText(context, "Failed to get URI for file", Toast.LENGTH_SHORT).show();
+            return; // Exit if URI is null
+        }
+        try (OutputStream outputStream = resolver.openOutputStream(uri)) {
+            if (outputStream != null) {
+                outputStream.write(fileData);
+                Toast.makeText(context, "File saved to Downloads", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(context, "Failed to open OutputStream", Toast.LENGTH_SHORT).show();
             }
-
-            rs.close();
-            ps.close();
-            con.close();
-        } catch (Exception e) { e.printStackTrace(); }
-        return reportDetails;
-    }
-
-//    private void sendEmail(){
-//        String filename = "vilas Feb 2019 Report.xls";
-//        File fileLocation = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ "Feb 2019 Reports" + filename);
-//       // Uri path = Uri.fromFile(fileLocation);
-//        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-//        // set the type to 'email'
-//        emailIntent .setType("vnd.android.cursor.dir/email");
-//        emailIntent.setType("application/x-vcard");
-//        String to[] = {"harshadgondil25@gmail.com"};
-//        emailIntent .putExtra(Intent.EXTRA_EMAIL, to);
-//        // the attachment
-//        emailIntent .putExtra(Intent.EXTRA_STREAM,Uri.parse( "file://"+fileLocation.getAbsolutePath()));
-//        // the mail subject
-//        emailIntent .putExtra(Intent.EXTRA_SUBJECT, "Feb 2019 Report");
-//        startActivity(Intent.createChooser(emailIntent , "Send email..."));
-//    }
-
-
-    private void generateUserDTSExcelReport(ArrayList<ReportDTSDataModel> reportDTSDataModels)
-    {
-        File sd = Environment.getExternalStorageDirectory();
-        // File Name
-        String fileName = isUserValid() + " " + getMonth() + " " + "Report.xls";
-        // Folder Name
-        String folderName = getMonth() + " " + "Reports";
-
-        File directory = new File(sd.getAbsolutePath() + "/" + folderName);
-        //create directory if not exist
-        if (!directory.isDirectory()) { directory.mkdirs(); }
-
-        try {
-
-            //file path
-            File file = new File(directory, fileName);
-            WorkbookSettings wbSettings = new WorkbookSettings();
-            wbSettings.setLocale(new Locale("en", "EN"));
-            WritableWorkbook workbook;
-
-            workbook = Workbook.createWorkbook(file, wbSettings);
-
-            //Excel sheet name. 0 represents first sheet
-//            WritableSheet planSheet = workbook.createSheet("Planning", 0);
-            WritableSheet sheet = workbook.createSheet("Daily Worksheet", 0);
-
-//            NumberFormat numberFormat = new NumberFormat("00:00");
-//            WritableCellFormat nFormat = new WritableCellFormat(numberFormat);
-
-
-            WritableCellFormat cFormat = new WritableCellFormat();
-            WritableFont font = new WritableFont(WritableFont.ARIAL, 16, WritableFont.BOLD);
-            cFormat.setFont(font);
-
-            // column and row for Daily Worksheet
-            sheet.addCell(new Label(0, 0, "Date Of TimeShare",cFormat));
-            sheet.addCell(new Label(1, 0, "Project Code",cFormat));
-            sheet.addCell(new Label(2, 0, "Project Name",cFormat));
-            sheet.addCell(new Label(3, 0, "Activity Name",cFormat));
-            sheet.addCell(new Label(4, 0, "Task Name",cFormat));
-            sheet.addCell(new Label(5, 0, "Start Time",cFormat));
-            sheet.addCell(new Label(6, 0, "End Time",cFormat));
-            sheet.addCell(new Label(7, 0, "Consumed Time",cFormat));
-            sheet.addCell(new Label(8, 0, "Measurable Name",cFormat));
-            sheet.addCell(new Label(9, 0, "Measurable Quantity",cFormat));
-            sheet.addCell(new Label(10, 0, "Measurable Unit",cFormat));
-            sheet.addCell(new Label(11, 0, "Description",cFormat));
-
-
-            int j = 1;
-            for (ReportDTSDataModel reportDataModel : reportDTSDataModels){
-
-                sheet.addCell(new Label(0, j, reportDataModel.getTimeShareDate()));
-                sheet.addCell(new Label(1, j, reportDataModel.getProjectCode()));
-                sheet.addCell(new Label(2, j, reportDataModel.getProjectName()));
-                sheet.addCell(new Label(3, j, reportDataModel.getActivityName()));
-                sheet.addCell(new Label(4, j, reportDataModel.getTaskName()));
-                sheet.addCell(new Label(5, j, reportDataModel.getStartTime()));
-                sheet.addCell(new Label(6, j, reportDataModel.getEndTime()));
-                sheet.addCell(new Label(7, j, reportDataModel.getConsumedTime()));
-                sheet.addCell(new Label(8, j, reportDataModel.getMeasurableName()));
-                sheet.addCell(new Label(9, j, reportDataModel.getMeasurableQty()));
-                sheet.addCell(new Label(10, j, reportDataModel.getMeasurableUnit()));
-                sheet.addCell(new Label(11, j, reportDataModel.getDescription()));
-
-
-                j++;
-
-            }
-
-
-            workbook.write();
-            workbook.close();
-            Toast.makeText(getActivity().getApplicationContext(), isUserValid() + "  " + getMonth() + "  " + "Report Generated", Toast.LENGTH_LONG).show();
-
-        } catch(Exception e){ e.printStackTrace(); }
-    }
-
-
-    private void generateUserExcelReport(ArrayList<ReportGenerationDataModel> reportGenerationDetails)
-    {
-        File sd = Environment.getExternalStorageDirectory();
-        // File Name
-        String fileName = isUserValid() + " " + getMonth() + " " + "Report.xls";
-        // Folder Name
-        String folderName = getMonth() + " " + "Reports";
-
-        File directory = new File(sd.getAbsolutePath() + "/" + folderName);
-        //create directory if not exist
-        if (!directory.isDirectory()) { directory.mkdirs(); }
-
-        try {
-
-            //file path
-            File file = new File(directory, fileName);
-            WorkbookSettings wbSettings = new WorkbookSettings();
-            wbSettings.setLocale(new Locale("en", "EN"));
-            WritableWorkbook workbook;
-
-            workbook = Workbook.createWorkbook(file, wbSettings);
-
-            //Excel sheet name. 0 represents first sheet
-            WritableSheet planSheet = workbook.createSheet("Planning", 0);
-            WritableSheet sheet = workbook.createSheet("Daily Worksheet", 1);
-
-
-            WritableCellFormat cFormat = new WritableCellFormat();
-            WritableFont font = new WritableFont(WritableFont.ARIAL, 16, WritableFont.BOLD);
-            cFormat.setFont(font);
-
-            // column and row for Daily Worksheet
-            sheet.addCell(new Label(0, 0, "Task Owner User",cFormat));
-            sheet.addCell(new Label(1, 0, "Task Received User",cFormat));
-            sheet.addCell(new Label(2, 0, "Activity Name",cFormat));
-            sheet.addCell(new Label(3, 0, "Task Name",cFormat));
-            sheet.addCell(new Label(4, 0, "Project Code",cFormat));
-            sheet.addCell(new Label(5, 0, "Project Name",cFormat));
-            sheet.addCell(new Label(6, 0, "Date Of TimeShare",cFormat));
-            sheet.addCell(new Label(7, 0, "Start Time",cFormat));
-            sheet.addCell(new Label(8, 0, "End Time",cFormat));
-            sheet.addCell(new Label(9, 0, "Time Difference",cFormat));
-            sheet.addCell(new Label(10, 0, "Measurable Name",cFormat));
-            sheet.addCell(new Label(11, 0, "Measurable Quantity",cFormat));
-            sheet.addCell(new Label(12, 0, "Measurable Unit",cFormat));
-            sheet.addCell(new Label(13, 0, "Description",cFormat));
-
-            // column and row for Planning
-            planSheet.addCell(new Label(0, 0, "Project Name",cFormat));
-            planSheet.addCell(new Label(1, 0, "Activity Name",cFormat));
-            planSheet.addCell(new Label(2, 0, "Task Name",cFormat));
-            planSheet.addCell(new Label(3, 0, "Actual Time",cFormat));
-
-
-            int j = 1;
-            for (ReportGenerationDataModel reportGenerationDataModel : reportGenerationDetails){
-
-                sheet.addCell(new Label(0, j, reportGenerationDataModel.getTaskOwnerUser()));
-                sheet.addCell(new Label(1, j, reportGenerationDataModel.getTaskReceivedUser()));
-                sheet.addCell(new Label(2, j, reportGenerationDataModel.getActivityName()));
-                sheet.addCell(new Label(3, j, reportGenerationDataModel.getTaskName()));
-                sheet.addCell(new Label(4, j, reportGenerationDataModel.getProjectCode()));
-                sheet.addCell(new Label(5, j, reportGenerationDataModel.getProjectName()));
-                sheet.addCell(new Label(6, j, reportGenerationDataModel.getTimeShareDate()));
-                sheet.addCell(new Label(7, j, reportGenerationDataModel.getStartTime()));
-                sheet.addCell(new Label(8, j, reportGenerationDataModel.getEndTime()));
-                sheet.addCell(new Label(9, j, reportGenerationDataModel.getTimeDifference()));
-                sheet.addCell(new Label(10, j, reportGenerationDataModel.getMeasurableName()));
-                sheet.addCell(new Label(11, j, reportGenerationDataModel.getMeasurableQty()));
-                sheet.addCell(new Label(12, j, reportGenerationDataModel.getMeasurableUnit()));
-                sheet.addCell(new Label(13, j, reportGenerationDataModel.getDescription()));
-
-                planSheet.addCell(new Label(0, j, reportGenerationDataModel.getProjectName()));
-                planSheet.addCell(new Label(1, j, reportGenerationDataModel.getActivityName()));
-                planSheet.addCell(new Label(2, j, reportGenerationDataModel.getTaskName()));
-                planSheet.addCell(new Label(3, j, reportGenerationDataModel.getActualTotalTime()));
-                j++;
-
-            }
-
-
-            workbook.write();
-            workbook.close();
-            Toast.makeText(getActivity().getApplicationContext(), isUserValid() + "  " + getMonth() + "  " + "Report Generated", Toast.LENGTH_LONG).show();
-
-        } catch(Exception e){ e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(context, "Error saving file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 }

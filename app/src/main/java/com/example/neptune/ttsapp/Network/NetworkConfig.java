@@ -103,6 +103,14 @@ public class NetworkConfig {
                 build().create(TimeShareServiceInterface.class);
     }
 
+    @Provides
+    @Singleton
+    public static ReportServiceInterface provideReportService(){
+        return new Retrofit.Builder().baseUrl("http://192.168.0.104:8080")
+                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
+                build().create(ReportServiceInterface.class);
+    }
+
 
 
 

@@ -364,6 +364,13 @@
                 </TableLayout>
 
             </FrameLayout>
+<!--            <ProgressBar-->
+<!--                android:id="@+id/progressBarInReg"-->
+<!--                style="?android:attr/progressBarStyleLarge"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_centerInParent="true"-->
+<!--                android:progressDrawable="@drawable/circular_progress_bar" />-->
 
             <!--<ProgressBar-->
                 <!--android:id="@+id/progressBarInMainPage"-->

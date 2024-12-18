@@ -64,12 +64,11 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -241,6 +240,7 @@ public class TTSMainActivity extends AppCompatActivity {
         //Code For set measurable list to spinner
         if (InternetConnectivity.isConnected())
         {
+
 //            appExecutor.getMainThread().execute(() -> {
 //                timeShareDate.setText("");
 //                timeShareStartTime.setText("");
@@ -253,60 +253,80 @@ public class TTSMainActivity extends AppCompatActivity {
 //                timeShareProjName.setText("");
 //                timeShareMeasurableUnit.setText("");
 //            });
-
             appExecutor.getNetworkIO().execute(() -> {
-                getActivityNames().thenAccept(activityNames -> {
+                CompletableFuture<ArrayList<String>> activityNames = getActivityNames();
+                CompletableFuture<ArrayList<String>> projectNames = getProjectNames();
+                CompletableFuture<ArrayList<String>> taskNames = getTaskNames();
+                CompletableFuture<List<MeasurableListDataModel>> measurableObjects = getMeasurableListAndUpdateUi();
+                CompletableFuture.allOf(
+                        activityNames,
+                        projectNames,
+                        taskNames,
+                        measurableObjects
+                ).thenRun(() -> 
                     appExecutor.getMainThread().execute(() -> {
-                        ArrayAdapter<String> activityNamesAdapter = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_list_item_1,activityNames);
-                        timeShareActivityName.setAdapter(activityNamesAdapter);
-                    });
-                }).exceptionally(e -> {
-                    appExecutor.getMainThread().execute(() ->
-                            Toast.makeText(getApplicationContext(), "couldn't fetch activity names ", Toast.LENGTH_LONG).show());
+                        updateActivityNamesAdapter(activityNames.join());
+                        updateTaskNamesAdapter(taskNames.join());
+                        updateProjectNamesAdapter(projectNames.join());
+                        updateMeasurableObjectsAdapter(measurableObjects.join());
+                    })
+                ).exceptionally(e -> {
+                    appExecutor.getMainThread().execute(() -> Toast
+                            .makeText(getApplicationContext(),"Failed to load data",Toast.LENGTH_LONG)
+                            .show());
                     return null;
                 });
             });
+            
+            
+//            appExecutor.getNetworkIO().execute(() -> {
+//                getActivityNames().thenAccept(activityNames -> {
+//                    appExecutor.getMainThread().execute(() -> {
+//
+//                    });
+//                }).exceptionally(e -> {
+//                    appExecutor.getMainThread().execute(() ->
+//                            Toast.makeText(getApplicationContext(), "couldn't fetch activity names ", Toast.LENGTH_LONG).show());
+//                    return null;
+//                });
+//            });
 
-            appExecutor.getNetworkIO().execute(() -> {
-                getTaskNames().thenAccept(taskNames -> {
-                    appExecutor.getMainThread().execute( () -> {
-                        ArrayAdapter<String> taskNamesAdapter = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_list_item_1,taskNames);
-                        timeShareActivityName.setAdapter(taskNamesAdapter);
-                    });
-                }).exceptionally(e -> {
-                    appExecutor.getMainThread().execute(() ->
-                            Toast.makeText(getApplicationContext(), "couldn't fetch task names ", Toast.LENGTH_LONG).show());
-                    return null;
-                });
-            });
-            appExecutor.getNetworkIO().execute(() -> {
-                getProjectNames().thenAccept(projectNames -> {
-                    appExecutor.getMainThread().execute(() -> {
-                        ArrayAdapter<String> projectNamesAdapter = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_list_item_1, projectNames);
-                        timeShareActivityName.setAdapter(projectNamesAdapter);
-                    });
-                }).exceptionally(e -> {
-                    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
-                    appExecutor.getMainThread().execute(() ->
-                            Toast.makeText(getApplicationContext(), "couldn't fetch project names", Toast.LENGTH_LONG).show());
-                    return null;
-                });
-            });
+//            appExecutor.getNetworkIO().execute(() -> {
+//                getTaskNames().thenAccept(taskNames -> {
+//                    appExecutor.getMainThread().execute( () -> {
+//
+//                    });
+//                }).exceptionally(e -> {
+//                    appExecutor.getMainThread().execute(() ->
+//                            Toast.makeText(getApplicationContext(), "couldn't fetch task names ", Toast.LENGTH_LONG).show());
+//                    return null;
+//                });
+//            });
+//            appExecutor.getNetworkIO().execute(() -> {
+//                getProjectNames().thenAccept(projectNames -> {
+//                    appExecutor.getMainThread().execute(() -> {
+//
+//                    });
+//                }).exceptionally(e -> {
+//                    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
+//                    appExecutor.getMainThread().execute(() ->
+//                            Toast.makeText(getApplicationContext(), "couldn't fetch project names", Toast.LENGTH_LONG).show());
+//                    return null;
+//                });
+//            });
 
 
-            appExecutor.getNetworkIO().execute(() -> {
-                getMeasurableListAndUpdateUi().thenAccept(measurableListDataModels1 -> {
-                    appExecutor.getMainThread().execute(() -> {
-                        ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
-                        adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        timeShareMeasurable.setAdapter(adapterMeasurable);
-                    });
-                }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
-                    appExecutor.getMainThread().execute(() ->
-                            Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
-                    return null;
-                });
-            });
+//            appExecutor.getNetworkIO().execute(() -> {
+//                getMeasurableListAndUpdateUi().thenAccept(measurableListDataModels1 -> {
+//                    appExecutor.getMainThread().execute(() -> {
+//
+//                    });
+//                }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
+//                    appExecutor.getMainThread().execute(() ->
+//                            Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
+//                    return null;
+//                });
+//            });
 
 
 
@@ -328,13 +348,13 @@ public class TTSMainActivity extends AppCompatActivity {
                 String tmeShreMsrblUnit = timeShareMeasurableUnit.getText().toString();
 
                 String[]   parts = tmeShrMsrble.split("-");
-                Log.e("parts",""+parts);
+
 
                 String numberPart = parts[0].split("\\.")[0]; // Cast to int to remove decimal
-                Log.e("numberPart",""+numberPart);
+
                 // Extract the word part
                 String wordPart = parts[1];
-                Log.e("wordPart",""+wordPart);
+
                 if (tmeShreMsrbleQty.isEmpty()){
                     timeShareMeasurableQty.setError("Qty can't be blank");
                     return;
@@ -683,6 +703,36 @@ public class TTSMainActivity extends AppCompatActivity {
 
     }
 
+    private void updateMeasurableObjectsAdapter(List<MeasurableListDataModel> measurableObjects) {
+        ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_spinner_item, measurableObjects);
+        adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        timeShareMeasurable.setAdapter(adapterMeasurable);
+    }
+
+    private void updateProjectNamesAdapter(ArrayList<String> projectNames) {
+        ArrayAdapter<String> projectNamesAdapter = new ArrayAdapter<>(
+                getBaseContext(),
+                android.R.layout.simple_list_item_1,
+                projectNames);
+        timeShareActivityName.setAdapter(projectNamesAdapter);
+    }
+
+    private void updateTaskNamesAdapter(ArrayList<String> taskNames) {
+        ArrayAdapter<String> taskNamesAdapter = new ArrayAdapter<>(
+                getBaseContext(),
+                android.R.layout.simple_list_item_1,
+                taskNames);
+        timeShareActivityName.setAdapter(taskNamesAdapter);
+    }
+
+    private void updateActivityNamesAdapter(ArrayList<String> activityNames) {
+        ArrayAdapter<String> activityNamesAdapter = new ArrayAdapter<>(
+                getBaseContext(), 
+                android.R.layout.simple_list_item_1,
+                activityNames);
+        timeShareActivityName.setAdapter(activityNamesAdapter);
+
+    }
 
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener
@@ -825,7 +875,7 @@ public class TTSMainActivity extends AppCompatActivity {
     }
 
     void setupToolbar(){
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
