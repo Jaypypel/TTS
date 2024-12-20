@@ -2,20 +2,21 @@ package com.example.neptune.ttsapp;
 
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.os.Handler;
 
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -25,9 +26,13 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.fragment.app.FragmentManager;
+
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -40,7 +45,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.neptune.ttsapp.DTO.DailyTimeShareDTO;
-import com.example.neptune.ttsapp.DTO.DailyTimeShareMeasurable;
 import com.example.neptune.ttsapp.Network.APIEmptyResponse;
 import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
@@ -77,18 +81,14 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
-import javax.security.auth.login.LoginException;
 
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -196,6 +196,9 @@ public class TTSMainActivity extends AppCompatActivity {
         });
 
 
+        // Setup AutoCompleteTextViews
+
+
 
         // Code for Measurable list
         listView=findViewById(R.id.listMainMeasurable);
@@ -239,108 +242,59 @@ public class TTSMainActivity extends AppCompatActivity {
         });
         CompletableFuture<List<MeasurableListDataModel>> measurableList  = getMeasurableListAndUpdateUi();
         //Code For set measurable list to spinner
-        if (InternetConnectivity.isConnected())
-        {
-            // Create a progress bar or loading spinner
-            ProgressBar loadingIndicator = findViewById(R.id.progressBarInMainPage);
-
-            // Show loading before network calls
-            loadingIndicator.setVisibility(View.VISIBLE);
-
-            appExecutor.getMainThread().execute(() -> {
-                timeShareDate.setText("");
-                timeShareStartTime.setText("");
-                timeShareEndTime.setText("");
-                timeShareDescription.setText("");
-                timeShareMeasurableQty.setText("");
-                timeShareProjCode.setText("");
-                timeShareActivityName.setText("");
-                timeShareTaskName.setText("");
-                timeShareProjName.setText("");
-                timeShareMeasurableUnit.setText("");
-            });
-            appExecutor.getNetworkIO().execute(() -> {
-                CompletableFuture<ArrayList<String>> activityNames = getActivityNames();
-                CompletableFuture<ArrayList<String>> projectNames = getProjectNames();
-                CompletableFuture<ArrayList<String>> taskNames = getTaskNames();
-                CompletableFuture<List<MeasurableListDataModel>> measurableObjects = getMeasurableListAndUpdateUi();
-                CompletableFuture.allOf(
-                        activityNames,
-                        projectNames,
-                        taskNames,
-                        measurableObjects
-                ).thenRun(() -> 
-                    appExecutor.getMainThread().execute(() -> {
-                        updateActivityNamesAdapter(activityNames.join());
-                        updateTaskNamesAdapter(taskNames.join());
-                        updateProjectNamesAdapter(projectNames.join());
-                        updateMeasurableObjectsAdapter(measurableObjects.join());
-
-                    })
-                ).exceptionally(e -> {
-                    appExecutor.getMainThread().execute(() -> {
-                            loadingIndicator.setVisibility(View.GONE);
-                            Toast
-                            .makeText(getApplicationContext(),"Failed to load data",Toast.LENGTH_LONG)
-                            .show();
-                    });
-                    return null;
-                });
-            });
-            
-            
+//        if (InternetConnectivity.isConnected())
+//        {
+//            // Create a progress bar or loading spinner
+//            ProgressBar loadingIndicator = findViewById(R.id.progressBarInMainPage);
+//
+//            // Show loading before network calls
+//            loadingIndicator.setVisibility(View.VISIBLE);
+//
+//            appExecutor.getMainThread().execute(() -> {
+//                timeShareDate.setText("");
+//                timeShareStartTime.setText("");
+//                timeShareEndTime.setText("");
+//                timeShareDescription.setText("");
+//                timeShareMeasurableQty.setText("");
+//                timeShareProjCode.setText("");
+//                timeShareActivityName.setText("");
+//                timeShareTaskName.setText("");
+//                timeShareProjName.setText("");
+//                timeShareMeasurableUnit.setText("");
+//            });
 //            appExecutor.getNetworkIO().execute(() -> {
-//                getActivityNames().thenAccept(activityNames -> {
+//                CompletableFuture<ArrayList<String>> activityNames = getActivityNames();
+//                CompletableFuture<ArrayList<String>> projectNames = getProjectNames();
+//                CompletableFuture<ArrayList<String>> taskNames = getTaskNames();
+//                CompletableFuture<List<MeasurableListDataModel>> measurableObjects = getMeasurableListAndUpdateUi();
+//                CompletableFuture.allOf(
+//                        activityNames,
+//                        projectNames,
+//                        taskNames,
+//                        measurableObjects
+//                ).thenRun(() ->
 //                    appExecutor.getMainThread().execute(() -> {
+//                        updateActivityNamesAdapter(activityNames.join());
+//                        updateTaskNamesAdapter(taskNames.join());
+//                        updateProjectNamesAdapter(projectNames.join());
+//                        updateMeasurableObjectsAdapter(measurableObjects.join());
 //
-//                    });
-//                }).exceptionally(e -> {
-//                    appExecutor.getMainThread().execute(() ->
-//                            Toast.makeText(getApplicationContext(), "couldn't fetch activity names ", Toast.LENGTH_LONG).show());
-//                    return null;
-//                });
-//            });
-
-//            appExecutor.getNetworkIO().execute(() -> {
-//                getTaskNames().thenAccept(taskNames -> {
-//                    appExecutor.getMainThread().execute( () -> {
-//
-//                    });
-//                }).exceptionally(e -> {
-//                    appExecutor.getMainThread().execute(() ->
-//                            Toast.makeText(getApplicationContext(), "couldn't fetch task names ", Toast.LENGTH_LONG).show());
-//                    return null;
-//                });
-//            });
-//            appExecutor.getNetworkIO().execute(() -> {
-//                getProjectNames().thenAccept(projectNames -> {
+//                    })
+//                ).exceptionally(e -> {
 //                    appExecutor.getMainThread().execute(() -> {
-//
+//                            loadingIndicator.setVisibility(View.GONE);
+//                            Toast
+//                            .makeText(getApplicationContext(),"Failed to load data",Toast.LENGTH_LONG)
+//                            .show();
 //                    });
-//                }).exceptionally(e -> {
-//                    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
-//                    appExecutor.getMainThread().execute(() ->
-//                            Toast.makeText(getApplicationContext(), "couldn't fetch project names", Toast.LENGTH_LONG).show());
 //                    return null;
 //                });
 //            });
-
-
-//            appExecutor.getNetworkIO().execute(() -> {
-//                getMeasurableListAndUpdateUi().thenAccept(measurableListDataModels1 -> {
-//                    appExecutor.getMainThread().execute(() -> {
 //
-//                    });
-//                }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
-//                    appExecutor.getMainThread().execute(() ->
-//                            Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
-//                    return null;
-//                });
-//            });
-
-
-
-        }else {Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+//
+//
+//        }else {Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+        recreateMainView();
 
         timeShareMeasurable.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -539,24 +493,29 @@ public class TTSMainActivity extends AppCompatActivity {
             MaterialDatePicker<Long> datePicker = MaterialDatePicker
                     .Builder
                     .datePicker()
+                    .setTheme(R.style.CustomPickerTheme)
                     .setTitleText("Select Date")
                     .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                     .build();
 
-            datePicker.show(getSupportFragmentManager(),"Date_Picker");
+            if (!datePicker.isAdded()){
+                datePicker.show(getSupportFragmentManager(),"Date_Picker");
+            }
+
             datePicker.addOnPositiveButtonClickListener(selection -> {
                 Log.e("Date",""+datePicker.getHeaderText());
-                LocalDate selectedDate = Instant
-                        .ofEpochMilli(selection)
-                        .atZone(ZoneId.systemDefault())
-                                .toLocalDate();
+                appExecutor.getNetworkIO().execute(() -> {
+                    LocalDate selectedDate = Instant
+                            .ofEpochMilli(selection)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
 
-                DateTimeFormatter df =  DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                String formattedDate = selectedDate.format(df);
-                Log.e("fD",formattedDate);
-                Log.e("getCurrentDate", getTodayDate());
-                Log.e("isDateValid", isDateValid());
-                timeShareDate.setText(formattedDate);
+                    DateTimeFormatter df =  DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    String formattedDate = selectedDate.format(df);
+                    appExecutor.getMainThread().execute(() -> timeShareDate.setText(formattedDate));
+                });
+
+
             });
         });
         //Date Picker start
@@ -585,26 +544,20 @@ public class TTSMainActivity extends AppCompatActivity {
                     .setMinute(10)
                     .setTitleText("Select Start Time")
                     .build();
-
-            timePicker.show(getSupportFragmentManager(),"Time_Picker");
+            if (!timePicker.isAdded()) timePicker
+                    .show(getSupportFragmentManager(),"Time_Picker");
 
             timePicker.addOnPositiveButtonClickListener(selection -> {
-                int hour = timePicker.getHour();
-                int minute = timePicker.getMinute();
-
-                // Determine AM/PM
-                String amPm = (hour < 12) ? "AM" : "PM";
-
-                // Convert to 12-hour format
-                int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
-
-                // Create formatted time string
-                String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
-
-                Log.d("StartTime",formattedTime);
-                timeShareStartTime.setText(formattedTime);
+                appExecutor.getNetworkIO().execute(() -> {
+                    int hour = timePicker.getHour();
+                    int minute = timePicker.getMinute();
+                    String amPm = (hour < 12) ? "AM" : "PM";
+                    int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
+                    String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
+                    appExecutor.getMainThread().execute(()-> timeShareStartTime
+                            .setText(formattedTime));
+                });
             });
-
         });
 
 
@@ -631,23 +584,21 @@ public class TTSMainActivity extends AppCompatActivity {
                     .setTitleText("Select End Time")
                     .build();
 
-            timePicker.show(getSupportFragmentManager(),"Time_Picker");
-
+            if(!timePicker.isAdded()){
+                timePicker.show(getSupportFragmentManager(),"Time_Picker");
+            }
             timePicker.addOnPositiveButtonClickListener(selection -> {
-                int hour = timePicker.getHour();
-                int minute = timePicker.getMinute();
+               appExecutor.getNetworkIO().execute(() -> {
+                   int hour = timePicker.getHour();
+                   int minute = timePicker.getMinute();
+                   String amPm = (hour < 12) ? "AM" : "PM";
+                   int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
+                   String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
+                   appExecutor.getMainThread().execute(() -> timeShareEndTime
+                           .setText(formattedTime));
+               });
 
-                // Determine AM/PM
-                String amPm = (hour < 12) ? "AM" : "PM";
 
-                // Convert to 12-hour format
-                int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
-
-                // Create formatted time string
-                String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
-
-                Log.d("StartTime",formattedTime);
-                timeShareEndTime.setText(formattedTime);
             });
 
         });
@@ -725,6 +676,8 @@ public class TTSMainActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1,
                 projectNames);
         timeShareActivityName.setAdapter(projectNamesAdapter);
+        setupAutoCompleteTextView(timeShareProjName, projectNamesAdapter);
+
     }
 
     private void updateTaskNamesAdapter(ArrayList<String> taskNames) {
@@ -733,14 +686,16 @@ public class TTSMainActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1,
                 taskNames);
         timeShareActivityName.setAdapter(taskNamesAdapter);
+        setupAutoCompleteTextView(timeShareTaskName, taskNamesAdapter);
     }
 
     private void updateActivityNamesAdapter(ArrayList<String> activityNames) {
         ArrayAdapter<String> activityNamesAdapter = new ArrayAdapter<>(
-                getBaseContext(), 
+                getBaseContext(),
                 android.R.layout.simple_list_item_1,
                 activityNames);
         timeShareActivityName.setAdapter(activityNamesAdapter);
+        setupAutoCompleteTextView(timeShareActivityName, activityNamesAdapter);
 
     }
 
@@ -760,36 +715,36 @@ public class TTSMainActivity extends AppCompatActivity {
     private void selectItem(int position) {
 
         Fragment fragment = null;
-        Activity adminActivity=null;
-        Activity mainActivity = null;
+        clearAllFragments();
 
-        if (position!=0)
-        {
-             timeShareMeasurable.setVisibility(View.INVISIBLE);
-             timeShareDate.setVisibility(View.INVISIBLE);
-             timeShareStartTime.setVisibility(View.INVISIBLE);
-             timeShareEndTime.setVisibility(View.INVISIBLE);
-             timeShareDescription.setVisibility(View.INVISIBLE);
-             timeShareMeasurableQty.setVisibility(View.INVISIBLE);
-             timeShareProjCode.setVisibility(View.INVISIBLE);
-             timeShareActivityName.setVisibility(View.INVISIBLE);
-             timeShareTaskName.setVisibility(View.INVISIBLE);
-             timeShareProjName.setVisibility(View.INVISIBLE);
-             timeShareMeasurableUnit.setVisibility(View.INVISIBLE);
-             timeShareCancel.setVisibility(View.INVISIBLE);
-             timeShareSubmit.setVisibility(View.INVISIBLE);
-             timeShareAddMeasurable.setVisibility(View.INVISIBLE);
-             listView.setVisibility(View.INVISIBLE);
-//            user.setVisibility(View.INVISIBLE);
-             date.setVisibility(View.INVISIBLE);
-             time.setVisibility(View.INVISIBLE);
-
-        }
+//        if (position!=0)
+//        {
+//             timeShareMeasurable.setVisibility(View.INVISIBLE);
+//             timeShareDate.setVisibility(View.INVISIBLE);
+//             timeShareStartTime.setVisibility(View.INVISIBLE);
+//             timeShareEndTime.setVisibility(View.INVISIBLE);
+//             timeShareDescription.setVisibility(View.INVISIBLE);
+//             timeShareMeasurableQty.setVisibility(View.INVISIBLE);
+//             timeShareProjCode.setVisibility(View.INVISIBLE);
+//             timeShareActivityName.setVisibility(View.INVISIBLE);
+//             timeShareTaskName.setVisibility(View.INVISIBLE);
+//             timeShareProjName.setVisibility(View.INVISIBLE);
+//             timeShareMeasurableUnit.setVisibility(View.INVISIBLE);
+//             timeShareCancel.setVisibility(View.INVISIBLE);
+//             timeShareSubmit.setVisibility(View.INVISIBLE);
+//             timeShareAddMeasurable.setVisibility(View.INVISIBLE);
+//             listView.setVisibility(View.INVISIBLE);
+////            user.setVisibility(View.INVISIBLE);
+//             date.setVisibility(View.INVISIBLE);
+//             time.setVisibility(View.INVISIBLE);
+//
+//        }
 
         switch (position) {
             case 0:
-                mainActivity = new TTSMainActivity();
-                break;
+                hideAllFragments();
+                recreateMainView();
+                return;
             case 1:
                 fragment = new TTSDailyTimeShareListFragment();
                 break;
@@ -822,7 +777,7 @@ public class TTSMainActivity extends AppCompatActivity {
                 break;
             case 11:
                 if (sessionManager.getUserID().equals("Prerna") || sessionManager.getUserID().equals("YoKo") || sessionManager.getUserID().equals("swar") || sessionManager.getUserID().equals("mangal"))
-                { adminActivity = new TTSAdminActivity();}
+                { startActivity(new Intent(this,TTSAdminActivity.class));}
                 else {Toast.makeText(getApplicationContext(), "You Are Not Admin", Toast.LENGTH_LONG).show(); }
                 break;
 
@@ -831,22 +786,31 @@ public class TTSMainActivity extends AppCompatActivity {
                 break;
         }
 
-        if (adminActivity!=null)
-        {
-            Intent i = new Intent(TTSMainActivity.this, adminActivity.getClass());
-            startActivity(i);
-            finish();
-        }
-        else if (mainActivity!=null){
-            Intent i = new Intent(TTSMainActivity.this, mainActivity.getClass());
-            startActivity(i);
-            finish();
-        }
+//        if (adminActivity!=null)
+//        {
+//            Intent i = new Intent(TTSMainActivity.this, adminActivity.getClass());
+//            startActivity(i);
+//            finish();
+//        }
+//        else if (mainActivity!=null){
+//            Intent i = new Intent(TTSMainActivity.this, mainActivity.getClass());
+//            startActivity(i);
+//            finish();
+//        }
 
 
         if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+            hideMainActivityViews();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                            .setCustomAnimations(
+                                    R.anim.slide_in_right,
+                                    R.anim.slide_out_left,
+                                    R.anim.slide_in_right,
+                                    R.anim.slide_out_right
+                            ).replace(R.id.content_frame, fragment)
+                    .commit();
+
 
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
@@ -854,6 +818,137 @@ public class TTSMainActivity extends AppCompatActivity {
             mDrawerLayout.closeDrawer(mDrawerList);
 
         } else { Log.e("MainActivity", "Error in creating fragment"); }
+    }
+    private void setupAutoCompleteTextView(AutoCompleteTextView textView, ArrayAdapter<String> adapter) {
+        textView.setThreshold(1); // Start suggesting after 1 character
+        textView.setDropDownBackgroundResource(android.R.color.white);
+        textView.setDropDownVerticalOffset(4); // Add some spacing
+
+        // Prevent dropdown from disappearing too quickly
+        textView.setOnItemClickListener((parent, view, position, id) -> {
+            String selection = (String) parent.getItemAtPosition(position);
+            textView.setText(selection);
+            textView.clearFocus();
+        });
+
+        // Handle text changes smoothly
+        textView.addTextChangedListener(new TextWatcher() {
+            private Handler handler = new Handler(Looper.getMainLooper());
+            private Runnable filterRunnable;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (filterRunnable != null) {
+                    handler.removeCallbacks(filterRunnable);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filterRunnable = () -> {
+                    adapter.getFilter().filter(s.toString());
+                };
+                handler.postDelayed(filterRunnable, 300); // Delay filtering by 300ms
+            }
+        });
+    }
+    private void hideMainActivityViews() {
+        timeShareMeasurable.setVisibility(View.GONE);
+        timeShareDate.setVisibility(View.GONE);
+        timeShareStartTime.setVisibility(View.GONE);
+        timeShareEndTime.setVisibility(View.GONE);
+        timeShareDescription.setVisibility(View.GONE);
+        timeShareMeasurableQty.setVisibility(View.GONE);
+        timeShareProjCode.setVisibility(View.GONE);
+        timeShareActivityName.setVisibility(View.GONE);
+        timeShareTaskName.setVisibility(View.GONE);
+        timeShareProjName.setVisibility(View.GONE);
+        timeShareMeasurableUnit.setVisibility(View.GONE);
+        timeShareCancel.setVisibility(View.GONE);
+        timeShareSubmit.setVisibility(View.GONE);
+        timeShareAddMeasurable.setVisibility(View.GONE);
+        listView.setVisibility(View.GONE);
+        date.setVisibility(View.GONE);
+        time.setVisibility(View.GONE);
+    }
+    private void recreateMainView() {
+        // Make all fields visible again
+        timeShareMeasurable.setVisibility(View.VISIBLE);
+        timeShareDate.setVisibility(View.VISIBLE);
+        timeShareStartTime.setVisibility(View.VISIBLE);
+        timeShareEndTime.setVisibility(View.VISIBLE);
+        timeShareDescription.setVisibility(View.VISIBLE);
+        timeShareMeasurableQty.setVisibility(View.VISIBLE);
+        timeShareProjCode.setVisibility(View.VISIBLE);
+        timeShareActivityName.setVisibility(View.VISIBLE);
+        timeShareTaskName.setVisibility(View.VISIBLE);
+        timeShareProjName.setVisibility(View.VISIBLE);
+        timeShareMeasurableUnit.setVisibility(View.VISIBLE);
+        timeShareCancel.setVisibility(View.VISIBLE);
+        timeShareSubmit.setVisibility(View.VISIBLE);
+        timeShareAddMeasurable.setVisibility(View.VISIBLE);
+        listView.setVisibility(View.VISIBLE);
+        date.setVisibility(View.VISIBLE);
+        time.setVisibility(View.VISIBLE);
+
+
+
+
+        // Clear fields
+        clearAll();
+
+        // Reset date and time
+        appExecutor.getMainThread().execute(() -> {
+            date.setText(DateConverter.currentDate());
+            time.setText(DateConverter.currentTime());
+        });
+
+        // Refresh adapters
+        if (InternetConnectivity.isConnected()) {
+            ProgressBar loadingIndicator = findViewById(R.id.progressBarInMainPage);
+            loadingIndicator.setVisibility(View.VISIBLE);
+
+            appExecutor.getNetworkIO().execute(() -> {
+                CompletableFuture<ArrayList<String>> activityNames = getActivityNames();
+                CompletableFuture<ArrayList<String>> projectNames = getProjectNames();
+                CompletableFuture<ArrayList<String>> taskNames = getTaskNames();
+                CompletableFuture<List<MeasurableListDataModel>> measurableObjects = getMeasurableListAndUpdateUi();
+
+                CompletableFuture.allOf(activityNames, projectNames, taskNames, measurableObjects)
+                        .thenRun(() -> appExecutor.getMainThread().execute(() -> {
+                            updateActivityNamesAdapter(activityNames.join());
+                            updateTaskNamesAdapter(taskNames.join());
+                            updateProjectNamesAdapter(projectNames.join());
+                            updateMeasurableObjectsAdapter(measurableObjects.join());
+                            loadingIndicator.setVisibility(View.GONE);
+                        }))
+                        .exceptionally(e -> {
+                            appExecutor.getMainThread().execute(() -> {
+                                Toast.makeText(getApplicationContext(),
+                                        "Failed to refresh data", Toast.LENGTH_LONG).show();
+                                loadingIndicator.setVisibility(View.GONE);
+                            });
+                            return null;
+                        });
+            });
+        }
+    }
+
+    private void clearAllFragments(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        for(Fragment fragment: fragmentManager.getFragments()){
+            fragmentManager.beginTransaction().remove(fragment).commit();
+        }
+    }
+
+    private void hideAllFragments(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        for (Fragment fragment : fragmentManager.getFragments()){
+            fragmentManager.beginTransaction().hide(fragment).commit();
+        }
     }
 
     // Add leading 0 when input date or time is single No like 5
