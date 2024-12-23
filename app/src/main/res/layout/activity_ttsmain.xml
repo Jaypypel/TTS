@@ -7,10 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".TTSMainActivity">
 
-<!--    <data>-->
-<!--        <variable name="viewModel"-->
-<!--                  type="com.example.neptune.ttsapp.MainActivityViewModel"/>-->
-<!--    </data>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,75 +31,60 @@
 
                 <TableLayout
                     android:id="@+id/tableLayout1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <TableRow
                         android:id="@+id/tableRow1"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:orientation="horizontal"
-                        android:padding="5dp">
-
-                        <!--<TextView-->
-                            <!--android:id="@+id/textViewMainUser"-->
-                            <!--android:layout_width="103dp"-->
-                            <!--android:layout_height="25dp"-->
-                            <!--android:layout_column="1"-->
-                            <!--android:layout_marginLeft="10dp"-->
-                            <!--android:layout_marginTop="5dp"-->
-                            <!--android:textColor="@android:color/black"-->
-                            <!--android:textStyle="bold" />-->
-
-                        <TextView
-                            android:id="@+id/textViewMainDate"
-                            android:layout_width="150dp"
-                            android:layout_height="18dp"
-                            android:layout_column="1"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginTop="-18dp"
-                            android:textColor="@android:color/black"
-                            android:textStyle="bold" />
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
 
 
-<!--                        <EditText-->
-<!--                            android:id="@+id/editTextMainDate"-->
-<!--                            android:layout_width="105dp"-->
-<!--                            android:layout_height="35dp"-->
-<!--                            android:layout_column="2"-->
-<!--                            android:layout_marginLeft="50dp"-->
-<!--                            android:ems="10"-->
-<!--                            android:hint="Enter Date"-->
-<!--                            android:inputType="date"-->
-<!--                            android:paddingBottom="5dp" />-->
+                       <LinearLayout
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:orientation="vertical"
+                           android:layout_marginLeft="20dp">
+                           <TextView
+                               android:id="@+id/textViewMainDate"
+                               android:layout_width="80dp"
+                               android:layout_height="wrap_content"
+                               android:layout_column="1"
+                               android:textColor="@android:color/black"
+                               android:textStyle="bold"
+                               android:layout_gravity="top"/>
+
+                           <TextView
+                               android:id="@+id/textViewMainTime"
+                               android:layout_width="wrap_content"
+                               android:layout_height="wrap_content"
+                               android:layout_column="3"
+                               android:layout_gravity="top"
+                               android:textColor="@android:color/black"
+                               android:textStyle="bold" />
+                       </LinearLayout>
+
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textInputMainDateLayout"
-                            android:layout_width="105dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="50dp"
-                            app:hintEnabled="true"
+                            android:layout_marginLeft="70dp"
                             android:hint="Enter Date"
-                            android:paddingBottom="5dp">
+                            app:boxBackgroundMode="outline"
+                            app:hintEnabled="true">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/editTextMainDate"
-                                android:layout_width="match_parent"
-                                android:layout_height="35dp"
-                                android:ems="10"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:ems="2000"
+                                android:gravity="center_vertical"
                                 android:inputType="date" />
                         </com.google.android.material.textfield.TextInputLayout>
 
 
-                        <TextView
-                            android:id="@+id/textViewMainTime"
-                            android:layout_width="150dp"
-                            android:layout_height="18dp"
-                            android:layout_column="3"
-                            android:layout_marginLeft="-305dp"
-                            android:layout_marginTop="02dp"
-                            android:textColor="@android:color/black"
-                            android:textStyle="bold" />
+
 
                     </TableRow>
 
@@ -113,30 +94,22 @@
                     android:id="@+id/tableLayout3"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="45dp">
+                    android:layout_marginTop="65dp">
 
                     <TableRow
                         android:id="@+id/tableRow6"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="5dp">
+                       >
 
-<!--                        <EditText-->
-<!--                            android:id="@+id/editTextMainStartTime"-->
-<!--                            android:layout_width="95dp"-->
-<!--                            android:layout_height="40dp"-->
-<!--                            android:layout_column="1"-->
-<!--                            android:layout_marginLeft="20dp"-->
-<!--                            android:ems="10"-->
-<!--                            android:hint="Start Time"-->
-<!--                            android:inputType="time" />-->
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textInputMainStartTimeLayout"
                             android:layout_width="95dp"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="20dp"
                             app:hintEnabled="true"
+                            app:boxBackgroundMode="outline"
                             android:hint="Start Time">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -148,22 +121,14 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
 
-<!--                        <EditText-->
-<!--                            android:id="@+id/editTextMainEndTime"-->
-<!--                            android:layout_width="95dp"-->
-<!--                            android:layout_height="40dp"-->
-<!--                            android:layout_column="2"-->
-<!--                            android:layout_marginLeft="70dp"-->
-<!--                            android:ems="10"-->
-<!--                            android:hint="End Time"-->
-<!--                            android:inputType="time" />-->
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textInputMainEndTimeLayout"
                             android:layout_width="95dp"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="70dp"
                             app:hintEnabled="true"
-                            android:hint="End Time">
+                            android:hint="End Time"
+                            app:boxBackgroundMode="outline">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/editTextMainEndTime"
@@ -182,7 +147,7 @@
                     android:id="@+id/tableLayout2"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="95dp">
+                    android:layout_marginTop="120dp">
 
                     <TableRow
                         android:id="@+id/tableRow5"
@@ -191,22 +156,15 @@
                         android:orientation="horizontal"
                         android:padding="3dp">
 
-<!--                        <AutoCompleteTextView-->
-<!--                            android:id="@+id/editTextMainTaskName"-->
-<!--                            android:layout_width="215dp"-->
-<!--                            android:layout_height="40dp"-->
-<!--                            android:layout_column="1"-->
-<!--                            android:layout_marginLeft="45dp"-->
-<!--                            android:ems="10"-->
-<!--                            android:hint="Enter Task Name"-->
-<!--                            android:inputType="text" />-->
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textInputMainTaskNameLayout"
                             android:layout_width="215dp"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="45dp"
                             app:hintEnabled="true"
-                            android:hint="Enter Task Name">
+                            android:hint="Enter Task Name"
+                            app:boxBackgroundMode="outline"
+                            >
 
                             <AutoCompleteTextView
                                 android:id="@+id/editTextMainTaskName"
@@ -222,26 +180,19 @@
                     <TableRow
                         android:id="@+id/tableRow12"
                         android:layout_width="match_parent"
-                        android:layout_height="31dp"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:padding="5dp">
 
-<!--                        <EditText-->
-<!--                            android:id="@+id/editTextMainDescription"-->
-<!--                            android:layout_width="213dp"-->
-<!--                            android:layout_height="40dp"-->
-<!--                            android:layout_column="1"-->
-<!--                            android:layout_marginLeft="43dp"-->
-<!--                            android:ems="10"-->
-<!--                            android:hint="Enter Task Description"-->
-<!--                            android:inputType="text" />-->
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textInputMainDescriptionLayout"
-                            android:layout_width="213dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="43dp"
                             app:hintEnabled="true"
-                            android:hint="Enter Task Description">
+                            android:hint="Enter Task Description"
+                            app:boxBackgroundMode="outline"
+                            >
 
                             <EditText
                                 android:id="@+id/editTextMainDescription"
@@ -263,17 +214,6 @@
                         android:orientation="horizontal"
                         android:padding="3dp">
 
-<!--                        <TextView-->
-<!--                            android:id="@+id/editTextMainProjNo"-->
-<!--                            android:layout_width="215dp"-->
-<!--                            android:layout_height="30dp"-->
-<!--                            android:layout_column="1"-->
-<!--                            android:layout_marginLeft="45dp"-->
-<!--                            android:ems="10"-->
-<!--                            android:inputType="textPersonName"-->
-<!--                            android:paddingLeft="10dp"-->
-<!--                            android:textColor="@android:color/black"-->
-<!--                            android:textStyle="bold" />-->
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/editTextMainProjNo"
                             android:layout_width="215dp"
@@ -297,19 +237,12 @@
                         android:orientation="horizontal"
                         android:padding="3dp">
 
-<!--                        <AutoCompleteTextView-->
-<!--                            android:id="@+id/editTextMainProjName"-->
-<!--                            android:layout_width="215dp"-->
-<!--                            android:layout_height="40dp"-->
-<!--                            android:layout_column="1"-->
-<!--                            android:layout_marginLeft="45dp"-->
-<!--                            android:ems="10"-->
-<!--                            android:hint="Enter Project Name"-->
-<!--                            android:inputType="textPersonName" />-->
+
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:hintEnabled="true">
+                            app:hintEnabled="true"
+                            app:boxBackgroundMode="outline">
 
                             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                                 android:id="@+id/editTextMainProjName"
@@ -333,21 +266,13 @@
                         android:orientation="horizontal"
                         android:padding="3dp">
 
-<!--                        <AutoCompleteTextView-->
-<!--                            android:id="@+id/editTextMainActName"-->
-<!--                            android:layout_width="215dp"-->
-<!--                            android:layout_height="40dp"-->
-<!--                            android:layout_column="1"-->
-<!--                            android:layout_marginLeft="45dp"-->
-<!--                            android:ems="10"-->
-<!--                            android:hint="Enter Activity Name"-->
-<!--                            android:inputType="textPersonName" />-->
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="215dp"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="45dp"
                             app:hintEnabled="true"
-                            app:placeholderText="Enter Activity Name">
+                            app:placeholderText="Enter Activity Name"
+                            app:boxBackgroundMode="outline">
 
                             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                                 android:id="@+id/editTextMainActName"
@@ -367,113 +292,87 @@
 
                 <TableLayout
                     android:id="@+id/tableLayout4"
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="325dp">
-
-                    <TableRow
+                    android:layout_marginTop="325dp"
+                    android:padding="16dp">
+           <TableRow
                         android:id="@+id/tableRow8"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
 
                         <Spinner
                             android:id="@+id/measurableSelect"
-                            android:layout_width="140dp"
-                            android:layout_height="wrap_content"
-                            android:layout_column="1"
-                            android:layout_marginTop="7dp"
-                            android:spinnerMode="dialog"
-                            android:textColor="@android:color/black"
+                            android:layout_width="0dp"
+                            android:layout_height="56dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="2"
                             android:focusable="true"
-                            android:focusableInTouchMode="true"/>
+                            android:focusableInTouchMode="true"
+                            android:spinnerMode="dialog"
+                            android:textColor="@android:color/black" />
 
-                        <!--<AutoCompleteTextView-->
-                            <!--android:id="@+id/measurableSelect"-->
-                            <!--android:layout_width="150dp"-->
-                            <!--android:layout_height="40dp"-->
-                            <!--android:layout_column="1"-->
-                            <!--android:layout_marginTop="2dp"-->
-                            <!--android:ems="10"-->
-                            <!--android:hint="Enter Measurable"-->
-                            <!--android:inputType="text" />-->
-
-<!--                        <EditText-->
-<!--                            android:id="@+id/editTextMainQty"-->
-<!--                            android:layout_width="45dp"-->
-<!--                            android:layout_height="40dp"-->
-<!--                            android:layout_column="2"-->
-<!--                            android:layout_marginLeft="5dp"-->
-<!--                            android:ems="10"-->
-<!--                            android:hint="Qty"-->
-<!--                            android:inputType="number" />-->
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textInputLayoutQty"
-                            android:layout_width="45dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:hint="Qty"
-                            app:hintEnabled="true"
-                            app:boxBackgroundMode="outline"
-                            app:boxStrokeColor="@android:color/black"
-                            app:boxBackgroundColor="@android:color/white">
+                            android:layout_width="0dp"
+                            android:layout_height="56dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:hint="Qty"
+                        app:boxBackgroundMode="outline">
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/editTextMainQty"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:ems="10"
-                                android:inputType="number" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextMainQty"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                        android:inputType="number"
+                        android:gravity="center_vertical" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-
+                    <!-- Unit Input Field -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textInputLayoutUnit"
-                            android:layout_width="45dp"
-                            android:layout_height="40dp"
-                            android:layout_marginLeft="5dp"
+                            android:layout_width="0dp"
+                            android:layout_height="56dp"
+                            android:layout_weight="1"
                             android:hint="Unit"
-                            app:hintEnabled="true"
                             app:boxBackgroundMode="outline"
-                            app:boxStrokeColor="@android:color/black"
-                            app:boxBackgroundColor="@android:color/white">
+                            app:hintEnabled="true">
 
                             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                                 android:id="@+id/editTextMainUnit"
                                 android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:ems="10"
+                                android:layout_height="match_parent"
+                                android:gravity="center_vertical"
                                 android:inputType="text" />
                         </com.google.android.material.textfield.TextInputLayout>
+                    </TableRow>
 
 
-<!--                        <AutoCompleteTextView-->
-<!--                            android:id="@+id/editTextMainUnit"-->
-<!--                            android:layout_width="45dp"-->
-<!--                            android:layout_height="40dp"-->
-<!--                            android:layout_column="3"-->
-<!--                            android:layout_marginLeft="5dp"-->
-<!--                            android:hint="Unit"-->
-<!--                            android:inputType="text" />-->
+            <!-- Bottom Row with Button -->
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
 
                         <Button
                             android:id="@+id/buttonMainMeasurableAdd"
-                            android:layout_width="70dp"
-                            android:layout_height="40dp"
-                            android:layout_column="4"
-                            android:layout_marginLeft="5dp"
-                            android:gravity="center_horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:text="ADD"
                             android:textStyle="bold" />
                     </TableRow>
-
                 </TableLayout>
 
                 <TableLayout
                     android:id="@+id/tableLayout5"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="370dp">
+                    android:layout_marginTop="470dp">
 
                     <TableRow
                         android:id="@+id/tableRow9"
@@ -485,7 +384,7 @@
                         <ListView
                             android:id="@+id/listMainMeasurable"
                             android:layout_width="305dp"
-                            android:layout_height="45dp"
+                            android:layout_height="100dp"
                             android:layout_column="1"
                             android:layout_marginLeft="5dp" />
 
@@ -497,7 +396,7 @@
                     android:id="@+id/tableLayout6"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="420dp">
+                    android:layout_marginTop="620dp">
 
                     <TableRow
                         android:id="@+id/tableRow11"
@@ -529,13 +428,7 @@
                 </TableLayout>
 
             </FrameLayout>
-<!--            <ProgressBar-->
-<!--                android:id="@+id/progressBarInReg"-->
-<!--                style="?android:attr/progressBarStyleLarge"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_centerInParent="true"-->
-<!--                android:progressDrawable="@drawable/circular_progress_bar" />-->
+
 
             <ProgressBar
                 android:id="@+id/progressBarInMainPage"
