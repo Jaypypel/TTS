@@ -59,6 +59,7 @@ import com.example.neptune.ttsapp.Network.TaskServiceInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import com.google.gson.Gson;
@@ -85,6 +86,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -144,7 +146,8 @@ public class TTSMainActivity extends AppCompatActivity {
     private AutoCompleteTextView timeShareActivityName,timeShareTaskName,timeShareProjName, timeShareMeasurableUnit;
     private Button timeShareCancel,timeShareSubmit,timeShareAddMeasurable;
     private Spinner timeShareMeasurable;
-
+    private TextInputLayout tsDate,tsStartTime,tsEndTime,tsDescription,tsMeasurableQty,tsActivityName,
+            tsTaskName,tsProjectName,tsMeasurableUnit;
     ArrayList<MeasurableListDataModel> measurableListDataModels = new ArrayList<>();
 
 
@@ -182,6 +185,16 @@ public class TTSMainActivity extends AppCompatActivity {
         timeShareStartTime=findViewById(R.id.editTextMainStartTime);
         timeShareEndTime=findViewById(R.id.editTextMainEndTime);
         timeShareDescription=findViewById(R.id.editTextMainDescription);
+
+        tsDate = findViewById(R.id.textInputMainDateLayout);
+        tsStartTime = findViewById(R.id.textInputMainStartTimeLayout);
+        tsEndTime = findViewById(R.id.textInputMainEndTimeLayout);
+        tsDescription = findViewById(R.id.textInputMainDescriptionLayout);
+        tsMeasurableQty = findViewById(R.id.textInputLayoutQty);
+        tsActivityName = findViewById(R.id.textInputActivityLayout);
+        tsProjectName= findViewById(R.id.textInputMainProjectLayout);
+        tsTaskName = findViewById(R.id.textInputMainTaskNameLayout);
+        tsMeasurableUnit = findViewById(R.id.textInputLayoutUnit);
 
 
         timeShareCancel=findViewById(R.id.buttonMainCancel);
@@ -873,6 +886,15 @@ public class TTSMainActivity extends AppCompatActivity {
         listView.setVisibility(View.GONE);
         date.setVisibility(View.GONE);
         time.setVisibility(View.GONE);
+        tsDate.setVisibility(View.GONE);
+        tsStartTime.setVisibility(View.GONE);
+        tsEndTime.setVisibility(View.GONE);
+        tsDescription.setVisibility(View.GONE);
+        tsMeasurableQty.setVisibility(View.GONE);
+        tsActivityName.setVisibility(View.GONE);
+        tsTaskName.setVisibility(View.GONE);
+        tsMeasurableUnit.setVisibility(View.GONE);
+        tsProjectName.setVisibility(View.GONE);
     }
     private void recreateMainView() {
         // Make all fields visible again
@@ -893,6 +915,15 @@ public class TTSMainActivity extends AppCompatActivity {
         listView.setVisibility(View.VISIBLE);
         date.setVisibility(View.VISIBLE);
         time.setVisibility(View.VISIBLE);
+        tsDate.setVisibility(View.VISIBLE);
+        tsStartTime.setVisibility(View.VISIBLE);
+        tsEndTime.setVisibility(View.VISIBLE);
+        tsDescription.setVisibility(View.VISIBLE);
+        tsMeasurableQty.setVisibility(View.VISIBLE);
+        tsActivityName.setVisibility(View.VISIBLE);
+        tsTaskName.setVisibility(View.VISIBLE);
+        tsMeasurableUnit.setVisibility(View.VISIBLE);
+        tsProjectName.setVisibility(View.VISIBLE);
 
 
 
@@ -913,8 +944,29 @@ public class TTSMainActivity extends AppCompatActivity {
 
             appExecutor.getNetworkIO().execute(() -> {
                 CompletableFuture<ArrayList<String>> activityNames = getActivityNames();
+                try {
+                    Log.e("activityNames",""+getActivityNames().get());
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 CompletableFuture<ArrayList<String>> projectNames = getProjectNames();
+                try {
+                    Log.e("projectNames", ""+getProjectNames().get());
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 CompletableFuture<ArrayList<String>> taskNames = getTaskNames();
+                try {
+                    Log.e("taskNames",""+taskNames.get());
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 CompletableFuture<List<MeasurableListDataModel>> measurableObjects = getMeasurableListAndUpdateUi();
 
                 CompletableFuture.allOf(activityNames, projectNames, taskNames, measurableObjects)

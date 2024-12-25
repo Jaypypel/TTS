@@ -43,7 +43,8 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.007" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewMainTime"
@@ -63,7 +64,8 @@
         app:layout_constraintEnd_toStartOf="@+id/textInputLayout9"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="85dp" />
+        tools:layout_editor_absoluteY="85dp"
+        tools:text="@tools:sample/full_names" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout9"
@@ -155,7 +157,7 @@
         app:layout_constraintEnd_toStartOf="@+id/textInputLayout"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="486dp">
+        tools:layout_editor_absoluteY="461dp">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/measurableSelect"
@@ -171,7 +173,7 @@
         app:layout_constraintEnd_toStartOf="@+id/textInputLayout4"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/textInputLayout5"
-        tools:layout_editor_absoluteY="486dp">
+        tools:layout_editor_absoluteY="461dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextMainQty"
@@ -187,7 +189,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/textInputLayout"
-        tools:layout_editor_absoluteY="487dp">
+        tools:layout_editor_absoluteY="463dp">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/editTextMainUnit"
@@ -202,17 +204,17 @@
         android:layout_height="49dp"
         android:text="Button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.549"
+        app:layout_constraintHorizontal_bias="0.56"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="547dp" />
+        tools:layout_editor_absoluteY="532dp" />
 
     <ListView
         android:id="@+id/listMainMeasurable"
-        android:layout_width="392dp"
-        android:layout_height="126dp"
-        android:layout_marginTop="595dp"
+        android:layout_width="393dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="580dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -224,7 +226,7 @@
         app:layout_constraintEnd_toStartOf="@+id/button3"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="735dp" />
+        tools:layout_editor_absoluteY="659dp" />
 
     <Button
         android:id="@+id/button3"
@@ -234,7 +236,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/button2"
-        tools:layout_editor_absoluteY="735dp" />
+        tools:layout_editor_absoluteY="661dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout3"
