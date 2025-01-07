@@ -110,15 +110,15 @@ public class TaskDelegatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
 //        lastPosition = position;
 
 
-        viewHolder.txttaskDeligateReceivedName.setText(dataModel.getTaskReceivedUserId());
-//        if(dataModel.getDeligationDateTime() != null){
-//            viewHolder.txttaskDeligateTaskDate.setText(extractDate(dataModel.getDeligationDateTime()));
+        viewHolder.txttaskDeligateReceivedName.setText(dataModel.getTaskReceivedUserID());
+//        if(dataModel.getTaskAssignedOn() != null){
+//            viewHolder.txttaskDeligateTaskDate.setText(extractDate(dataModel.getTaskAssignedOn()));
 //        }
-        viewHolder.txttaskDeligateTaskDate.setText(extractDate(dataModel.getDeligationDateTime()));
+        viewHolder.txttaskDeligateTaskDate.setText(extractDate(dataModel.getTaskAssignedOn()));
 //        viewHolder.txttaskDeligateTaskDate.setText("25-08-2001");
-               if(dataModel.getDeligationDateTime() != null){
-           Log.e("delegationDate from dataModel",dataModel.getDeligationDateTime());
-           String d = dataModel.getDeligationDateTime();
+               if(dataModel.getTaskAssignedOn() != null){
+           Log.e("delegationDate from dataModel",dataModel.getTaskAssignedOn());
+           String d = dataModel.getTaskAssignedOn();
            Log.e("delegationDate funciton"," "+extractDate(d));
        }else{
            Log.e("delegationDate", "is null ");

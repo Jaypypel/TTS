@@ -6,22 +6,24 @@ import java.io.Serializable;
 public class TaskDataModel implements Serializable {
 
     Long id;
-    String deligationDateTime;
-    String TaskDeligateOwnerUserID;
-    String taskReceivedUserId;
-    String projectNo;
-    String projectName;
+    String taskOwnerUserID;
+    String taskReceivedUserID;
     String activityName;
     String taskName;
+    String projectCode;
+    String projectName;
     String expectedDate;
     String expectedTotalTime;
-    String actualTotalTime;
     String description;
-    String modificationdescription;
-    String seenOn;
-    String acceptedOn;
-    String completedOn;
+    String taskAssignedOn;
+    String actualTotalTime;
+    String taskSeenOn;
+    String taskCompletedOn;
+    String taskAcceptedOn;
+    String taskProcessedOn;
+    String tasKApprovedOn;
     String status;
+    String modificationdescription;
 
     public Long getId() {
         return id;
@@ -31,31 +33,12 @@ public class TaskDataModel implements Serializable {
         this.id = id;
     }
 
-    public String getDeligationDateTime() {
-        return deligationDateTime;
-    }
 
-    public void setDeligationDateTime(String deligationDateTime) { this.deligationDateTime = deligationDateTime; }
 
-    public String getTaskDeligateOwnerUserID() {
-        return TaskDeligateOwnerUserID;
-    }
 
-    public void setTaskDeligateOwnerUserID(String taskDeligateOwnerUserID) { TaskDeligateOwnerUserID = taskDeligateOwnerUserID; }
 
-    public String getTaskReceivedUserId() {
-        return taskReceivedUserId;
-    }
 
-    public void setTaskReceivedUserId(String taskReceivedUserId) { this.taskReceivedUserId = taskReceivedUserId; }
 
-    public String getProjectNo() {
-        return projectNo;
-    }
-
-    public void setProjectNo(String projectNo) {
-        this.projectNo = projectNo;
-    }
 
     public String getProjectName() {
         return projectName;
@@ -109,29 +92,6 @@ public class TaskDataModel implements Serializable {
         this.description = description;
     }
 
-    public String getSeenOn() {
-        return seenOn;
-    }
-
-    public void setSeenOn(String seenOn) {
-        this.seenOn = seenOn;
-    }
-
-    public String getAcceptedOn() {
-        return acceptedOn;
-    }
-
-    public void setAcceptedOn(String acceptedOn) {
-        this.acceptedOn = acceptedOn;
-    }
-
-    public String getCompletedOn() {
-        return completedOn;
-    }
-
-    public void setCompletedOn(String completedOn) {
-        this.completedOn = completedOn;
-    }
 
     public String getStatus() {
         return status;
@@ -153,22 +113,96 @@ public class TaskDataModel implements Serializable {
     public String toString() {
         return "TaskDataModel{" +
                 "id=" + id +
-                ", deligationDateTime='" + deligationDateTime + '\'' +
-                ", TaskDeligateOwnerUserID='" + TaskDeligateOwnerUserID + '\'' +
-                ", taskReceivedUserId='" + taskReceivedUserId + '\'' +
-                ", projectNo='" + projectNo + '\'' +
-                ", projectName='" + projectName + '\'' +
+                ", taskOwnerUserID='" + taskOwnerUserID + '\'' +
+                ", taskReceivedUserID='" + taskReceivedUserID + '\'' +
                 ", activityName='" + activityName + '\'' +
                 ", taskName='" + taskName + '\'' +
+                ", projectCode='" + projectCode + '\'' +
+                ", projectName='" + projectName + '\'' +
                 ", expectedDate='" + expectedDate + '\'' +
                 ", expectedTotalTime='" + expectedTotalTime + '\'' +
-                ", actualTotalTime='" + actualTotalTime + '\'' +
                 ", description='" + description + '\'' +
-                ", modificationdescription='" + modificationdescription + '\'' +
-                ", seenOn='" + seenOn + '\'' +
-                ", acceptedOn='" + acceptedOn + '\'' +
-                ", completedOn='" + completedOn + '\'' +
+                ", taskAssignedOn='" + taskAssignedOn + '\'' +
+                ", actualTotalTime='" + actualTotalTime + '\'' +
+                ", taskSeenOn='" + taskSeenOn + '\'' +
+                ", taskCompletedOn='" + taskCompletedOn + '\'' +
+                ", taskAcceptedOn='" + taskAcceptedOn + '\'' +
+                ", taskProcessedOn='" + taskProcessedOn + '\'' +
+                ", tasKApprovedOn='" + tasKApprovedOn + '\'' +
                 ", status='" + status + '\'' +
+                ", modificationdescription='" + modificationdescription + '\'' +
                 '}';
+    }
+
+    public String getTaskOwnerUserID() {
+        return taskOwnerUserID;
+    }
+
+    public void setTaskOwnerUserID(String taskOwnerUserID) {
+        this.taskOwnerUserID = taskOwnerUserID;
+    }
+
+    public String getTaskReceivedUserID() {
+        return taskReceivedUserID;
+    }
+
+    public void setTaskReceivedUserID(String taskReceivedUserID) {
+        this.taskReceivedUserID = taskReceivedUserID;
+    }
+
+    public String getProjectCode() {
+        return projectCode;
+    }
+
+    public void setProjectCode(String projectCode) {
+        this.projectCode = projectCode;
+    }
+
+    public String getTaskAssignedOn() {
+        return taskAssignedOn;
+    }
+
+    public void setTaskAssignedOn(String taskAssignedOn) {
+        this.taskAssignedOn = taskAssignedOn;
+    }
+
+    public String getTaskSeenOn() {
+        return taskSeenOn;
+    }
+
+    public void setTaskSeenOn(String taskSeenOn) {
+        this.taskSeenOn = taskSeenOn;
+    }
+
+    public String getTaskCompletedOn() {
+        return taskCompletedOn;
+    }
+
+    public void setTaskCompletedOn(String taskCompletedOn) {
+        this.taskCompletedOn = taskCompletedOn;
+    }
+
+    public String getTaskAcceptedOn() {
+        return taskAcceptedOn;
+    }
+
+    public void setTaskAcceptedOn(String taskAcceptedOn) {
+        this.taskAcceptedOn = taskAcceptedOn;
+    }
+
+    public String getTaskProcessedOn() {
+        return taskProcessedOn;
+    }
+
+    public void setTaskProcessedOn(String taskProcessedOn) {
+        this.taskProcessedOn = taskProcessedOn;
+    }
+
+    public String getTasKApprovedOn() {
+        return tasKApprovedOn;
+    }
+
+    public void setTasKApprovedOn(String tasKApprovedOn) {
+        this.tasKApprovedOn = tasKApprovedOn;
     }
 }

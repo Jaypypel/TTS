@@ -22,11 +22,14 @@ import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -95,26 +98,22 @@ public class TTSTaskModificationListFragment extends Fragment {
 
 
         if (InternetConnectivity.isConnected()) {
-            appExecutors.getNetworkIO().execute(() -> {
-                getSendModificationTaskList(getUserId(),"revised").thenAccept(tasks -> {
-                    senderDataModels = tasks;
-                    adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity().getApplicationContext());
-                    senderModificationTaskList.setAdapter(adapter);
-                }).exceptionally(e -> {
-                    Toast.makeText(getContext().getApplicationContext(),"Failed to fetch outgoing tasks due to "+ e,Toast.LENGTH_LONG).show();
-                    return null;
-                });
-            });
-            appExecutors.getNetworkIO().execute(() -> {
-                getReceiveModificationTaskList(getUserId(),"revised").thenAccept(tasks -> {
-                    receiverDataModels = tasks;
-                    adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity().getApplicationContext());
-                    receiverModificationTaskList.setAdapter(adapter);
-                }).exceptionally(e -> {
-                    Toast.makeText(getContext().getApplicationContext(),"Failed to fetch outgoing tasks due to "+ e,Toast.LENGTH_LONG).show();
-                    return null;
-                });
-            });
+            appExecutors.getNetworkIO().execute(() -> getSendModificationTaskList(getUserId(),"revised").thenAccept(tasks -> {
+                senderDataModels = tasks;
+                adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity().getApplicationContext());
+                senderModificationTaskList.setAdapter(adapter);
+            }).exceptionally(e -> {
+                Toast.makeText(getContext().getApplicationContext(),"Failed to fetch outgoing tasks due to "+ e,Toast.LENGTH_LONG).show();
+                return null;
+            }));
+            appExecutors.getNetworkIO().execute(() -> getReceiveModificationTaskList(getUserId(),"revised").thenAccept(tasks -> {
+                receiverDataModels = tasks;
+                adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity().getApplicationContext());
+                receiverModificationTaskList.setAdapter(adapter);
+            }).exceptionally(e -> {
+                Toast.makeText(getContext().getApplicationContext(),"Failed to fetch outgoing tasks due to "+ e,Toast.LENGTH_LONG).show();
+                return null;
+            }));
 
 
         }else { Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
@@ -122,44 +121,30 @@ public class TTSTaskModificationListFragment extends Fragment {
         senderModificationTaskList.setOnItemClickListener((parent, view1, position, id) -> {
 
             TaskDataModel dataModel= senderDataModels.get(position);
-            appExecutors.getNetworkIO().execute(() -> {
-
-
-                getModificationTaskMeasurableList(dataModel.getId()).thenAccept(measurables -> {
-                    Intent i = new Intent(getActivity(), TTSTaskModificationListItemDetailsActivity.class);
-
-
-                    i.putExtra("senderTaskModificationItemDetails",dataModel);
-                    i.putExtra("senderTaskModificationMeasurableList", measurables);
-                    startActivity(i);
-                }).exceptionally(e -> {
-                    Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
-                    return  null;
-                });
-
-            });
+            appExecutors.getNetworkIO().execute(() -> getModificationTaskMeasurableList(dataModel.getId()).thenAccept(measurables -> {
+                Intent i = new Intent(getActivity(), TTSTaskModificationListItemDetailsActivity.class);
+                i.putExtra("senderTaskModificationItemDetails",dataModel);
+                i.putExtra("senderTaskModificationMeasurableList", measurables);
+                startActivity(i);
+            }).exceptionally(e -> {
+                Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
+                return  null;
+            }));
 
         });
 
         receiverModificationTaskList.setOnItemClickListener((parent, view1, position, id) -> {
 
             TaskDataModel dataModel= receiverDataModels.get(position);
-            appExecutors.getNetworkIO().execute(() -> {
-
-
-                getModificationTaskMeasurableList(dataModel.getId()).thenAccept(measurables -> {
-                    Intent i = new Intent(getActivity(), TTSTaskModificationListItemDetailsActivity.class);
-
-
-                    i.putExtra("receiverTaskModificationItemDetails",dataModel);
-                    i.putExtra("receiverTaskModificationMeasurableList", measurables);
-                    startActivity(i);
-                }).exceptionally(e -> {
-                    Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
-                    return  null;
-                });
-
-            });
+            appExecutors.getNetworkIO().execute(() -> getModificationTaskMeasurableList(dataModel.getId()).thenAccept(measurables -> {
+                Intent i = new Intent(getActivity(), TTSTaskModificationListItemDetailsActivity.class);
+                i.putExtra("receiverTaskModificationItemDetails",dataModel);
+                i.putExtra("receiverTaskModificationMeasurableList", measurables);
+                startActivity(i);
+            }).exceptionally(e -> {
+                Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
+                return  null;
+            }));
         });
 
         return view;
@@ -177,56 +162,68 @@ public class TTSTaskModificationListFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ArrayList<TaskDataModel> tasks = new ArrayList<>();
+                //ArrayList<TaskDataModel> tasks = new ArrayList<>();
                 TaskDataModel task;
                 try{
                     APIResponse apiResponse = APIResponse.create(response);
                     if(apiResponse instanceof APISuccessResponse){
-                        JsonArray bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonArray();
-
-
-                        for (JsonElement item: bodyContent
-                        ) {
-                            JsonObject taskObj = item.getAsJsonObject();
-                            task = new TaskDataModel();
-                            task.setId(taskObj.get("id").getAsLong());
-                            JsonObject usr = taskObj.get("taskReceivedUserID").getAsJsonObject();
-                            task.setTaskDeligateOwnerUserID(usr.get("username").getAsString());
-                            task.setActivityName(taskObj.get("activityName").getAsString());
-                            task.setTaskName(taskObj.get("taskName").getAsString());
-                            task.setProjectNo(taskObj.get("projectCode").getAsString());
-                            task.setProjectName(taskObj.get("projectName").getAsString());
-                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
-                            //        task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
-                            task.setDescription(taskObj.get("description").getAsString());
-                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
+                        JsonElement bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type taskType = new TypeToken<ArrayList<TaskDataModel>>(){}.getType();
+                        if (bodyContent.isJsonArray()){
+                            JsonArray content = bodyContent.getAsJsonArray();
+                            ArrayList<TaskDataModel> tasks = gson.fromJson(content,taskType);
+                            future.complete(tasks);
+                        }
+//                        for (JsonElement item: bodyContent
+//                        ) {
+//                            JsonObject taskObj = item.getAsJsonObject();
+//                            task = new TaskDataModel();
+//                            task.setId(taskObj.get("id").getAsLong());
+//                            JsonObject usr = taskObj.get("taskReceivedUserID").getAsJsonObject();
+//                            task.setTaskDeligateOwnerUserID(usr.get("username").getAsString());
+//                            task.setActivityName(taskObj.get("activityName").getAsString());
+//                            task.setTaskName(taskObj.get("taskName").getAsString());
+//                            task.setProjectNo(taskObj.get("projectCode").getAsString());
+//                            task.setProjectName(taskObj.get("projectName").getAsString());
+//                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
+//                            //        task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
+//                            task.setDescription(taskObj.get("description").getAsString());
+//                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
+////                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
+////                            task.setSeenOn(taskObj.get("taskSeenOn").getAsString());
+////                            task.setAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
 //                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
-//                            task.setSeenOn(taskObj.get("taskSeenOn").getAsString());
-//                            task.setAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
-                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
-                            task.setStatus(taskObj.get("status").getAsString());
-                            tasks.add(task);
+//                            task.setStatus(taskObj.get("status").getAsString());
+//                            tasks.add(task);
 
-                        }future.complete(tasks);
                     }
 
-                    if (apiResponse instanceof APIErrorResponse){
-                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                        future.completeExceptionally(new RuntimeException("Error while fetching taskList :"+msg+"ResponseCode :"+response.code()));
-                    }
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
 
-                    if(apiResponse instanceof APIErrorResponse){
-                        future.completeExceptionally(new Throwable("Response is empty"));
                     }
-                } catch (IOException e) {
-                    future.completeExceptionally(e);
+                    if (apiResponse instanceof APIErrorResponse) {
+                        future.completeExceptionally(new Throwable("empty response"));
+                    }
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while getting modified tasks due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                future.completeExceptionally(t);
-                Log.e("Error", "Request Failed: " + t.getMessage(), t);
+                future.completeExceptionally(new Throwable(t.getMessage()));
+
             }
         });
 
@@ -240,50 +237,65 @@ public class TTSTaskModificationListFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ArrayList<TaskDataModel> tasks = new ArrayList<>();
-                TaskDataModel task;
+
                 try{
                     APIResponse apiResponse = APIResponse.create(response);
                     if(apiResponse instanceof APISuccessResponse){
-                        JsonArray bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonArray();
 
-
-                        for (JsonElement item: bodyContent
-                        ) {
-                            JsonObject taskObj = item.getAsJsonObject();
-                            task = new TaskDataModel();
-                            task.setId(taskObj.get("id").getAsLong());
-                            JsonObject taskReceivedUserID = taskObj.get("taskReceivedUserID").getAsJsonObject();
-                            JsonObject taskOwnerUserID = taskObj.get("taskOwnerUserID").getAsJsonObject();
-                            task.setTaskReceivedUserId(taskReceivedUserID.get("username").getAsString());
-                            task.setTaskDeligateOwnerUserID(taskOwnerUserID.get("username").getAsString());
-                            task.setActivityName(taskObj.get("activityName").getAsString());
-                            task.setTaskName(taskObj.get("taskName").getAsString());
-                            task.setProjectNo(taskObj.get("projectCode").getAsString());
-                            task.setProjectName(taskObj.get("projectName").getAsString());
-                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
-                            //        task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
-                            task.setDescription(taskObj.get("description").getAsString());
-                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
-                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
-//                            task.setSeenOn(taskObj.get("taskSeenOn").getAsString());
-//                            task.setAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
-                            task.setStatus(taskObj.get("status").getAsString());
-                            tasks.add(task);
-
-                        }future.complete(tasks);
+                        JsonElement bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse)
+                                .getBody().getBody();
+                        Gson gson = new Gson();
+                        Type taskType = new TypeToken<ArrayList<TaskDataModel>>(){}.getType();
+                        if (bodyContent.isJsonArray()){
+                            JsonArray content = bodyContent.getAsJsonArray();
+                            ArrayList<TaskDataModel> tasks = gson.fromJson(content,taskType);
+                            future.complete(tasks);
+                        }
+//
+//                        for (JsonElement item: bodyContent
+//                        ) {
+//                            JsonObject taskObj = item.getAsJsonObject();
+//                            task = new TaskDataModel();
+//                            task.setId(taskObj.get("id").getAsLong());
+//                            JsonObject taskReceivedUserID = taskObj.get("taskReceivedUserID").getAsJsonObject();
+//                            JsonObject taskOwnerUserID = taskObj.get("taskOwnerUserID").getAsJsonObject();
+//                            task.setTaskReceivedUserId(taskReceivedUserID.get("username").getAsString());
+//                            task.setTaskDeligateOwnerUserID(taskOwnerUserID.get("username").getAsString());
+//                            task.setActivityName(taskObj.get("activityName").getAsString());
+//                            task.setTaskName(taskObj.get("taskName").getAsString());
+//                            task.setProjectNo(taskObj.get("projectCode").getAsString());
+//                            task.setProjectName(taskObj.get("projectName").getAsString());
+//                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
+//                            //        task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
+//                            task.setDescription(taskObj.get("description").getAsString());
+//                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
+//                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
+////                            task.setSeenOn(taskObj.get("taskSeenOn").getAsString());
+////                            task.setAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
+//                            task.setStatus(taskObj.get("status").getAsString());
+//                            tasks.add(task);
+//
+//                        }future.complete(tasks);
                     }
 
-                    if (apiResponse instanceof APIErrorResponse){
-                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                        future.completeExceptionally(new RuntimeException("Error while fetching taskList :"+msg+"ResponseCode :"+response.code()));
-                    }
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
 
-                    if(apiResponse instanceof APIErrorResponse){
-                        future.completeExceptionally(new Throwable("Response is empty"));
                     }
-                } catch (IOException e) {
-                    future.completeExceptionally(e);
+                    if (apiResponse instanceof APIErrorResponse) {
+                        future.completeExceptionally(new Throwable("empty response"));
+                    }
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while getting modified tasks due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
@@ -304,39 +316,56 @@ public class TTSTaskModificationListFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ArrayList<MeasurableListDataModel> measurables = new ArrayList<>();
-                MeasurableListDataModel measurable;
+//                ArrayList<MeasurableListDataModel> measurables = new ArrayList<>();
+//                MeasurableListDataModel measurable;
                 try {
                     APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
                     if(apiResponse instanceof APISuccessResponse){
-                        JsonArray bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonArray();
-                        for (JsonElement e : bodyContent){
-                            JsonObject msrObj = e.getAsJsonObject();
-                            measurable = new MeasurableListDataModel();
-                            measurable.setId(msrObj.get("id").getAsString());
-                            measurable.setMeasurableName(msrObj.get("name").getAsString());
-                            measurables.add(measurable);
+                        JsonElement bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse)
+                                .getBody().getBody();
+                        Gson gson = new Gson();
+                        Type measurableType = new TypeToken<ArrayList<MeasurableListDataModel>>(){}
+                                .getType();
+                        if (bodyContent.isJsonArray()){
+                            JsonArray content = bodyContent.getAsJsonArray();
+                            ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurableType);
+                            future.complete(measurables);
                         }
-                        future.complete(measurables);
-                    }
-                    if (apiResponse instanceof APIErrorResponse){
-                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                        future.completeExceptionally(new RuntimeException("Error while fetching measurableList :"+msg+"ResponseCode :"+response.code()));
-                    }
 
-                    if(apiResponse instanceof APIErrorResponse){
-                        future.completeExceptionally(new Throwable("Response is empty"));
+//                        for (JsonElement e : bodyContent){
+//                            JsonObject msrObj = e.getAsJsonObject();
+//                            measurable = new MeasurableListDataModel();
+//                            measurable.setId(msrObj.get("id").getAsString());
+//                            measurable.setMeasurableName(msrObj.get("name").getAsString());
+//                            measurables.add(measurable);
+//                        }
+//                        future.complete(measurables);
                     }
-                } catch (IOException e) {
-                    Log.e("Error", "IOException occurred" + e.getMessage(), e);
-                    future.completeExceptionally(e);
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
+
+                    }
+                    if (apiResponse instanceof APIErrorResponse) {
+                        future.completeExceptionally(new Throwable("empty response"));
+                    }
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while getting modified tasks due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("Error", "Request Failed: " + t.getMessage(), t);
-                future.completeExceptionally(t);
+
+                future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
 

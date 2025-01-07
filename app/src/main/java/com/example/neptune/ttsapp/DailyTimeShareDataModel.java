@@ -4,39 +4,39 @@ import java.io.Serializable;
 
 public class DailyTimeShareDataModel implements Serializable
 {
-    Long timeShareId;
-    String timeShareDate;
-    String projectNo;
+    Long id;
+    String dateOfTimeShare;
+    String projectCode;
     String projectName;
     String activityName;
     String taskName;
     String startTime;
     String endTime;
-    String consumedTime;
-    String taskDescription;
+    String timeDifference;
+    String description;
 
-    public Long getTimeShareId() {
-        return timeShareId;
+    public Long getId() {
+        return id;
     }
 
-    public void setTimeShareId(Long timeShareId) {
-        this.timeShareId = timeShareId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getTimeShareDate() {
-        return timeShareDate;
+    public String getDateOfTimeShare() {
+        return dateOfTimeShare;
     }
 
-    public void setTimeShareDate(String timeShareDate) {
-        this.timeShareDate = timeShareDate;
+    public void setDateOfTimeShare(String dateOfTimeShare) {
+        this.dateOfTimeShare = dateOfTimeShare;
     }
 
-    public String getProjectNo() {
-        return projectNo;
+    public String getProjectCode() {
+        return projectCode;
     }
 
-    public void setProjectNo(String projectNo) {
-        this.projectNo = projectNo;
+    public void setProjectCode(String projectCode) {
+        this.projectCode = projectCode;
     }
 
     public String getProjectName() {
@@ -79,19 +79,19 @@ public class DailyTimeShareDataModel implements Serializable
         this.endTime = endTime;
     }
 
-    public String getConsumedTime() {
-        return consumedTime;
+    public String getTimeDifference() {
+        return timeDifference;
     }
 
-    public void setConsumedTime(String consumedTime) {
-        this.consumedTime = consumedTime;
+    public void setTimeDifference(String timeDifference) {
+        this.timeDifference = timeDifference;
     }
 
-    public String getTaskDescription() {
-        return taskDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setTaskDescription(String taskDescription) {
-        this.taskDescription = taskDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

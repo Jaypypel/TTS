@@ -371,7 +371,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                 try {
                     APIResponse apiResponse = APIResponse.create(response);
                     if (apiResponse instanceof APISuccessResponse){
-                        Log.e("update","going inside of api sucess block");
+                        Log.e("update","going inside of api success block");
                         String msg = ((APISuccessResponse<ResponseBody>) apiResponse)
                                 .getBody()
                                 .getMessage()
@@ -379,32 +379,31 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                         future.complete(msg);
                     }
 
-                    if (apiResponse instanceof APIErrorResponse){
-                        String msg = ((APIErrorResponse<String>) apiResponse).getErrorMessage();
-                        future.complete(msg);
-                    }
 
-                    if (apiResponse instanceof APIEmptyResponse){
-                        future.complete("empty response is received");
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
+
+                    }
+                    if (apiResponse instanceof APIErrorResponse) {
+                        future.completeExceptionally(new Throwable("empty response"));
                     }
                 }
                 catch (ClassCastException e){
-                    future.completeExceptionally(e);
-                    Log.e("Response","Error : "+"unable to process request due to "+e.getMessage());
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
                 }
                 catch (IOException e) {
-                    future.completeExceptionally(e);
-                    Log.e("Response","Error : "+"unable to process request due to "+e.getMessage());
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occurred while  your registration due to" + e.getMessage()));
                 }
                 catch (RuntimeException e) {
-                    future.completeExceptionally(e);
-                    Log.e("Response","Error : "+"unable to process request due to "+e.getMessage());
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                future.completeExceptionally(t);
+                future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
         return future;

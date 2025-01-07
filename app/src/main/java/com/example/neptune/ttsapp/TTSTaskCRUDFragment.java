@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.ActivityServiceInterface;
@@ -247,25 +248,43 @@ public class TTSTaskCRUDFragment extends Fragment {
 
                     try {
                         APIResponse apiResponse =   APIResponse.create(response);
-                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
-                        Gson gson = new Gson();
-                        Type listType = new TypeToken<ArrayList<ActivityDataModel>>() {}.getType();
+                        if(apiResponse instanceof  APISuccessResponse){
+                            JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                            Gson gson = new Gson();
+                            Type listType = new TypeToken<ArrayList<ActivityDataModel>>() {}.getType();
+                            if(result.isJsonArray()){
+                                JsonArray jsonArray = result.getAsJsonArray();
+                                ArrayList<ActivityDataModel> list = gson.fromJson(jsonArray, listType);
+                                future.complete(list);
+                            }
 
-                        if(result.isJsonArray()){
-                            JsonArray jsonArray = result.getAsJsonArray();
-                            ArrayList<ActivityDataModel> list = gson.fromJson(jsonArray, listType);
-                            future.complete(list);
 
                         }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            future.completeExceptionally(new Throwable(erMsg));
+
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            future.completeExceptionally(new Throwable("empty response"));
+                        }
+                    }
+                    catch (ClassCastException e){
+                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    }
+                    catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        future.completeExceptionally(new Throwable("Exception occured while getting activities due to" + e.getMessage()));
+                    }
+                    catch (RuntimeException e) {
+                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                     }
 
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.e("Network Request", "Failed: " + t.getMessage());
+                    future.completeExceptionally(new Throwable(t.getMessage()));
 
                 }
             });
@@ -287,26 +306,43 @@ public class TTSTaskCRUDFragment extends Fragment {
 
                     try {
                         APIResponse apiResponse =   APIResponse.create(response);
-                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
-                        Gson gson = new Gson();
-                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+                        if (apiResponse instanceof APISuccessResponse){
+                            JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                            Gson gson = new Gson();
+                            Type listType = new TypeToken<ArrayList<String>>() {}.getType();
 
-                        if(result.isJsonArray()){
-                            JsonArray usernames = result.getAsJsonArray();
-                            ArrayList<String> list = gson.fromJson(usernames, listType);
-                            future.complete(list);
+                            if(result.isJsonArray()){
+                                JsonArray usernames = result.getAsJsonArray();
+                                ArrayList<String> list = gson.fromJson(usernames, listType);
+                                future.complete(list);
+
+                            }
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            future.completeExceptionally(new Throwable(erMsg));
 
                         }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        if (apiResponse instanceof APIErrorResponse) {
+                            future.completeExceptionally(new Throwable("empty response"));
+                        }
+                    }
+                    catch (ClassCastException e){
+                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    }
+                    catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        future.completeExceptionally(new Throwable("Exception occured while getting usernames due to" + e.getMessage()));
+                    }
+                    catch (RuntimeException e) {
+                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                     }
 
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.e("Network Request", "Failed: " + t.getMessage());
-
+                    future.completeExceptionally(new Throwable(t.getMessage()));
                 }
             });
 
@@ -327,25 +363,43 @@ public class TTSTaskCRUDFragment extends Fragment {
 
                     try {
                         APIResponse apiResponse =   APIResponse.create(response);
-                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
-                        Gson gson = new Gson();
-                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+                       if (apiResponse instanceof APISuccessResponse){
+                           JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                           Gson gson = new Gson();
+                           Type listType = new TypeToken<ArrayList<String>>() {}.getType();
 
-                        if(result.isJsonArray()){
-                            JsonArray usernames = result.getAsJsonArray();
-                            ArrayList<String> list = gson.fromJson(usernames, listType);
-                            future.complete(list);
+                           if(result.isJsonArray()){
+                               JsonArray usernames = result.getAsJsonArray();
+                               ArrayList<String> list = gson.fromJson(usernames, listType);
+                               future.complete(list);
+
+                           }
+                       }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            future.completeExceptionally(new Throwable(erMsg));
 
                         }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        if (apiResponse instanceof APIErrorResponse) {
+                            future.completeExceptionally(new Throwable("empty response"));
+                        }
+                    }
+                    catch (ClassCastException e){
+                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    }
+                    catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        future.completeExceptionally(new Throwable("Exception occured while getting tasks due to" + e.getMessage()));
+                    }
+                    catch (RuntimeException e) {
+                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                     }
 
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.e("Network Request", "Failed: " + t.getMessage());
+                 future.completeExceptionally(new Throwable(t.getMessage()));
 
                 }
             });
@@ -368,21 +422,35 @@ public class TTSTaskCRUDFragment extends Fragment {
                         if (apiResponse instanceof APISuccessResponse) {
                             String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
                             // JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();
-
                             if ("successful".equals(message)) {
                                 future.complete(message);
                             }
                         }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            future.completeExceptionally(new Throwable(erMsg));
+
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            future.completeExceptionally(new Throwable("empty response"));
+                        }
                     }
-                } catch (IOException e) {
-                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                    future.completeExceptionally(new Exception("API request failed: " + response.code()));
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+
+                        future.completeExceptionally(new Throwable("Exception occured while adding a task due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                future.completeExceptionally(t);
+                future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
         return future;

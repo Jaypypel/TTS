@@ -99,11 +99,11 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
         if(allocatedTaskListItemDetails!=null)
         {
             Log.e("allocatedTaskListItemDetails",""+allocatedTaskListItemDetails);
-            TALIDDate.setText(allocatedTaskListItemDetails.getDeligationDateTime());
-            TALIDUserName.setText("From,  " + allocatedTaskListItemDetails.getTaskDeligateOwnerUserID());
+            TALIDDate.setText(allocatedTaskListItemDetails.getTaskAssignedOn());
+            TALIDUserName.setText("From,  " + allocatedTaskListItemDetails.getTaskOwnerUserID());
             TALIDActivityName.setText(allocatedTaskListItemDetails.getActivityName());
             TALIDTaskName.setText(allocatedTaskListItemDetails.getTaskName());
-            TALIDProjCode.setText(allocatedTaskListItemDetails.getProjectNo());
+            TALIDProjCode.setText(allocatedTaskListItemDetails.getProjectCode());
             TALIDProjName.setText(allocatedTaskListItemDetails.getProjectName());
             TALIDExpectedDate.setText(allocatedTaskListItemDetails.getExpectedDate());
             TALIDExpectedTime.setText(allocatedTaskListItemDetails.getExpectedTotalTime());
@@ -115,13 +115,13 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
         }
 
         else if (completedTaskListItemDetails != null)
-        {
+        {   completedTaskListItemDetails.getTaskOwnerUserID();
 
-            TALIDDate.setText(completedTaskListItemDetails.getDeligationDateTime());
-            TALIDUserName.setText("From,  " + completedTaskListItemDetails.getTaskDeligateOwnerUserID());
+            TALIDDate.setText(completedTaskListItemDetails.getTaskAssignedOn());
+            TALIDUserName.setText("From,  " + completedTaskListItemDetails.getTaskOwnerUserID());
             TALIDActivityName.setText(completedTaskListItemDetails.getActivityName());
             TALIDTaskName.setText(completedTaskListItemDetails.getTaskName());
-            TALIDProjCode.setText(completedTaskListItemDetails.getProjectNo());
+            TALIDProjCode.setText(completedTaskListItemDetails.getProjectCode());
             TALIDProjName.setText(completedTaskListItemDetails.getProjectName());
             TALIDExpectedDate.setText(completedTaskListItemDetails.getExpectedDate());
             TALIDExpectedTime.setText(completedTaskListItemDetails.getExpectedTotalTime());
@@ -139,7 +139,7 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
 
 
             TALIDAccept.setOnClickListener(v -> {
-                if(allocatedTaskListItemDetails.getAcceptedOn()!=null && allocatedTaskListItemDetails.getAcceptedOn().equals("not_accepted")) {
+                if(allocatedTaskListItemDetails.getTaskAcceptedOn()!=null && allocatedTaskListItemDetails.getTaskAcceptedOn().equals("not_accepted")) {
                     if (InternetConnectivity.isConnected())
                     {
 
@@ -220,21 +220,28 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
                             Log.e("task updated"," return true");
 
                             isUpdated.complete(true);
-                            return;
+                           // return;
                         }
                     }
 
-                    if (apiResponse instanceof APIErrorResponse){
-                        APIErrorResponse<ResponseBody> apiErrorResponse = new APIErrorResponse(response.message());
-                        String msg = apiErrorResponse.getErrorMessage();
-                        Log.e("Error","due to "+msg );
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        isUpdated.completeExceptionally(new Throwable(erMsg));
+
                     }
-                } catch (IOException e) {
-                    Log.e("IO exception", "Facing issue to update data as IO exception occurred");
-                    isUpdated.completeExceptionally(e);
-                } catch ( ClassCastException e){
-                    Log.e("ClassCast exception", "Unable to convert apiResponse into apiSuccessResponse");
-                    isUpdated.completeExceptionally(e);
+                    if (apiResponse instanceof APIErrorResponse) {
+                        isUpdated.completeExceptionally(new Throwable("empty response"));
+                    }
+                }
+                catch (ClassCastException e){
+                    isUpdated.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    isUpdated.completeExceptionally(new Throwable("Exception occured while getting no. of completed tasks due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    isUpdated.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
                 //isUpdated.complete(false); // Ensure fallback
             }
@@ -242,7 +249,7 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e("Error","Failed to make request due to "+t.getMessage());
-                isUpdated.completeExceptionally(t);
+                isUpdated.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
 

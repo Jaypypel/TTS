@@ -24,11 +24,14 @@ import com.example.neptune.ttsapp.Network.DailyTimeShareInterface;
 import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -144,7 +147,7 @@ public class TTSDailyTimeShareListFragment extends Fragment {
             listViewDailyTimeShares.setOnItemClickListener((parent, view1, position, id) -> {
                 DailyTimeShareDataModel dataModel = dailyTimeShareDataList.get(position);
                 appExecutor.getNetworkIO().execute(() -> {
-                    getDTSMeasurableList(dataModel.getTimeShareId()).thenAccept(result -> {
+                    getDTSMeasurableList(dataModel.getId()).thenAccept(result -> {
                         appExecutor.getMainThread().execute(() -> {
                             Intent i = new Intent(getActivity(),TTSTaskModificationActivity.class);
                             i.putExtra("DTSListItemDetails",dataModel);
@@ -184,70 +187,75 @@ public class TTSDailyTimeShareListFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ArrayList<DailyTimeShareDataModel> dailyTimeShareDataModels = new ArrayList<>();
-                DailyTimeShareDataModel dailyTimeShareData;
+
+
                 try {
                     APIResponse apiResponse = APIResponse.create(response);
                     if(apiResponse != null){
                         if(apiResponse instanceof APISuccessResponse){
-                            JsonArray bodyContent =  ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonArray();
-                            Log.e("dtsList"," "+bodyContent);
-                            for (JsonElement item : bodyContent) {
-                                JsonObject dts = item.getAsJsonObject();
-                                Long id = dts.get("id").getAsLong();
-                                String dateOfTime = dts.get("dateOfTimeShare").getAsString();
-                                String projectCode = dts.get("projectCode").getAsString();
-                                String projectName = dts.get("projectName").getAsString();
-                                String activityName = dts.get("activityName").getAsString();
-                                String taskName = dts.get("taskName").getAsString();
-                                String taskDescription = dts.get("description").getAsString();
-                                String startTime = dts.get("startTime").getAsString();
-                                String endTime = dts.get("endTime").getAsString();
-                                String timeDifference = dts.get("timeDifference").getAsString();
-                                dailyTimeShareData = new DailyTimeShareDataModel();
-                                dailyTimeShareData.setTimeShareId(id);
-                                dailyTimeShareData.setTimeShareDate(dateOfTime);
-                                dailyTimeShareData.setProjectNo(projectCode);
-                                dailyTimeShareData.setProjectName(projectName);
-                                dailyTimeShareData.setActivityName(activityName);
-                                dailyTimeShareData.setTaskName(taskName);
-                                dailyTimeShareData.setTaskDescription(taskDescription);
-                                dailyTimeShareData.setStartTime(startTime);
-                                dailyTimeShareData.setEndTime(endTime);
-                                dailyTimeShareData.setConsumedTime(timeDifference);
-                                dailyTimeShareDataModels.add(dailyTimeShareData);
+                            JsonElement bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse)
+                                    .getBody().getBody();
+                            Gson gson = new Gson();
+                            Type dailyTimeShareType = new TypeToken<ArrayList<DailyTimeShareDataModel>>(){}.getType();
+                            if (bodyContent.isJsonArray()){
+                                JsonArray content = bodyContent.getAsJsonArray();
+                                ArrayList<DailyTimeShareDataModel> dailyTimeShareDataModels = gson.fromJson(content,dailyTimeShareType);
+                                future.complete(dailyTimeShareDataModels);
                             }
-                            future.complete(dailyTimeShareDataModels);
-                        }
-                        if(apiResponse instanceof APIErrorResponse){
-                            future.exceptionally(e -> {
-                                Log.e("Error","Request Failed :"+ e.getMessage()+response.code());
-                                return null;
-                            });
-                        }
-                        if(apiResponse instanceof APIEmptyResponse){
-                            future.exceptionally(e -> {
-                                Log.e("Empty Response","Oops, Empty response ");
-                                return null;
-                            });
-                        }
 
-                    }else{
-                        Log.e("Response","API Response is null");
+//                            Log.e("dtsList"," "+bodyContent);
+//                            for (JsonElement item : bodyContent) {
+//                                JsonObject dts = item.getAsJsonObject();
+//                                Long id = dts.get("id").getAsLong();
+//                                String dateOfTime = dts.get("dateOfTimeShare").getAsString();
+//                                String projectCode = dts.get("projectCode").getAsString();
+//                                String projectName = dts.get("projectName").getAsString();
+//                                String activityName = dts.get("activityName").getAsString();
+//                                String taskName = dts.get("taskName").getAsString();
+//                                String taskDescription = dts.get("description").getAsString();
+//                                String startTime = dts.get("startTime").getAsString();
+//                                String endTime = dts.get("endTime").getAsString();
+//                                String timeDifference = dts.get("timeDifference").getAsString();
+//                                dailyTimeShareData = new DailyTimeShareDataModel();
+//                                dailyTimeShareData.setTimeShareId(id);
+//                                dailyTimeShareData.setTimeShareDate(dateOfTime);
+//                                dailyTimeShareData.setProjectNo(projectCode);
+//                                dailyTimeShareData.setProjectName(projectName);
+//                                dailyTimeShareData.setActivityName(activityName);
+//                                dailyTimeShareData.setTaskName(taskName);
+//                                dailyTimeShareData.setTaskDescription(taskDescription);
+//                                dailyTimeShareData.setStartTime(startTime);
+//                                dailyTimeShareData.setEndTime(endTime);
+//                                dailyTimeShareData.setConsumedTime(timeDifference);
+//                                dailyTimeShareDataModels.add(dailyTimeShareData);
+//                            }
+//                            future.complete(dailyTimeShareDataModels);
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            future.completeExceptionally(new Throwable(erMsg));
+
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            future.completeExceptionally(new Throwable("empty response"));
+                        }
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while getting measurables due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                CompletableFuture<ArrayList<DailyTimeShareDataModel>> error = future.exceptionally(e -> {
-                    Log.e("Error", "Request Failed" + e.getMessage() + " " + t.getMessage());
-                    return null;
-                });
-
+                future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
         return future;
@@ -266,48 +274,52 @@ public class TTSDailyTimeShareListFragment extends Fragment {
                     APIResponse apiResponse = APIResponse.create(response);
                     if(apiResponse != null){
                         if(apiResponse instanceof APISuccessResponse){
-                            JsonArray bodyContent =  ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonArray();
-                            Log.e("mList"," "+bodyContent);
-                            for (JsonElement item : bodyContent) {
-                                JsonObject dts = item.getAsJsonObject();
-                                String id = dts.get("id").getAsString();
-                                String name = dts.get("name").getAsString();
-                                measurableListDataModel  = new MeasurableListDataModel();
-                                measurableListDataModel.setId(id);
-                                measurableListDataModel.setMeasurableName(name );
-                                measurableListDataModels.add(measurableListDataModel);
+                            JsonElement bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse)
+                                    .getBody().getBody();
+                            Gson gson = new Gson();
+                            Type measurableType = new TypeToken<ArrayList<MeasurableListDataModel>>(){}
+                                    .getType();
+                            if (bodyContent.isJsonArray()){
+                                JsonArray content = bodyContent.getAsJsonArray();
+                                ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurableType);
+                                future.complete(measurables);
                             }
-                            future.complete(measurableListDataModels);
+//                            for (JsonElement item : bodyContent) {
+//                                JsonObject dts = item.getAsJsonObject();
+//                                String id = dts.get("id").getAsString();
+//                                String name = dts.get("name").getAsString();
+//                                measurableListDataModel  = new MeasurableListDataModel();
+//                                measurableListDataModel.setId(id);
+//                                measurableListDataModel.setMeasurableName(name );
+//                                measurableListDataModels.add(measurableListDataModel);
+//                            }
+//                            future.complete(measurableListDataModels);
                         }
-                        if(apiResponse instanceof APIErrorResponse){
-                            future.exceptionally(e -> {
-                                Log.e("Error","Request Failed :"+ e.getMessage()+response.code());
-                                return null;
-                            });
-                        }
-                        if(apiResponse instanceof APIEmptyResponse){
-                            future.exceptionally(e -> {
-                                Log.e("Empty Response","Oops, Empty response ");
-                                return null;
-                            });
-                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            future.completeExceptionally(new Throwable(erMsg));
 
-                    }else{
-                        Log.e("Response","API Response is null");
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            future.completeExceptionally(new Throwable("empty response"));
+                        }
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
                 }
+                catch (ClassCastException e){
+                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    }
+                catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        future.completeExceptionally(new Throwable("Exception occured while getting measurables due to" + e.getMessage()));
+                    }
+                catch (RuntimeException e) {
+                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                    }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                future.exceptionally(e -> {
-                    Log.e("Error", "Request Failed" + e.getMessage() + " " + t.getMessage());
-                    return null;
-                });
-
+                future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
         return future;

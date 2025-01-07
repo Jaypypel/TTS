@@ -141,12 +141,12 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 
         if(taskDelegateListItemDetails!=null)
         {
-            TDLIDDate.setText(taskDelegateListItemDetails.getDeligationDateTime());
-            TDLIDUserName.setText(taskDelegateListItemDetails.getTaskDeligateOwnerUserID());
-            TDLIDReceivedUserName.setText("To,  " + taskDelegateListItemDetails.getTaskReceivedUserId());
+            TDLIDDate.setText(taskDelegateListItemDetails.getTaskAssignedOn());
+            TDLIDUserName.setText(taskDelegateListItemDetails.getTaskOwnerUserID());
+            TDLIDReceivedUserName.setText("To,  " + taskDelegateListItemDetails.getTaskReceivedUserID());
             TDLIDActivityName.setText(taskDelegateListItemDetails.getActivityName());
             TDLIDTaskName.setText(taskDelegateListItemDetails.getTaskName());
-            TDLIDProjCode.setText(taskDelegateListItemDetails.getProjectNo());
+            TDLIDProjCode.setText(taskDelegateListItemDetails.getProjectCode());
             TDLIDProjName.setText(taskDelegateListItemDetails.getProjectName());
             TDLIDExpectedDate.setText(taskDelegateListItemDetails.getExpectedDate());
             TDLIDExpectedTime.setText(taskDelegateListItemDetails.getExpectedTotalTime());
@@ -158,23 +158,23 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 
         //    if (taskDelegateListItemDetails.getStatus().equals("")) { TDLIDComplete.setVisibility(View.INVISIBLE); }
             // a user who assigned the task , can not complete the task by own, thus this code check the same
-            if (!taskDelegateListItemDetails.getTaskReceivedUserId().equals(getUserId())) TDLIDComplete.setVisibility(View.INVISIBLE);
+            if (!taskDelegateListItemDetails.getTaskReceivedUserID().equals(getUserId())) TDLIDComplete.setVisibility(View.INVISIBLE);
         }
         else if (taskAcceptedItemDetails!=null)
         {
-            TDLIDDate.setText(taskAcceptedItemDetails.getDeligationDateTime());
-            TDLIDUserName.setText(taskAcceptedItemDetails.getTaskReceivedUserId());
-            TDLIDReceivedUserName.setText("From,  " + taskAcceptedItemDetails.getTaskDeligateOwnerUserID());
+            TDLIDDate.setText(taskAcceptedItemDetails.getTaskAssignedOn());
+            TDLIDUserName.setText(taskAcceptedItemDetails.getTaskReceivedUserID());
+            TDLIDReceivedUserName.setText("From,  " + taskAcceptedItemDetails.getTaskOwnerUserID());
             TDLIDActivityName.setText(taskAcceptedItemDetails.getActivityName());
             TDLIDTaskName.setText(taskAcceptedItemDetails.getTaskName());
-            TDLIDProjCode.setText(taskAcceptedItemDetails.getProjectNo());
+            TDLIDProjCode.setText(taskAcceptedItemDetails.getProjectCode());
             TDLIDProjName.setText(taskAcceptedItemDetails.getProjectName());
             TDLIDExpectedDate.setText(taskAcceptedItemDetails.getExpectedDate());
             TDLIDExpectedTime.setText(taskAcceptedItemDetails.getExpectedTotalTime());
             TDLIDDescription.setText(taskAcceptedItemDetails.getDescription());
             measurableListCustomAdapter = new MeasurableListCustomAdapter(acceptedTaskMeasurales,getApplicationContext());
             TDLIDlistView.setAdapter(measurableListCustomAdapter);
-            if (taskAcceptedItemDetails.getStatus().equals(Status.Accepted.name()) && !taskAcceptedItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
+            if (taskAcceptedItemDetails.getStatus().equals(Status.Accepted.name()) && !taskAcceptedItemDetails.getTaskOwnerUserID().equals(getUserId())){
                 TDLIDProcessing.setVisibility(View.VISIBLE);
                 TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
                 TDLIDComplete.setVisibility(View.INVISIBLE);
@@ -184,12 +184,12 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
         }
         else if (taskProcessingItemDetails!=null)
          {
-            TDLIDDate.setText(taskProcessingItemDetails.getDeligationDateTime());
-            TDLIDUserName.setText("To, "+taskProcessingItemDetails.getTaskReceivedUserId());
-            TDLIDReceivedUserName.setText("From,  " + taskProcessingItemDetails.getTaskDeligateOwnerUserID());
+            TDLIDDate.setText(taskProcessingItemDetails.getTaskAssignedOn());
+            TDLIDUserName.setText("To, "+taskProcessingItemDetails.getTaskReceivedUserID());
+            TDLIDReceivedUserName.setText("From,  " + taskProcessingItemDetails.getTaskOwnerUserID());
             TDLIDActivityName.setText(taskProcessingItemDetails.getActivityName());
             TDLIDTaskName.setText(taskProcessingItemDetails.getTaskName());
-            TDLIDProjCode.setText(taskProcessingItemDetails.getProjectNo());
+            TDLIDProjCode.setText(taskProcessingItemDetails.getProjectCode());
             TDLIDProjName.setText(taskProcessingItemDetails.getProjectName());
             TDLIDExpectedDate.setText(taskProcessingItemDetails.getExpectedDate());
           //  TDLIDExpectedTime.setText(taskProcessingItemDetails.getExpectedTotalTime());
@@ -201,12 +201,12 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             Log.e("timeshares",""+timeShares);
                 if (timeShares != null && !timeShares.isEmpty() &&
                         taskProcessingItemDetails.getStatus().equals("In_Process") &&
-                        !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())) {
+                        !taskProcessingItemDetails.getTaskOwnerUserID().equals(getUserId())) {
                     Log.d("DEBUG", "timeShares != null: " + (timeShares != null));
                     Log.d("DEBUG", "!timeShares.isEmpty(): " + (timeShares != null && !timeShares.isEmpty()));
                     Log.d("DEBUG", "Status equals In_Process: " + taskProcessingItemDetails.getStatus().equals("In_Process"));
                     Log.d("DEBUG", "DelegateOwnerUserID mismatch: " +
-                            !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId()));
+                            !taskProcessingItemDetails.getTaskOwnerUserID().equals(getUserId()));
 
 //                    Log.d("DEBUG", "setting visiblity of complete to be true " + (timeShares != null));
 //                    TDLIDComplete.setVisibility(View.VISIBLE);
@@ -229,7 +229,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                 }
 
 
-                if(taskProcessingItemDetails.getStatus().equals(Status.Approved.name()) && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())) {TDLIDComplete.setVisibility(View.VISIBLE); TDLIDComplete.setText("Complete");
+                if(taskProcessingItemDetails.getStatus().equals(Status.Approved.name()) && !taskProcessingItemDetails.getTaskOwnerUserID().equals(getUserId())) {TDLIDComplete.setVisibility(View.VISIBLE); TDLIDComplete.setText("Complete");
                         Log.d("DEBUG", "check status processing task status " + (taskProcessingItemDetails.getStatus()));
 
                         TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
@@ -240,18 +240,18 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                         // Either timeShares is null or empty, or the other conditions failed
                         TDLIDComplete.setVisibility(View.INVISIBLE);
                     }
-                   if (taskProcessingItemDetails.getStatus().equals(Status.Accepted.name()) && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
+                   if (taskProcessingItemDetails.getStatus().equals(Status.Accepted.name()) && !taskProcessingItemDetails.getTaskOwnerUserID().equals(getUserId())){
                        TDLIDProcessing.setVisibility(View.VISIBLE);
                        TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
                    }
 
-                if (taskProcessingItemDetails.getStatus().equals(Status.Pending.name()) && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
+                if (taskProcessingItemDetails.getStatus().equals(Status.Pending.name()) && !taskProcessingItemDetails.getTaskOwnerUserID().equals(getUserId())){
                     TDLIDProcessing.setVisibility(View.INVISIBLE);
                     TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
                     TDLIDComplete.setVisibility(View.INVISIBLE);
                 }
 
-                if (taskProcessingItemDetails.getStatus().equals("revised") && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
+                if (taskProcessingItemDetails.getStatus().equals("revised") && !taskProcessingItemDetails.getTaskOwnerUserID().equals(getUserId())){
                     TDLIDComplete.setVisibility(View.VISIBLE);
                     TDLIDComplete.setText("ApRequest");
                     TDLIDDisplayTimeShares.setVisibility(View.INVISIBLE);
@@ -260,7 +260,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 
 
 //                if(timeShares != null && taskProcessingItemDetails.getStatus().equals("In_Process") &&
-//                        !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())
+//                        !taskProcessingItemDetails.getTaskOwnerUserID().equals(getUserId())
 //                        && !timeShares.isEmpty()) {
 //                    TDLIDComplete.setVisibility(View.VISIBLE);
 //                    TDLIDComplete.setText("Approval Request");
@@ -271,7 +271,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
 
 //                }else{
 ////                    if(taskProcessingItemDetails.getStatus().equals("In_Process") &&
-////                        !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())) {
+////                        !taskProcessingItemDetails.getTaskOwnerUserID().equals(getUserId())) {
 //                    TDLIDComplete.setVisibility(View.VISIBLE);
 //                    TDLIDComplete.setText("BApproval Request");
 //                }
@@ -284,12 +284,12 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             });
 //            if(taskProcessingItemDetails.getStatus().equals(Status.Accepted.name())) {TDLIDComplete.setVisibility(View.VISIBLE); TDLIDComplete.setText("Complete");}
 //                    if(taskProcessingItemDetails.getStatus().equals("In_Process") &&
-//                        !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())) {
+//                        !taskProcessingItemDetails.getTaskOwnerUserID().equals(getUserId())) {
 //                    TDLIDComplete.setVisibility(View.VISIBLE);
 //                    TDLIDComplete.setText("Approval Request");
 //                }
 //            else if (taskProcessingItemDetails.getStatus().equals("Unapproved")
-//                    && !taskProcessingItemDetails.getTaskDeligateOwnerUserID().equals(getUserId())){
+//                    && !taskProcessingItemDetails.getTaskOwnerUserID().equals(getUserId())){
 //                TDLIDComplete.setText("Approval Request");
 //            }
 //
@@ -300,12 +300,12 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
          }
         else if (taskSenderApprovalItemDetails!=null)
         {
-            TDLIDDate.setText(taskSenderApprovalItemDetails.getDeligationDateTime());
-            TDLIDUserName.setText(taskSenderApprovalItemDetails.getTaskDeligateOwnerUserID());
-            TDLIDReceivedUserName.setText("To,  " + taskSenderApprovalItemDetails.getTaskDeligateOwnerUserID());
+            TDLIDDate.setText(taskSenderApprovalItemDetails.getTaskAssignedOn());
+            TDLIDUserName.setText(taskSenderApprovalItemDetails.getTaskOwnerUserID());
+            TDLIDReceivedUserName.setText("To,  " + taskSenderApprovalItemDetails.getTaskOwnerUserID());
             TDLIDActivityName.setText(taskSenderApprovalItemDetails.getActivityName());
             TDLIDTaskName.setText(taskSenderApprovalItemDetails.getTaskName());
-            TDLIDProjCode.setText(taskSenderApprovalItemDetails.getProjectNo());
+            TDLIDProjCode.setText(taskSenderApprovalItemDetails.getProjectCode());
             TDLIDProjName.setText(taskSenderApprovalItemDetails.getProjectName());
             TDLIDExpectedDate.setText(taskSenderApprovalItemDetails.getExpectedDate());
             TDLIDExpectedTime.setText(taskSenderApprovalItemDetails.getExpectedTotalTime());
@@ -318,17 +318,17 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
         }
         else if (taskReceiverApprovalItemDetails != null)
         {
-            if (getUserId().equals(taskReceiverApprovalItemDetails.getTaskDeligateOwnerUserID())
+            if (getUserId().equals(taskReceiverApprovalItemDetails.getTaskOwnerUserID())
                     && taskReceiverApprovalItemDetails.getStatus().equals("Unapproved"))
             { TDLIDComplete.setText("Check  Approve Task");}
             else {TDLIDComplete.setVisibility(View.INVISIBLE);}
 
-            TDLIDDate.setText(taskReceiverApprovalItemDetails.getDeligationDateTime());
-            TDLIDUserName.setText("To, "+taskReceiverApprovalItemDetails.getTaskReceivedUserId());
-            TDLIDReceivedUserName.setText("From,  " + taskReceiverApprovalItemDetails.getTaskDeligateOwnerUserID());
+            TDLIDDate.setText(taskReceiverApprovalItemDetails.getTaskAssignedOn());
+            TDLIDUserName.setText("To, "+taskReceiverApprovalItemDetails.getTaskReceivedUserID());
+            TDLIDReceivedUserName.setText("From,  " + taskReceiverApprovalItemDetails.getTaskOwnerUserID());
             TDLIDActivityName.setText(taskReceiverApprovalItemDetails.getActivityName());
             TDLIDTaskName.setText(taskReceiverApprovalItemDetails.getTaskName());
-            TDLIDProjCode.setText(taskReceiverApprovalItemDetails.getProjectNo());
+            TDLIDProjCode.setText(taskReceiverApprovalItemDetails.getProjectCode());
             TDLIDProjName.setText(taskReceiverApprovalItemDetails.getProjectName());
             TDLIDExpectedDate.setText(taskReceiverApprovalItemDetails.getExpectedDate());
             TDLIDExpectedTime.setText(taskReceiverApprovalItemDetails.getExpectedTotalTime());
@@ -343,7 +343,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
             TDLIDComplete.setOnClickListener(v -> {
                 if (taskDelegateListItemDetails != null)
                 {
-                    if (taskDelegateListItemDetails.getCompletedOn().equals("not_completed")) {
+                    if (taskDelegateListItemDetails.getTaskCompletedOn().equals("not_completed")) {
                         if (InternetConnectivity.isConnected()) {
                             updateTaskManagementStatus(taskDelegateListItemDetails.getId(),completed).thenAccept(isCompleted -> {
                                 Log.e("isCompleted after future resolves"," "+isCompleted);
@@ -410,7 +410,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                 }
                 else if (taskSenderApprovalItemDetails != null)
                 {
-                    if (taskSenderApprovalItemDetails.getCompletedOn().equals("not_completed")) {
+                    if (taskSenderApprovalItemDetails.getTaskCompletedOn().equals("not_completed")) {
                         if (InternetConnectivity.isConnected()) {
                             updateTaskManagementStatus(taskDelegateListItemDetails.getId(),completed).thenAccept(isCompleted -> {
                                 if(isCompleted){
@@ -528,32 +528,30 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                     }
 
                     if (apiResponse instanceof APIErrorResponse) {
-                        String msg = ((APIErrorResponse) apiResponse).getErrorMessage();
-                        Log.e("Error", "" + msg);
-                        future.completeExceptionally(new Throwable(msg));
-                        return;
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
+
                     }
-                    if (apiResponse instanceof APIEmptyResponse) {
-                        Log.e("API Response", "" + "empty response");
+                    if (apiResponse instanceof APIErrorResponse) {
                         future.completeExceptionally(new Throwable("empty response"));
                     }
-
-                } catch (ClassCastException e) {
-                    Log.e("ClassCastException error", "Error : unable to cast due to " + e.getMessage());
-                    future.completeExceptionally(new Throwable("class cannot be converted"));
-                } catch (IOException e) {
-                    Log.e("IO Excetpion error", "Error : " + e.getMessage());
-                    future.completeExceptionally(new Throwable("class cannot be converted"));
-                } catch (RuntimeException e) {
-                    Log.e("Unnoticed Exception", "Error : " + "occured " + e.getMessage());
-                    future.completeExceptionally(new Throwable("class cannot be converted"));
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while getting timeshares due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e("Response", "Request failed due to " + t.getMessage());
-                future.completeExceptionally(t);
+                future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
 
@@ -585,29 +583,37 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                             Log.e("msg",":-"+msg);
                             if(msg.equals("updated")){
                                 Log.e("task updated"," return true");
-
                                 isUpdated.complete(true);
-                                return;
+
                             }
                         }
 
-                        if (apiResponse instanceof APIErrorResponse){
-                            APIErrorResponse<ResponseBody> apiErrorResponse = new APIErrorResponse(response.message());
-                            String msg = apiErrorResponse.getErrorMessage();
-                            Log.e("Error","due to "+msg );
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            isUpdated.completeExceptionally(new Throwable(erMsg));
+
                         }
-                    } catch (IOException e) {
-                        Log.e("IO exception", "Facing issue to update data as IO exception occurred");
-                    } catch ( ClassCastException e){
-                        Log.e("ClassCast exception", "Unable to convert apiResponse into apiSuccessResponse");
+                        if (apiResponse instanceof APIErrorResponse) {
+                            isUpdated.completeExceptionally(new Throwable("empty response"));
+                        }
                     }
-                    isUpdated.complete(false); // Ensure fallback
+                    catch (ClassCastException e){
+                        isUpdated.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    }
+                    catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        isUpdated.completeExceptionally(new Throwable("Exception occured while performing input output of measurables due to" + e.getMessage()));
+                    }
+                    catch (RuntimeException e) {
+                        isUpdated.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                    }
+                    //isUpdated.complete(false); // Ensure fallback
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                     Log.e("Error","Failed to make request due to "+t.getMessage());
-                    isUpdated.complete(false);
+                    isUpdated.completeExceptionally(new Throwable(t.getMessage()));
                 }
             });
 

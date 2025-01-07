@@ -58,12 +58,12 @@ public class TTSTaskModificationListItemDetailsActivity extends AppCompatActivit
 
         if(senderTaskModificationListItemDetails!=null)
         {
-            TMLIDDate.setText(senderTaskModificationListItemDetails.getDeligationDateTime());
-            TMLIDUserName.setText(senderTaskModificationListItemDetails.getTaskDeligateOwnerUserID());
-            TMLIDReceivedUserName.setText("To,  " + senderTaskModificationListItemDetails.getTaskDeligateOwnerUserID());
+            TMLIDDate.setText(senderTaskModificationListItemDetails.getTaskAssignedOn());
+            TMLIDUserName.setText(senderTaskModificationListItemDetails.getTaskOwnerUserID());
+            TMLIDReceivedUserName.setText("To,  " + senderTaskModificationListItemDetails.getTaskOwnerUserID());
             TMLIDActivityName.setText(senderTaskModificationListItemDetails.getActivityName());
             TMLIDTaskName.setText(senderTaskModificationListItemDetails.getTaskName());
-            TMLIDProjCode.setText(senderTaskModificationListItemDetails.getProjectNo());
+            TMLIDProjCode.setText(senderTaskModificationListItemDetails.getProjectCode());
             TMLIDProjName.setText(senderTaskModificationListItemDetails.getProjectName());
             TMLIDExpectedDate.setText(senderTaskModificationListItemDetails.getExpectedDate());
             TMLIDExpectedTime.setText(senderTaskModificationListItemDetails.getExpectedTotalTime());
@@ -76,12 +76,12 @@ public class TTSTaskModificationListItemDetailsActivity extends AppCompatActivit
         }
         else
         {
-            TMLIDDate.setText(receiverTaskModificationListItemDetails.getDeligationDateTime());
-            TMLIDUserName.setText(receiverTaskModificationListItemDetails.getTaskDeligateOwnerUserID());
-            TMLIDReceivedUserName.setText("From,  " + receiverTaskModificationListItemDetails.getTaskDeligateOwnerUserID());
+            TMLIDDate.setText(receiverTaskModificationListItemDetails.getTaskAssignedOn());
+            TMLIDUserName.setText(receiverTaskModificationListItemDetails.getTaskOwnerUserID());
+            TMLIDReceivedUserName.setText("From,  " + receiverTaskModificationListItemDetails.getTaskOwnerUserID());
             TMLIDActivityName.setText(receiverTaskModificationListItemDetails.getActivityName());
             TMLIDTaskName.setText(receiverTaskModificationListItemDetails.getTaskName());
-            TMLIDProjCode.setText(receiverTaskModificationListItemDetails.getProjectNo());
+            TMLIDProjCode.setText(receiverTaskModificationListItemDetails.getProjectCode());
             TMLIDProjName.setText(receiverTaskModificationListItemDetails.getProjectName());
             TMLIDExpectedDate.setText(receiverTaskModificationListItemDetails.getExpectedDate());
             TMLIDExpectedTime.setText(receiverTaskModificationListItemDetails.getExpectedTotalTime());

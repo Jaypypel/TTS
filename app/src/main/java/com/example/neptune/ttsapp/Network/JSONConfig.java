@@ -8,15 +8,16 @@ import com.google.gson.JsonElement;
 import java.io.IOException;
 import java.util.List;
 
-public class JSONConfig {
+public class JSONConfig<T> {
 
-    public JsonNode extractBodyFromJson(String json) throws IOException {
+
+    public JsonNode  extractBodyFromJson (String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(json);  // Convert the whole response into a JsonNode
         return rootNode;
     }
 
-    public <T> List<T> extractListFromBodyFromJson(String json, Class<T> clazz)  throws IOException {
+    public static <T> List<T> extractListFromBodyFromJson(String json, Class<T> clazz)  throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 //        ResponseBody<List<T>> responseBody = mapper.readValue(json, ResponseBody.class);
 //        return responseBody.getBody();
@@ -26,7 +27,7 @@ public class JSONConfig {
         return mapper.readerForListOf(clazz).readValue(bodyNode);
     }
 
-    public JsonElement extractMessageFromBodyFromJson(String json) throws JsonProcessingException {
+    public static JsonElement extractMessageFromBodyFromJson(String json) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ResponseBody responseBody = mapper.readValue(json,ResponseBody.class);
         return responseBody.getMessage();

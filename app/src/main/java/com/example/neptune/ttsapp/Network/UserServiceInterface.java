@@ -17,7 +17,7 @@ public interface UserServiceInterface {
     Call<ResponseBody> registerUser(@Body User user);
 
     @GET("/app/user/login")
-    Call<APIResponse<Object>> login(@Query("username") String username,@Query("password") String password);
+    Call<ResponseBody> login(@Query("username") String username,@Query("password") String password);
 
     @GET("/app/user/list")
     Call<ResponseBody> getUsernames();

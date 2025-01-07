@@ -1,6 +1,8 @@
 package com.example.neptune.ttsapp.Network;
 
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -26,4 +28,5 @@ public interface ActivityServiceInterface {
 
     @GET("OtherActivities/list")
     Call<ResponseBody> getOtherActivityNames();
+
 }

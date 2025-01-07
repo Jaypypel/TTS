@@ -1,7 +1,6 @@
 package com.example.neptune.ttsapp;
 
 import android.content.Intent;
-import android.os.StrictMode;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,9 +22,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
@@ -62,8 +58,6 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ttstime_share_list);
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
 
         listView =  findViewById(R.id.timeShareList);
         gotoTimeshare =  findViewById(R.id.buttonGotoTimeshare);
@@ -242,30 +236,31 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                             ArrayList<TimeShareDataModel> timeShares = gson.fromJson(content, timeShareType);
                             future.complete(timeShares);
                         }
-                        return;
+                    }
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
                     }
 
                     if (apiResponse instanceof APIErrorResponse) {
-                        String msg = ((APIErrorResponse) apiResponse).getErrorMessage();
-                        Log.e("Error", "" + msg);
-                        return;
+                        future.completeExceptionally(new Throwable("empty response"));
                     }
-                    if (apiResponse instanceof APIEmptyResponse) {
-                        Log.e("API Response", "" + "empty response");
-                    }
-
-                } catch (ClassCastException e) {
-                    Log.e("ClassCastException error", "Error : unable to cast due to " + e.getMessage());
-                } catch (IOException e) {
-                    Log.e("IO Excetpion error", "Error : " + e.getMessage());
-                } catch (RuntimeException e) {
-                    Log.e("Unnoticed Exception", "Error : " + "occured " + e.getMessage());
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while performing input output of measurables due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("Response", "Request failed due to " + t.getMessage());
+                future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
 

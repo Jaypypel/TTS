@@ -10,11 +10,15 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-public interface MeasurableServiceInterface {
+public interface MeasurableServiceInterface{
 
 
     @GET("Measurables/list")
     Call<ResponseBody> getMeasurableList();
+
+
+    @GET("Measurables/measurable-list/")
+    Call<ResponseBody> getMeasurables();
 
     @GET("Measurables/names")
     Call<ResponseBody> getMeasurableNamesbyUsername(@Query("username") String username);

@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.ReportServiceInterface;
@@ -243,20 +244,35 @@ public class TTSReportGenerationFragment extends Fragment {
 
                     try {
                         APIResponse apiResponse =   APIResponse.create(response);
-                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
-                        Gson gson = new Gson();
-                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+                        if (apiResponse instanceof APISuccessResponse){
+                            JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                            Gson gson = new Gson();
+                            Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+                            if(result.isJsonArray()){
+                                JsonArray usernames = result.getAsJsonArray();
+                                ArrayList<String> list = gson.fromJson(usernames, listType);
+                                future.complete(list);
+                            }
+                        }
 
-                        if(result.isJsonArray()){
-                            JsonArray usernames = result.getAsJsonArray();
-                            ArrayList<String> list = gson.fromJson(usernames, listType);
-                            future.complete(list);
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            future.completeExceptionally(new Throwable(erMsg));
 
                         }
-                    } catch (RuntimeException e) {
-                        Log.e("Error", ""+e.getMessage());
-                    } catch (IOException e) {
-                        Log.e("Error", ""+e.getMessage());
+                        if (apiResponse instanceof APIErrorResponse) {
+                            future.completeExceptionally(new Throwable("empty response"));
+                        }
+                    }
+                    catch (ClassCastException e){
+                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    }
+                    catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        future.completeExceptionally(new Throwable("Exception occured while getting usernames due to" + e.getMessage()));
+                    }
+                    catch (RuntimeException e) {
+                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                     }
 
                 }
@@ -287,15 +303,18 @@ public class TTSReportGenerationFragment extends Fragment {
                         future.complete(fileDate);}
                     else future.completeExceptionally(new Throwable("Failed to retrieve report"));
                 }
-                catch (ClassCastException e){
-                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                }
 
+
+                catch (ClassCastException e){
+                future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+            }
+                catch (IOException e) {
+                Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                future.completeExceptionally(new Throwable("Exception occured while getting a report due to" + e.getMessage()));
+            }
                 catch (RuntimeException e) {
-                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
-                } catch (IOException e) {
-                    future.completeExceptionally(new Throwable("Io excpetion occured  "+ e.getMessage() +   " its cause "+e.getCause()));
-                }
+                future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+            }
             }
 
             @Override

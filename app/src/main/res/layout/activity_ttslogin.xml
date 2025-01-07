@@ -157,7 +157,7 @@
                 android:layout_height="20dp"
                 android:layout_column="1"
                 android:layout_marginLeft="120dp"
-                android:text="TTS Version 4.0"
+                android:text="ETS Version 4.0"
                 android:textColor="@android:color/black"
                 android:textSize="12sp" />
 

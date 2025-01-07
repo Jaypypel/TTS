@@ -149,7 +149,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 //            if (acceptedTaskDetails !=null){
 //                activityName.setText(acceptedTaskDetails.getActivityName());
 //                taskName.setText(acceptedTaskDetails.getTaskName());
-//                projCode.setText(acceptedTaskDetails.getProjectNo());
+//                projCode.setText(acceptedTaskDetails.getProjectCode());
 //                projName.setText(acceptedTaskDetails.getProjectName());
 //            }
 
@@ -158,7 +158,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                 processingDelegationTaskId= processingTaskDetails.getId();
                 activityName.setText(processingTaskDetails.getActivityName());
                 taskName.setText(processingTaskDetails.getTaskName());
-                projCode.setText(processingTaskDetails.getProjectNo());
+                projCode.setText(processingTaskDetails.getProjectCode());
                 projName.setText(processingTaskDetails.getProjectName());
 
             }
@@ -199,22 +199,15 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
             {
                 String tmeShrMsrble =  spinnerMeasurableName.getSelectedItem().toString() != null ? spinnerMeasurableName.getSelectedItem().toString(): "undefined";
                 String tmeShreMsrbleQty = timeShareMeasurableQty.getText().toString();
-
                 String tmeShreMsrblUnit = timeShareMeasurableUnit.getText().toString();
-
                 String[]   parts = tmeShrMsrble.split("-");
-                Log.e("parts",""+parts);
-
                 String numberPart = parts[0].split("\\.")[0]; // Cast to int to remove decimal
-                Log.e("numberPart",""+numberPart);
-                // Extract the word part
                 String wordPart = parts[1];
                 Log.e("wordPart",""+wordPart);
                 if (tmeShreMsrbleQty.isEmpty()){
                     timeShareMeasurableQty.setError("Qty can't be blank");
                     return;
                 }
-
                 if (tmeShreMsrblUnit.isEmpty()){
                     timeShareMeasurableUnit.setError("Unit can't be blank");
                     return;
@@ -306,52 +299,10 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
         });
 
-//        btnPreview.setOnClickListener(v -> {
-//
-//            DailyTimeShareDataModel timeShareDataModel = new DailyTimeShareDataModel();
-//            timeShareDataModel.setTimeShareDate(isDateValid());
-//            timeShareDataModel.setProjectNo(isProjectCodeValid());
-//            timeShareDataModel.setProjectName(isProjectNameValid());
-//            timeShareDataModel.setActivityName(isActivityNameValid());
-//            timeShareDataModel.setTaskName(isTaskNameValid());
-//            timeShareDataModel.setStartTime(isStartTimeValid());
-//            timeShareDataModel.setEndTime(isEndTimeValid());
-//            timeShareDataModel.setTaskDescription(isDescriptionValid());
-//
-//            Intent i = new Intent(getApplicationContext(), TTSTaskModificationActivity.class);
-//            i.putExtra("timeShareData", timeShareDataModel);
-//            i.putExtra("MEASURABLElIST",measurableListDataModels);
-//
-//            startActivity(i);
-//        });
-
-
 //  single click view Date and time pickers
         date.setFocusable(false);
         startTime.setFocusable(false);
         endTime.setFocusable(false);
-
-        //Date Picker start
-//        date.setOnClickListener(v -> {
-//
-//            //To show current date in the datePicker
-//            Calendar mcurrentDate=Calendar.getInstance();
-//            mYear=mcurrentDate.get(Calendar.YEAR);
-//            mMonth=mcurrentDate.get(Calendar.MONTH);
-//            mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
-//
-//            DatePickerDialog mDatePicker=new DatePickerDialog(TTSTimeShareFormActivity.this, new DatePickerDialog.OnDateSetListener() {
-//
-//                @Override
-//                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-//                    date.setText(convertDateTime(dayOfMonth) + "-" + convertDateTime((month+1))  + "-" + year);
-//                }
-//            },mYear, mMonth, mDay);
-//            mDatePicker.getDatePicker().setCalendarViewShown(false);
-//            mDatePicker.setTitle("Select date");
-//            mDatePicker.show();
-//
-//            });
 
             date.setOnClickListener(v -> {
                 MaterialDatePicker<Long> datePicker = MaterialDatePicker
@@ -391,17 +342,9 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                 timePicker.addOnPositiveButtonClickListener(selection -> {
                     int hour = timePicker.getHour();
                     int minute = timePicker.getMinute();
-
-                    // Determine AM/PM
                     String amPm = (hour < 12) ? "AM" : "PM";
-
-                    // Convert to 12-hour format
                     int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
-
-                    // Create formatted time string
                     String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
-
-                    Log.d("StartTime",formattedTime);
                     startTime.setText(formattedTime);
                 });
 
@@ -422,47 +365,13 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                 timePicker.addOnPositiveButtonClickListener(selection -> {
                     int hour = timePicker.getHour();
                     int minute = timePicker.getMinute();
-
-                    // Determine AM/PM
                     String amPm = (hour < 12) ? "AM" : "PM";
-
-                    // Convert to 12-hour format
                     int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
-
-                    // Create formatted time string
                     String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
-
-                    Log.d("EndTime",formattedTime);
                     endTime.setText(formattedTime);
                 });
 
             });
-
-//        // Time Picker for Start Time
-//        startTime.setOnClickListener(v -> {
-//            final Calendar c = Calendar.getInstance();
-//            mHour = c.get(Calendar.HOUR_OF_DAY);
-//            mMinute = c.get(Calendar.MINUTE);
-//
-//            // Launch Time Picker Dialog
-//            TimePickerDialog timePickerDialog = new TimePickerDialog(TTSTimeShareFormActivity.this,
-//                    (view, hourOfDay, minute) -> startTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute)), mHour, mMinute, true);
-//            timePickerDialog.show();
-//        });
-
-
-        // Time Picker for End Time
-//        endTime.setOnClickListener(v -> {
-//            final Calendar c = Calendar.getInstance();
-//            mHour = c.get(Calendar.HOUR_OF_DAY);
-//            mMinute = c.get(Calendar.MINUTE);
-//
-//            // Launch Time Picker Dialog
-//            TimePickerDialog timePickerDialog = new TimePickerDialog(TTSTimeShareFormActivity.this,
-//                    (view, hourOfDay, minute) -> endTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute)), mHour, mMinute, true);
-//            timePickerDialog.show();
-//        });
-
 
             endTime.addTextChangedListener(new TextWatcher() {
                 public void afterTextChanged(Editable s) {
@@ -486,8 +395,6 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
-//        Intent i = new Intent(getApplicationContext(), TTSMainActivity.class);
-//        startActivity(i);
         finish();
     }
 
@@ -637,35 +544,6 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
             }
     }
 
-    //Getting Maximum Id from TIME_SHARE Table
-    public Long getMaxTimeShareTaskId() {
-        long id=0;
-        Connection con;
-        ResultSet rs ;
-        try {
-            con=DatabaseHelper.getDBConnection();
-            PreparedStatement ps = con.prepareStatement("select max(ID) maxnum from TIME_SHARE");
-
-            rs=ps.executeQuery();
-            if (rs.next())
-            {
-                id=rs.getLong("maxnum");
-                System.out.println(id);
-                id++;
-            }else {
-                id++;
-            }
-            rs.close();
-            ps.close();
-            con.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return id;
-    }
-
-
     public CompletableFuture<ArrayList<MeasurableListDataModel>> getAllocatedMeasurableList(Long taskId){
         CompletableFuture<ArrayList<MeasurableListDataModel>> future = new CompletableFuture<>();
         Call<ResponseBody> call = measurableService.getAllocatedMeasurableList(taskId);
@@ -684,27 +562,30 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                             ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurablesType);
                             future.complete(measurables);
                         }
-
+                    }
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
 
                     }
-                    if (apiResponse instanceof APIErrorResponse){
-                        String msg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                        Log.e("Server Response", "Error Received : "+ msg);
+                    if (apiResponse instanceof APIErrorResponse) {
+                        future.completeExceptionally(new Throwable("empty response"));
                     }
-
-                    if(apiResponse instanceof APIErrorResponse){
-                        future.completeExceptionally(new Throwable("Response is empty"));
-                    }
-                } catch (IOException e) {
-                    Log.e("Error", "IOException occurred" + e.getMessage(), e);
-                    future.completeExceptionally(e);
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    future.completeExceptionally(new Throwable("Exception occured while getting measurables due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("Error", "Request Failed: " + t.getMessage(), t);
-                future.completeExceptionally(t);
+                future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
 
@@ -736,26 +617,26 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                                 }
                             }
 
-                            if (apiResponse instanceof APIErrorResponse){
-                                String msg = ((APIErrorResponse) apiResponse).getErrorMessage();
-                                Log.e("Error","occurred"+msg);
+                            if (apiResponse instanceof APIErrorResponse) {
+                                String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                                future.completeExceptionally(new Throwable(erMsg));
+
                             }
-                            if (apiResponse instanceof APIErrorResponse){
-                                Log.e("Response","response is empty");
+                            if (apiResponse instanceof APIErrorResponse) {
+                                future.completeExceptionally(new Throwable("empty response"));
                             }
                         }
-
-
                     }
                     catch (ClassCastException e){
-                        Log.e("Error","Not getting the response in required format due to "+e.getMessage());
-                    }
+                            future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                        }
                     catch (IOException e) {
-                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                    }
-                    catch (RuntimeException e){
-                        Log.e("Unnoticed Exception", "Any unidentified error occured "+e.getMessage());
-                    }
+                            Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                            future.completeExceptionally(new Throwable("Exception occured while adding a timeshare due to " + e.getMessage()));
+                        }
+                    catch (RuntimeException e) {
+                            future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                        }
 
                 }
 
@@ -805,12 +686,32 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                                     allSuccessful.set(false);
 
                                 }
-                            }
-                        } catch (IOException e) {
 
-                            Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                            allSuccessful.set(false);
-                        }
+                                if (apiResponse instanceof APIErrorResponse) {
+                                    allSuccessful.set(false);
+                                    String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                                    future.completeExceptionally(new Throwable(erMsg));
+
+                                }
+                                if (apiResponse instanceof APIErrorResponse) {
+                                    allSuccessful.set(false);
+                                    future.completeExceptionally(new Throwable("empty response"));
+                                }
+                            }
+                    }
+                    catch (ClassCastException e){
+                        allSuccessful.set(false);
+                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    }
+                    catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        allSuccessful.set(false);
+                        future.completeExceptionally(new Throwable("Exception occured while performing adding measurables due to" + e.getMessage()));
+                    }
+                    catch (RuntimeException e) {
+                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                    }
+
                         finally {
                             if (pendingTasks.decrementAndGet() == 0){
                                 future.complete(allSuccessful.get());
@@ -820,10 +721,10 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.e("IOException", "Exception occurred: " + t.getMessage(), t);
+
                         allSuccessful.set(false);
                         if (pendingTasks.decrementAndGet() == 0) {
-                            future.complete(false);
+                            future.completeExceptionally(new Throwable(t.getMessage()));
                         }
                     }
                 });
@@ -836,39 +737,40 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
     public CompletableFuture<String> getActualTotatTime(Long AssignedTaskId){
             CompletableFuture<String> future = new CompletableFuture<>();
-            Call call = taskHandlerService.getActualTotalTime(AssignedTaskId);
-            call.enqueue(new Callback() {
+            Call<ResponseBody> call = taskHandlerService.getActualTotalTime(AssignedTaskId);
+            call.enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call call, Response response) {
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     try {
-                        APIResponse<Response> apiResponse = APIResponse.create(response);
+                        APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
                         if (apiResponse instanceof  APISuccessResponse){
-                            String actualTotalTime = ((APISuccessResponse<Response>) apiResponse).getBody().getBody().getAsString();
+                            String actualTotalTime = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
                             future.complete(actualTotalTime);
                         }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            future.completeExceptionally(new Throwable(erMsg));
 
-                        if (apiResponse instanceof APIErrorResponse){
-                            String msg = ((APIErrorResponse<Response>) apiResponse).getErrorMessage();
-                            Log.e("Error",""+msg);
                         }
-                        if (apiResponse instanceof APIEmptyResponse ) {
-                            Log.e("Response","empty response is receive");
+                        if (apiResponse instanceof APIErrorResponse) {
+                            future.completeExceptionally(new Throwable("empty response"));
                         }
-                    }
+
+                }
                     catch (ClassCastException e){
-                        Log.e("Error","Not getting the response in required format due to "+e.getMessage());
-                    }
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
                     catch (IOException e) {
-                        Log.e("Error","IO Exception occured "+e.getMessage()+"while getting actual time");
-                    }
-
-                    catch (RuntimeException e){
-                        Log.e("Unnoticed Exception", "Any unidentified error occured "+e.getMessage());
-                    }
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while updating actual total time due to" + e.getMessage()));
+                }
+                    catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                }
                 }
 
                 @Override
-                public void onFailure(Call call, Throwable t) {
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
 
                 }
             });
@@ -878,40 +780,41 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
     public CompletableFuture<String> updateActualTotatTime(Long assignedTaskId,String newActualTotalTime){
         CompletableFuture<String> future = new CompletableFuture<>();
-        Call call = taskHandlerService.updateActualTotalTime(assignedTaskId,newActualTotalTime);
-        call.enqueue(new Callback() {
+        Call<ResponseBody> call = taskHandlerService.updateActualTotalTime(assignedTaskId,newActualTotalTime);
+        call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call call, Response response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    APIResponse<Response> apiResponse = APIResponse.create(response);
+                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
                     if (apiResponse instanceof  APISuccessResponse){
-                        String msg = ((APISuccessResponse<Response>) apiResponse).getBody().getMessage().getAsString();
+                        String msg = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
                         future.complete(msg);
                     }
 
-                    if (apiResponse instanceof APIErrorResponse){
-                        String msg = ((APIErrorResponse<Response>) apiResponse).getErrorMessage();
-                        Log.e("Error",""+msg);
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
+
                     }
-                    if (apiResponse instanceof APIEmptyResponse ) {
-                        Log.e("Response","empty response is receive");
+                    if (apiResponse instanceof APIErrorResponse) {
+                        future.completeExceptionally(new Throwable("empty response"));
                     }
                 }
                 catch (ClassCastException e){
-                    Log.e("Error","Not getting the response in required format due to "+e.getMessage());
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
                 }
                 catch (IOException e) {
-                    Log.e("Error","IO Exception occured "+e.getMessage()+"while getting actual time");
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while performing updateActualTotalTime due to" + e.getMessage()));
                 }
-
-                catch (RuntimeException e){
-                    Log.e("Unnoticed Exception", "Any unidentified error occured "+e.getMessage());
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
-            public void onFailure(Call call, Throwable t) {
-
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
         return future;

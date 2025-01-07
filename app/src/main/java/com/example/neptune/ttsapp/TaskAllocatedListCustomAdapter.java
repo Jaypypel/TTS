@@ -101,10 +101,10 @@ public class TaskAllocatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
             result=convertView;
         }
 
-        viewHolder.txttaskAllocateOwnerName.setText(dataModel.getTaskDeligateOwnerUserID());
-//       if(dataModel.getDeligationDateTime() != null){
-//           Log.e("delegationDate from dataModel",dataModel.getDeligationDateTime());
-//           String d = dataModel.getDeligationDateTime();
+        viewHolder.txttaskAllocateOwnerName.setText(dataModel.getTaskOwnerUserID());
+//       if(dataModel.getTaskAssignedOn() != null){
+//           Log.e("delegationDate from dataModel",dataModel.getTaskAssignedOn());
+//           String d = dataModel.getTaskAssignedOn();
 //           Log.e("delegationDate funciton"," "+extractDate(d));
 //       }else{
 //           Log.e("delegationDate", "is null ");
@@ -112,7 +112,7 @@ public class TaskAllocatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
 //
 //       }
 
-        viewHolder.txttaskAllocateTaskDate.setText(extractDate(dataModel.getDeligationDateTime()));
+        viewHolder.txttaskAllocateTaskDate.setText(extractDate(dataModel.getTaskAssignedOn()));
         viewHolder.txttaskAllocateTaskName.setText(dataModel.getTaskName());
         viewHolder.txttaskAllocateTaskStatus.setText(dataModel.getStatus());
 

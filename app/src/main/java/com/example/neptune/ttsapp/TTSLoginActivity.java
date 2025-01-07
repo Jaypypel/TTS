@@ -31,12 +31,18 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
+import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.UserServiceInterface;
+import com.google.gson.JsonObject;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
 
@@ -174,43 +180,31 @@ public class TTSLoginActivity extends AppCompatActivity {
 //                    Toast.makeText(TTSLoginActivity.this, "Incorrect Details", Toast.LENGTH_LONG).show();
 //                    progressBarInLogin.setVisibility(View.INVISIBLE);
 //                }
-                 appExecutors.getMainThread().execute(() -> {
-                     Call<APIResponse<Object>> loginResponse =  userServiceInterface.login(isValidUserId(),isValidPassword());
-                     loginResponse.enqueue(new Callback<APIResponse<Object>>() {
-                         @Override
-                         public void onResponse(Call<APIResponse<Object>> call, Response<APIResponse<Object>> response) {
-                             appExecutors.getMainThread().execute(() -> {
-                                 progressBarInLogin.setVisibility(View.VISIBLE);
-                                 if(response.isSuccessful() && response.body() != null && response.errorBody() == null){
-                                     String userId = userName.getText().toString().trim().replaceAll("\\s+","");
-                                     sessionManager = new SessionManager(getApplicationContext());
-                                     sessionManager.setUserID(userId);
-                                     Log.d("Network Request","Login succesful" + response.body());
-                                     Toast.makeText(TTSLoginActivity.this, "You're logged in now", Toast.LENGTH_SHORT).show();
-                                     Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);
-                                     startActivity(i);
-                                     finish();
+                 appExecutors.getNetworkIO().execute(() -> makeUserLogin(isValidUserId(),isValidPassword()).thenAccept(isCredentialsValid -> {
+                     if(isCredentialsValid){
+                        appExecutors.getMainThread().execute(()-> {
+                            String userId = userName.getText().toString().trim().replaceAll("\\s+","");
+                            sessionManager = new SessionManager(getApplicationContext());
+                            sessionManager.setUserID(userId);
+                            Toast.makeText(TTSLoginActivity.this, "You're logged in now", Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);
+                            startActivity(i);
+                            finish();
+                        });
+                     }else {
+                        appExecutors.getMainThread().execute(() -> {
+                            progressBarInLogin.setVisibility(View.INVISIBLE);
+                         Toast.makeText(TTSLoginActivity.this, "You entered incorrect details ", Toast.LENGTH_SHORT).show();
+                        });
+                     }
+                 }).exceptionally(e -> {
+                    appExecutors.getMainThread().execute(() -> {
+                        progressBarInLogin.setVisibility(View.INVISIBLE);
+                        Toast.makeText(TTSLoginActivity.this, "Error: "+e.getMessage(),Toast.LENGTH_LONG).show();
 
-                                 }else {
-                                     progressBarInLogin.setVisibility(View.INVISIBLE);
-                                     Toast.makeText(TTSLoginActivity.this, "You entered incorrect details ", Toast.LENGTH_SHORT).show();
-
-                                 }
-
-                             });
-
-                         }
-
-                         @Override
-                         public void onFailure(Call<APIResponse<Object>> call, Throwable t) {
-                             appExecutors.getMainThread().execute(() -> {
-                                 Log.e("Network Request", "Failed to connect: " + t.getMessage());
-                                 progressBarInLogin.setVisibility(View.INVISIBLE);
-                                 Toast.makeText(TTSLoginActivity.this, "Error: "+t.getMessage(),Toast.LENGTH_LONG).show();
-                             });
-                         }
-                     });
-                 });
+                    });
+                     return null;
+                 }));
              }
         } else {
             Toast.makeText(TTSLoginActivity.this, "No Internet Connection", Toast.LENGTH_LONG).show();
@@ -266,6 +260,54 @@ public class TTSLoginActivity extends AppCompatActivity {
         return passwordck;
     }
 
+
+    public CompletableFuture<Boolean> makeUserLogin(String username, String password){
+        CompletableFuture<Boolean> isLoggedIn = new CompletableFuture<>();
+        Call<ResponseBody> call = userServiceInterface.login(username,password);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    APIResponse apiResponse = APIResponse.create(response);
+                    Log.e("apiResponse", ""+apiResponse);
+                    if (apiResponse != null) {
+                        if (apiResponse instanceof APISuccessResponse) {
+                            ResponseBody responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody();
+                            Log.e("responBody", ""+responseBody);
+                            String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+                            if ("Successful".equals(message)) {
+                                isLoggedIn.complete(true);
+                            }
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                            isLoggedIn.completeExceptionally(new Throwable(erMsg));
+
+                        }
+                        if (apiResponse instanceof APIErrorResponse) {
+                            isLoggedIn.completeExceptionally(new Throwable("empty response"));
+                        }
+                    }
+                }
+                catch (ClassCastException e){
+                    isLoggedIn.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    isLoggedIn.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    isLoggedIn.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                isLoggedIn.completeExceptionally(new Throwable(t.getMessage()));
+            }
+        });
+        return isLoggedIn;
+    }
     // Method For Login User
 //    public boolean loginUser(String userName, String password) {
 //        boolean result = false;

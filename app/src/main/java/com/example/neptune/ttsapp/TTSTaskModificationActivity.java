@@ -110,7 +110,7 @@ public class TTSTaskModificationActivity extends AppCompatActivity {
 
                prevActivityName.setText(modifyTaskDetails.getActivityName());
                prevTaskName.setText(modifyTaskDetails.getTaskName());
-               prevProjCode.setText(modifyTaskDetails.getProjectNo());
+               prevProjCode.setText(modifyTaskDetails.getProjectCode());
                prevProjName.setText(modifyTaskDetails.getProjectName());
                prevStartTime.setText(modifyTaskDetails.getExpectedDate());
                prevEndTime.setText(modifyTaskDetails.getExpectedTotalTime());
@@ -126,14 +126,14 @@ public class TTSTaskModificationActivity extends AppCompatActivity {
 
            }
             else {
-                prevDate.setText(dtsListItemDetails.getTimeShareDate());
+                prevDate.setText(dtsListItemDetails.getDateOfTimeShare());
                 prevActivityName.setText(dtsListItemDetails.getActivityName());
                 prevTaskName.setText(dtsListItemDetails.getTaskName());
-                prevProjCode.setText(dtsListItemDetails.getProjectNo());
+                prevProjCode.setText(dtsListItemDetails.getProjectCode());
                 prevProjName.setText(dtsListItemDetails.getProjectName());
                 prevStartTime.setText(dtsListItemDetails.getStartTime());
                 prevEndTime.setText(dtsListItemDetails.getEndTime());
-                prevDescription.setText(dtsListItemDetails.getTaskDescription());
+                prevDescription.setText(dtsListItemDetails.getDescription());
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(dtsMeasurableList, getApplicationContext());
                 listView.setAdapter(measurableListCustomAdapter);
 
@@ -192,28 +192,30 @@ public class TTSTaskModificationActivity extends AppCompatActivity {
                         String msg = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
                         future.complete(msg);
                     }
-                    if (apiResponse instanceof APIErrorResponse){
-                        String msg = ((APIErrorResponse) apiResponse).getErrorMessage();
-                        Log.e("Error", ""+msg);
-                        return;
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
+
                     }
-                    if (apiResponse instanceof APIEmptyResponse){
-                        Log.e("API Response", ""+"empty response");
+                    if (apiResponse instanceof APIErrorResponse) {
+                        future.completeExceptionally(new Throwable("empty response"));
                     }
-                } catch (ClassCastException e){
-                    Log.e("ClassCastException error","Error : unable to cast due to "+e.getMessage());
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
                 }
                 catch (IOException e) {
-                    Log.e("IO Excetpion error", "Error : "+e.getMessage());
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while updating the task due to" + e.getMessage()));
                 }
-                catch (RuntimeException e){
-                    Log.e("Unnoticed Exception" ,"Error : "+"occured "+e.getMessage());
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("Response","Request failed due to "+t.getMessage());
+                future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
 
