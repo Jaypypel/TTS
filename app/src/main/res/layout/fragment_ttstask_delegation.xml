@@ -598,7 +598,8 @@
                 android:id="@+id/listTaskDeliMeasurable"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:layout_marginLeft="5dp" />
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"/>
 
         </TableRow>
 

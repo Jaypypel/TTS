@@ -196,10 +196,14 @@ public class TTSProjectCRUDFragment extends Fragment {
             {
                 if (InternetConnectivity.isConnected())
                 {
-                   if (isProjectCode().isEmpty()){projectCode.setError("Project Code Be Empty");}
-                   else if (isProjectName().isEmpty()){projectName.setError("Project Name Be Empty");}
-                   else
-                   {
+                   if (isProjectCode().isEmpty()){projectCode.setError("Project Code Be Empty");
+                        return ;
+
+                   }
+                   if (isProjectName().isEmpty()){projectName.setError("Project Name Be Empty");
+                   return;}
+
+
 
                        addProject(getUser(), getAct(), isProjectCode(), isProjectName(), createdOn()).thenAccept(isProjectAdded -> {
                            if(isProjectAdded.equals("successful")){
@@ -230,7 +234,7 @@ public class TTSProjectCRUDFragment extends Fragment {
 //                       } else {
 //                           Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
 //                       }
-                   }
+
                 }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 

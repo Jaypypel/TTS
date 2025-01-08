@@ -147,18 +147,19 @@ public class TTSActivityCRUDFragment extends Fragment {
             });
         }catch (Exception e){e.printStackTrace();}
 
-        addActivity=(Button)view.findViewById(R.id.buttonActCRUDAddAct);
+        addActivity= view.findViewById(R.id.buttonActCRUDAddAct);
 
 
         addActivity.setOnClickListener(v -> {
 
             try
             {
-                if (InternetConnectivity.isConnected()== true)
+                if (InternetConnectivity.isConnected())
                 {
-                    if(isActivityName().isEmpty()){activityName.setError("Activity Name Be Empty");}
-                    else
-                        {
+                    if(isActivityName().isEmpty()){activityName.setError("Activity Name Be Empty");
+                     return ;
+                    }
+
                             addActivity(getUser(),isActivityName(),createdOn()).thenAccept(isActivityAdded -> {
                                 if(isActivityAdded.equals("successful")){
                                     appExecutors.getMainThread().execute(() ->
@@ -186,7 +187,7 @@ public class TTSActivityCRUDFragment extends Fragment {
 //                            } else {
 //                                Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
 //                            }
-                        }
+
                 }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
             }

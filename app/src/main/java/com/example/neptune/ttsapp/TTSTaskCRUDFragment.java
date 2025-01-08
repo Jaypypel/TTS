@@ -169,11 +169,11 @@ public class TTSTaskCRUDFragment extends Fragment {
 
             try
             {
-                if (InternetConnectivity.isConnected()== true) {
+                if (InternetConnectivity.isConnected()) {
                     if (isTaskName().isEmpty()) {
                         taskName.setError("Task Name Be Empty");
-                    } else
-                    {
+                        return;
+                    }
 
                         addTask(getUser(), getAct(), isTaskName(), createdOn()).thenAccept(isTaskAdded -> {
                             if(isTaskAdded.equals("successful")){
@@ -193,7 +193,7 @@ public class TTSTaskCRUDFragment extends Fragment {
 
                             return null;
                         });
-                    }
+
                 }else { Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
             }

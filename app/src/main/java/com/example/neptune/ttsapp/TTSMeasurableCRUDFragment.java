@@ -161,9 +161,10 @@ public class TTSMeasurableCRUDFragment extends Fragment {
                 {
                     if (InternetConnectivity.isConnected()== true)
                     {
-                     if (isMeasurableName().isEmpty()){measurableName.setError("Measurable Name Be Empty");}
-                     else
-                     {
+                     if (isMeasurableName().isEmpty()){measurableName.setError("Measurable Name Be Empty");
+                        return;
+                     }
+
                          addTask(getUser(), isMeasurableName(), createdOn()).thenAccept(isMeasurbaleAdded -> {
                              if(isMeasurbaleAdded.equals("successful")){
                                  appExecutors.getMainThread().execute(() ->
@@ -190,7 +191,7 @@ public class TTSMeasurableCRUDFragment extends Fragment {
 //                         } else {
 //                             Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
 //                         }
-                     }
+
                     }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 

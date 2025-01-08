@@ -43,8 +43,8 @@ public class TTSAdminActivity extends AppCompatActivity {
 
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles= getResources().getStringArray(R.array.navigation_drawer_items_array_admin);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_admin);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer_admin);
+        mDrawerLayout = findViewById(R.id.drawer_layout_admin);
+        mDrawerList = findViewById(R.id.left_drawer_admin);
 
 
         setupToolbar();
@@ -66,7 +66,7 @@ public class TTSAdminActivity extends AppCompatActivity {
         DrawerItemCustomAdapterAdmin adapter = new DrawerItemCustomAdapterAdmin(this, R.layout.list_view_item_row_admin, drawerItem);
         mDrawerList.setAdapter(adapter);
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_admin);
+        mDrawerLayout = findViewById(R.id.drawer_layout_admin);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         setupDrawerToggle();
 

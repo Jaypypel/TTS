@@ -106,34 +106,33 @@ public class TTSOtherActivityCRUDFragment extends Fragment {
         addOtherActivity=(Button)view.findViewById(R.id.buttonOtherActivityCRUDAddOtherActivity);
 
 
-        addOtherActivity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        addOtherActivity.setOnClickListener(v -> {
 
-                try
+            try
+            {
+                if (InternetConnectivity.isConnected()== true)
                 {
-                    if (InternetConnectivity.isConnected()== true)
-                    {
-                        if (isOtherActivityName().isEmpty()){otherActivityName.setError("Other Activity Name Be Empty");}
-                        else
-                        {   addOtherActivity(isOtherActivityName(), createdOn()).thenAccept(isMeasurbaleAdded -> {
-                            if(isMeasurbaleAdded.equals("successful")){
-                                appExecutors.getMainThread().execute(() ->
-                                {
-                                    Toast.makeText(getActivity().getApplicationContext(), "Other Activity Inserted ", Toast.LENGTH_LONG).show();
-                                    otherActivityName.setText("");
-                                });
-                            }else {
-                                appExecutors.getMainThread().execute(() -> Toast
-                                        .makeText(getActivity()
-                                                .getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG)
-                                        .show());
-                            }
-                        }).exceptionally(e -> {
-                            Toast.makeText(getActivity().getApplicationContext(), "Failed to add other activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                    if (isOtherActivityName().isEmpty()){otherActivityName.setError("Other Activity Name Be Empty");
+                        return;
+                    }
+                     addOtherActivity(isOtherActivityName(), createdOn()).thenAccept(isMeasurableAdded -> {
+                        if(isMeasurableAdded.equals("successful")){
+                            appExecutors.getMainThread().execute(() ->
+                            {
+                                Toast.makeText(getActivity().getApplicationContext(), "Other Activity Inserted ", Toast.LENGTH_LONG).show();
+                                otherActivityName.setText("");
+                            });
+                        }else {
+                            appExecutors.getMainThread().execute(() -> Toast
+                                    .makeText(getActivity()
+                                            .getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG)
+                                    .show());
+                        }
+                    }).exceptionally(e -> {
+                        Toast.makeText(getActivity().getApplicationContext(), "Failed to add other activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
 
-                            return null;
-                        });
+                        return null;
+                    });
 
 //                            String result = insertOtherActivity(isOtherActivityName(), createdOn());
 //                            if (result.equals("true")) {
@@ -142,13 +141,12 @@ public class TTSOtherActivityCRUDFragment extends Fragment {
 //                            } else {
 //                                Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
 //                            }
-                        }
-                    }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+
+                }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
-                }
-                catch (Exception e){e.printStackTrace();}
             }
+            catch (Exception e){e.printStackTrace();}
         });
 
         return view;

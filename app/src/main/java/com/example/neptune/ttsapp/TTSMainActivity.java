@@ -80,8 +80,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -560,17 +562,15 @@ public class TTSMainActivity extends AppCompatActivity {
             if (!timePicker.isAdded()) timePicker
                     .show(getSupportFragmentManager(),"Time_Picker");
 
-            timePicker.addOnPositiveButtonClickListener(selection -> {
-                appExecutor.getNetworkIO().execute(() -> {
-                    int hour = timePicker.getHour();
-                    int minute = timePicker.getMinute();
-                    String amPm = (hour < 12) ? "AM" : "PM";
-                    int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
-                    String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
-                    appExecutor.getMainThread().execute(()-> timeShareStartTime
-                            .setText(formattedTime));
-                });
-            });
+            timePicker.addOnPositiveButtonClickListener(selection -> appExecutor.getNetworkIO().execute(() -> {
+                int hour = timePicker.getHour();
+                int minute = timePicker.getMinute();
+                String amPm = (hour < 12) ? "AM" : "PM";
+                int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
+                String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
+                appExecutor.getMainThread().execute(()-> timeShareStartTime
+                        .setText(formattedTime));
+            }));
         });
 
 
@@ -926,6 +926,7 @@ public class TTSMainActivity extends AppCompatActivity {
 
 
 
+
         // Clear fields
         clearAll();
 
@@ -1123,49 +1124,86 @@ public class TTSMainActivity extends AppCompatActivity {
     //Calculate Time Difference between startTime and endTime
     private String getConsumedTime()
     {
+
         String start= timeShareStartTime!=null ? timeShareStartTime.getText().toString().trim().replaceAll("\\s+","") : "N.I";
+
         String end=timeShareEndTime !=null ? timeShareEndTime.getText().toString().trim().replaceAll("\\s+","") : "N.I" ;
-        if(!start.equals(end)){
-            if(start.contains("am") && end.contains("am") || start.contains("pm") && end.contains("pm")){
-                if(start.split(":")[0] == end.split(":")[0]){
-                    return String.valueOf(Integer.valueOf(end.split(":")[1]) - Integer.valueOf(start.split(":")[1]));
-                }
-            }
-        }
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        format.setTimeZone(TimeZone.getTimeZone("IST"));
 
-        String difference=null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma");
 
-        if(!start.isEmpty() && !end.isEmpty()) {
-            try {
-                Date date1 = format.parse(start);
-                Date date2 = format.parse(end);
-                long mills = date2.getTime() - date1.getTime();
-                int hours = (int) (mills / (1000 * 60 * 60));
-                int mins = (int) (mills / (1000 * 60)) % 60;
-                difference = convertDateTime(hours) + ":" + convertDateTime(mins);
+        // Parse start and end times into LocalTime
+        LocalTime startTime = LocalTime.parse(start,formatter);
+        LocalTime endTime = LocalTime.parse(end,formatter);
 
-            } catch (ParseException e) { e.printStackTrace(); }
+        // Calculate difference in minutes
+        long difference = ChronoUnit.MINUTES.between(startTime, endTime);
+//            int startMinutes = converToMinutes(start);
+//        Log.e("time","timeConsumed "+startMinutes);
+//            int endMinutes = converToMinutes(end);
+//        Log.e("time","timeConsumed "+endMinutes);
+//            int difference = endMinutes - startMinutes;
+//        Log.e("time","timeConsumed "+difference);
+            int hours = (int) (difference/ 60);
+        Log.e("time","hours "+hours);
+            int mins = (int) (difference % 60);
+        Log.e("time","mins "+mins);
 
-        }
-        return difference;
+            String timeConsumed = hours + " hr : "+mins+" mins";
+        Log.e("time","hours "+timeConsumed);
+            return timeConsumed;
+//        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+//        format.setTimeZone(TimeZone.getTimeZone("IST"));
+//
+//        String difference=null;
+//
+//        if(!start.isEmpty() && !end.isEmpty()) {
+//            try {
+//                Date date1 = format.parse(start);
+//                Log.e("time","date1 "+date1);
+//
+//                Date date2 = format.parse(end);
+//                Log.e("time","date2 "+date2);
+//                long mills = date2.getTime() - date1.getTime();
+//                Log.e("time","mills "+mills);
+//                int hours = (int) (mills / (1000 * 60 * 60));
+//                Log.e("time","hours "+hours);
+//                int mins = (int) (mills / (1000 * 60)) % 60;
+//                Log.e("time","mins "+mins);
+//                difference = convertDateTime(hours) + ":" + convertDateTime(mins);
+//                Log.e("time","difference "+difference);
+//
+//            } catch (ParseException e) { e.printStackTrace(); }
+//
+//        }
+//        return difference;
+
     }
 
-
+    private static int converToMinutes(String time){
+        int hour = Integer.parseInt(time.substring(0,2));
+        Log.e("debugging", "hour :" +hour);
+        int minute = Integer.parseInt(time.substring(3,5));
+        Log.e("debugging", "minute :" +minute);
+        String period = time.substring(5);
+        Log.e("debugging", "period :" +period);
+        if (time.contains("pm") && hour != 12){ hour +=12;}
+        else if (period.contains("am") && hour == 12){ hour = 0;}
+        Log.e("debugging", "hour :" +hour);
+        return hour * 60 + minute;
+    }
 
     private CompletableFuture<ArrayList<String>> addDailyTimeShare(DailyTimeShare dailyTimeShare) {
-    CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
-    //it is used for to message & dts Id from ResponseBody object
-    ArrayList<String> messageAndId = new ArrayList<>();
-    appExecutor.getNetworkIO().execute(() -> {
-        Call<ResponseBody> call = dailyTimeShareInterface.addDailyTimeShare(dailyTimeShare);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    APIResponse apiResponse = APIResponse.create(response);
-                    if (apiResponse != null) {
+        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+        //it is used for to message & dts Id from ResponseBody object
+        ArrayList<String> messageAndId = new ArrayList<>();
+        appExecutor.getNetworkIO().execute(() -> {
+            Call<ResponseBody> call = dailyTimeShareInterface.addDailyTimeShare(dailyTimeShare);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    try {
+                        APIResponse apiResponse = APIResponse.create(response);
+                        if (apiResponse != null) {
                         if (apiResponse instanceof APISuccessResponse) {
                             String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
                              JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();

@@ -151,20 +151,22 @@ public class TTSTaskCountFragment extends Fragment {
 
         //Get Data From Database for Accepted Task And set to the ListView
         if (InternetConnectivity.isConnected()) {
-            appExecutors.getNetworkIO().execute(() -> {
-                getAssignedTask(sessionManager.getUserID()).thenAccept(task -> {
-                    appExecutors.getMainThread().execute(() -> {
-                        dataModels = task;
-                        if(isAdded()){
-                            adapter = new TaskAllocatedListCustomAdapter(task,getActivity().getApplicationContext());
-                            listView.setAdapter(adapter);
-                        }
-                    });
-                }).exceptionally(e -> {
-                    Toast.makeText(getActivity().getApplicationContext(),"Failed to get Tasks ",Toast.LENGTH_LONG).show();
-                    return null;
-                });
-            });
+            appExecutors
+                    .getNetworkIO()
+                    .execute(() -> getAssignedTask(sessionManager.getUserID())
+                            .thenAccept(task -> appExecutors
+                                    .getMainThread()
+                                    .execute(() -> {
+                dataModels = task;
+                if(isAdded()){
+                    adapter = new TaskAllocatedListCustomAdapter(task,getActivity().getApplicationContext());
+                    listView.setAdapter(adapter);
+                }
+                     }))
+                            .exceptionally(e -> {
+                Toast.makeText(getActivity().getApplicationContext(),"Failed to get Tasks ",Toast.LENGTH_LONG).show();
+                return null;
+            }));
 
         }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
