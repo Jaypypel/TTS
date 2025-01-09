@@ -60,7 +60,7 @@ public class TTSTaskModificationListItemDetailsActivity extends AppCompatActivit
         {
             TMLIDDate.setText(senderTaskModificationListItemDetails.getTaskAssignedOn());
             TMLIDUserName.setText(senderTaskModificationListItemDetails.getTaskOwnerUserID());
-            TMLIDReceivedUserName.setText("To,  " + senderTaskModificationListItemDetails.getTaskOwnerUserID());
+            TMLIDReceivedUserName.setText("To,  " + senderTaskModificationListItemDetails.getTaskReceivedUserID());
             TMLIDActivityName.setText(senderTaskModificationListItemDetails.getActivityName());
             TMLIDTaskName.setText(senderTaskModificationListItemDetails.getTaskName());
             TMLIDProjCode.setText(senderTaskModificationListItemDetails.getProjectCode());

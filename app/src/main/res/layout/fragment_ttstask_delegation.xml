@@ -87,16 +87,16 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-<!--            <com.google.android.material.textfield.MaterialAutoCompleteTextView-->
-<!--                android:id="@+id/editTextTaskDeliUserName"-->
-<!--                android:layout_width="215dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_column="1"-->
-<!--                android:layout_marginLeft="45dp"-->
-<!--                android:completionThreshold="1"-->
-<!--                android:ems="10"-->
-<!--                android:hint="Enter User Name"-->
-<!--                android:inputType="text" />-->
+            <!--            <com.google.android.material.textfield.MaterialAutoCompleteTextView-->
+            <!--                android:id="@+id/editTextTaskDeliUserName"-->
+            <!--                android:layout_width="215dp"-->
+            <!--                android:layout_height="40dp"-->
+            <!--                android:layout_column="1"-->
+            <!--                android:layout_marginLeft="45dp"-->
+            <!--                android:completionThreshold="1"-->
+            <!--                android:ems="10"-->
+            <!--                android:hint="Enter User Name"-->
+            <!--                android:inputType="text" />-->
 
 
         </TableRow>
@@ -129,15 +129,15 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-<!--            <AutoCompleteTextView-->
-<!--                android:id="@+id/editTextTaskDeliTaskName"-->
-<!--                android:layout_width="215dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_column="1"-->
-<!--                android:layout_marginLeft="45dp"-->
-<!--                android:ems="10"-->
-<!--                android:hint="Enter Task Name"-->
-<!--                android:inputType="text" />-->
+            <!--            <AutoCompleteTextView-->
+            <!--                android:id="@+id/editTextTaskDeliTaskName"-->
+            <!--                android:layout_width="215dp"-->
+            <!--                android:layout_height="40dp"-->
+            <!--                android:layout_column="1"-->
+            <!--                android:layout_marginLeft="45dp"-->
+            <!--                android:ems="10"-->
+            <!--                android:hint="Enter Task Name"-->
+            <!--                android:inputType="text" />-->
 
         </TableRow>
 
@@ -171,15 +171,15 @@
 
 
 
-<!--            <EditText-->
-<!--                android:id="@+id/editTextTaskDeliDes"-->
-<!--                android:layout_width="215dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_column="1"-->
-<!--                android:layout_marginLeft="45dp"-->
-<!--                android:ems="10"-->
-<!--                android:hint="Enter Description"-->
-<!--                android:inputType="text" />-->
+            <!--            <EditText-->
+            <!--                android:id="@+id/editTextTaskDeliDes"-->
+            <!--                android:layout_width="215dp"-->
+            <!--                android:layout_height="40dp"-->
+            <!--                android:layout_column="1"-->
+            <!--                android:layout_marginLeft="45dp"-->
+            <!--                android:ems="10"-->
+            <!--                android:hint="Enter Description"-->
+            <!--                android:inputType="text" />-->
 
         </TableRow>
 
@@ -211,15 +211,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-<!--            <AutoCompleteTextView-->
-<!--                android:id="@+id/editTextTaskDeliActName"-->
-<!--                android:layout_width="215dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_column="1"-->
-<!--                android:layout_marginLeft="45dp"-->
-<!--                android:ems="10"-->
-<!--                android:hint="Enter Activity Name"-->
-<!--                android:inputType="text" />-->
+            <!--            <AutoCompleteTextView-->
+            <!--                android:id="@+id/editTextTaskDeliActName"-->
+            <!--                android:layout_width="215dp"-->
+            <!--                android:layout_height="40dp"-->
+            <!--                android:layout_column="1"-->
+            <!--                android:layout_marginLeft="45dp"-->
+            <!--                android:ems="10"-->
+            <!--                android:hint="Enter Activity Name"-->
+            <!--                android:inputType="text" />-->
 
         </TableRow>
 
@@ -242,17 +242,17 @@
                 android:inputType="textPersonName"
                 android:gravity="center_vertical"/>
 
-<!--            <TextView-->
-<!--                android:id="@+id/editTextTaskDeliProjNo"-->
-<!--                android:layout_width="215dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_column="1"-->
-<!--                android:layout_marginLeft="45dp"-->
-<!--                android:ems="10"-->
-<!--                android:inputType="text"-->
-<!--                android:paddingLeft="10dp"-->
-<!--                android:textColor="@android:color/black"-->
-<!--                android:textStyle="bold" />-->
+            <!--            <TextView-->
+            <!--                android:id="@+id/editTextTaskDeliProjNo"-->
+            <!--                android:layout_width="215dp"-->
+            <!--                android:layout_height="40dp"-->
+            <!--                android:layout_column="1"-->
+            <!--                android:layout_marginLeft="45dp"-->
+            <!--                android:ems="10"-->
+            <!--                android:inputType="text"-->
+            <!--                android:paddingLeft="10dp"-->
+            <!--                android:textColor="@android:color/black"-->
+            <!--                android:textStyle="bold" />-->
 
         </TableRow>
 
@@ -286,15 +286,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-<!--            <AutoCompleteTextView-->
-<!--                android:id="@+id/editTextTaskDeliProjName"-->
-<!--                android:layout_width="215dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_column="1"-->
-<!--                android:layout_marginLeft="45dp"-->
-<!--                android:ems="10"-->
-<!--                android:hint="Enter Project Name"-->
-<!--                android:inputType="text" />-->
+            <!--            <AutoCompleteTextView-->
+            <!--                android:id="@+id/editTextTaskDeliProjName"-->
+            <!--                android:layout_width="215dp"-->
+            <!--                android:layout_height="40dp"-->
+            <!--                android:layout_column="1"-->
+            <!--                android:layout_marginLeft="45dp"-->
+            <!--                android:ems="10"-->
+            <!--                android:hint="Enter Project Name"-->
+            <!--                android:inputType="text" />-->
 
 
         </TableRow>
@@ -310,140 +310,140 @@
         android:layout_below="@+id/tableLayout2"
         android:layout_marginTop="0dp">
 
-    <TableRow
-        android:id="@+id/tableRow7"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+        <TableRow
+            android:id="@+id/tableRow7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
 
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputMainDateLayout"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_weight="2"
-            android:hint="Enter Date"
-            app:boxBackgroundMode="outline"
-            app:hintEnabled="true">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputMainDateLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="2"
+                android:hint="Enter Date"
+                app:boxBackgroundMode="outline"
+                app:hintEnabled="true">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextTaskDeliExpDate"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:inputType="date" />
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextTaskDeliExpDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:inputType="date" />
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-<!--        <EditText-->
-<!--            android:id="@+id/editTextTaskDeliExpDate"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="40dp"-->
-<!--            android:layout_column="1"-->
-<!--            android:ems="10"-->
-<!--            android:hint="Expt. Date"-->
-<!--            android:inputType="textPersonName" />-->
+            <!--        <EditText-->
+            <!--            android:id="@+id/editTextTaskDeliExpDate"-->
+            <!--            android:layout_width="100dp"-->
+            <!--            android:layout_height="40dp"-->
+            <!--            android:layout_column="1"-->
+            <!--            android:ems="10"-->
+            <!--            android:hint="Expt. Date"-->
+            <!--            android:inputType="textPersonName" />-->
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputTaskDeliExpTimeLayout"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_weight="2"
-            app:hintEnabled="true"
-            app:boxBackgroundMode="outline"
-            android:hint="Start Time">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputTaskDeliExpTimeLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="2"
+                app:hintEnabled="true"
+                app:boxBackgroundMode="outline"
+                android:hint="Start Time">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextTaskDeliExpTime"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:inputType="time" />
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextTaskDeliExpTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:inputType="time" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-<!--        <EditText-->
-<!--            android:id="@+id/editTextTaskDeliExpTime"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="40dp"-->
-<!--            android:layout_column="2"-->
-<!--            android:layout_marginLeft="10dp"-->
-<!--            android:ems="10"-->
-<!--            android:hint="Expt. Time"-->
-<!--            android:inputType="textPersonName" />-->
+            <!--        <EditText-->
+            <!--            android:id="@+id/editTextTaskDeliExpTime"-->
+            <!--            android:layout_width="100dp"-->
+            <!--            android:layout_height="40dp"-->
+            <!--            android:layout_column="2"-->
+            <!--            android:layout_marginLeft="10dp"-->
+            <!--            android:ems="10"-->
+            <!--            android:hint="Expt. Time"-->
+            <!--            android:inputType="textPersonName" />-->
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputTaskDeliExpTotalTimeHHLayout"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="7dp"
-            android:layout_weight="1"
-            app:hintEnabled="true"
-            app:boxBackgroundMode="outline"
-            android:hint="HH">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputTaskDeliExpTotalTimeHHLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="7dp"
+                android:layout_weight="1"
+                app:hintEnabled="true"
+                app:boxBackgroundMode="outline"
+                android:hint="HH">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextTaskDeliExpTotalTimeHH"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:inputType="time" />
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextTaskDeliExpTotalTimeHH"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:inputType="time" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-<!--        <EditText-->
-<!--            android:id="@+id/editTextTaskDeliExpTotalTimeHH"-->
-<!--            android:layout_width="40dp"-->
-<!--            android:layout_height="40dp"-->
-<!--            android:layout_column="3"-->
-<!--            android:layout_marginLeft="10dp"-->
-<!--            android:ems="10"-->
-<!--            android:hint="HH"-->
-<!--            android:inputType="time"-->
-<!--            android:paddingLeft="7dp" />-->
+            <!--        <EditText-->
+            <!--            android:id="@+id/editTextTaskDeliExpTotalTimeHH"-->
+            <!--            android:layout_width="40dp"-->
+            <!--            android:layout_height="40dp"-->
+            <!--            android:layout_column="3"-->
+            <!--            android:layout_marginLeft="10dp"-->
+            <!--            android:ems="10"-->
+            <!--            android:hint="HH"-->
+            <!--            android:inputType="time"-->
+            <!--            android:paddingLeft="7dp" />-->
 
-        <TextView
-            android:id="@+id/editTextTaskDeliExpTotalTimeColon"
-            android:layout_width="12dp"
-            android:layout_height="20dp"
-            android:layout_column="4"
-            android:paddingLeft="5dp"
-            android:text=":"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputTaskDeliExpTotalTimMMLayout"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="20dp"
-            android:layout_weight="1"
-            app:hintEnabled="true"
-            app:boxBackgroundMode="outline"
-            android:paddingLeft="7dp"
-            android:hint="MM">
+            <TextView
+                android:id="@+id/editTextTaskDeliExpTotalTimeColon"
+                android:layout_width="12dp"
+                android:layout_height="20dp"
+                android:layout_column="4"
+                android:paddingLeft="5dp"
+                android:text=":"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputTaskDeliExpTotalTimMMLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                app:hintEnabled="true"
+                app:boxBackgroundMode="outline"
+                android:paddingLeft="7dp"
+                android:hint="MM">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextTaskDeliExpTotalTimeMM"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:inputType="time" />
-        </com.google.android.material.textfield.TextInputLayout>
-<!--        <EditText-->
-<!--            android:id="@+id/editTextTaskDeliExpTotalTimeMM"-->
-<!--            android:layout_width="40dp"-->
-<!--            android:layout_height="40dp"-->
-<!--            android:layout_column="5"-->
-<!--            android:ems="10"-->
-<!--            android:hint="MM"-->
-<!--            android:inputType="time"-->
-<!--            android:paddingLeft="7dp" />-->
-    </TableRow>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextTaskDeliExpTotalTimeMM"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:inputType="time" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <!--        <EditText-->
+            <!--            android:id="@+id/editTextTaskDeliExpTotalTimeMM"-->
+            <!--            android:layout_width="40dp"-->
+            <!--            android:layout_height="40dp"-->
+            <!--            android:layout_column="5"-->
+            <!--            android:ems="10"-->
+            <!--            android:hint="MM"-->
+            <!--            android:inputType="time"-->
+            <!--            android:paddingLeft="7dp" />-->
+        </TableRow>
 
     </TableLayout>
 
@@ -527,59 +527,59 @@
     </TableLayout>
 
 
-<!--    <TableLayout-->
-<!--        android:id="@+id/tableLayout4"-->
-<!--        android:layout_width="fill_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@+id/tableLayout3"-->
-<!--        android:layout_marginTop="0dp">-->
+    <!--    <TableLayout-->
+    <!--        android:id="@+id/tableLayout4"-->
+    <!--        android:layout_width="fill_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@+id/tableLayout3"-->
+    <!--        android:layout_marginTop="0dp">-->
 
-<!--        <TableRow-->
-<!--            android:id="@+id/tableRow8"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal">-->
+    <!--        <TableRow-->
+    <!--            android:id="@+id/tableRow8"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:orientation="horizontal">-->
 
-<!--            <Spinner-->
-<!--                android:id="@+id/spinnerTaskDeliMeasurableSelect"-->
-<!--                android:layout_width="140dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_column="1"-->
-<!--                android:layout_marginTop="7dp"-->
-<!--                android:spinnerMode="dialog"-->
-<!--                android:textColor="@android:color/black" />-->
+    <!--            <Spinner-->
+    <!--                android:id="@+id/spinnerTaskDeliMeasurableSelect"-->
+    <!--                android:layout_width="140dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:layout_column="1"-->
+    <!--                android:layout_marginTop="7dp"-->
+    <!--                android:spinnerMode="dialog"-->
+    <!--                android:textColor="@android:color/black" />-->
 
-<!--            <EditText-->
-<!--                android:id="@+id/editTextTaskDeliQty"-->
-<!--                android:layout_width="45dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_column="2"-->
-<!--                android:layout_marginLeft="5dp"-->
-<!--                android:ems="10"-->
-<!--                android:hint="Qty"-->
-<!--                android:inputType="number" />-->
+    <!--            <EditText-->
+    <!--                android:id="@+id/editTextTaskDeliQty"-->
+    <!--                android:layout_width="45dp"-->
+    <!--                android:layout_height="40dp"-->
+    <!--                android:layout_column="2"-->
+    <!--                android:layout_marginLeft="5dp"-->
+    <!--                android:ems="10"-->
+    <!--                android:hint="Qty"-->
+    <!--                android:inputType="number" />-->
 
-<!--            <AutoCompleteTextView-->
-<!--                android:id="@+id/editTextTaskDeliUnit"-->
-<!--                android:layout_width="45dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_column="3"-->
-<!--                android:layout_marginLeft="5dp"-->
-<!--                android:hint="Unit"-->
-<!--                android:inputType="text" />-->
+    <!--            <AutoCompleteTextView-->
+    <!--                android:id="@+id/editTextTaskDeliUnit"-->
+    <!--                android:layout_width="45dp"-->
+    <!--                android:layout_height="40dp"-->
+    <!--                android:layout_column="3"-->
+    <!--                android:layout_marginLeft="5dp"-->
+    <!--                android:hint="Unit"-->
+    <!--                android:inputType="text" />-->
 
-<!--            <Button-->
-<!--                android:id="@+id/buttontTaskDeliAdd"-->
-<!--                android:layout_width="58dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_column="4"-->
-<!--                android:layout_marginLeft="5dp"-->
-<!--                android:gravity="center_horizontal"-->
-<!--                android:text="ADD"-->
-<!--                android:textStyle="bold" />-->
-<!--        </TableRow>-->
+    <!--            <Button-->
+    <!--                android:id="@+id/buttontTaskDeliAdd"-->
+    <!--                android:layout_width="58dp"-->
+    <!--                android:layout_height="40dp"-->
+    <!--                android:layout_column="4"-->
+    <!--                android:layout_marginLeft="5dp"-->
+    <!--                android:gravity="center_horizontal"-->
+    <!--                android:text="ADD"-->
+    <!--                android:textStyle="bold" />-->
+    <!--        </TableRow>-->
 
-<!--    </TableLayout>-->
+    <!--    </TableLayout>-->
 
     <TableLayout
         android:id="@+id/tableLayout5"
@@ -605,30 +605,30 @@
 
     </TableLayout>
 
-<!--    <TableLayout-->
-<!--        android:id="@+id/tableLayout5"-->
-<!--        android:layout_width="fill_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@+id/tableLayout4"-->
-<!--        android:layout_marginTop="0dp">-->
+    <!--    <TableLayout-->
+    <!--        android:id="@+id/tableLayout5"-->
+    <!--        android:layout_width="fill_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@+id/tableLayout4"-->
+    <!--        android:layout_marginTop="0dp">-->
 
-<!--    <TableRow-->
-<!--        android:id="@+id/tableRow9"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:padding="5dp">-->
+    <!--    <TableRow-->
+    <!--        android:id="@+id/tableRow9"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:orientation="horizontal"-->
+    <!--        android:padding="5dp">-->
 
-<!--        <ListView-->
-<!--            android:id="@+id/listTaskDeliMeasurable"-->
-<!--            android:layout_width="305dp"-->
-<!--            android:layout_height="45dp"-->
-<!--            android:layout_column="1"-->
-<!--            android:layout_marginLeft="5dp" />-->
+    <!--        <ListView-->
+    <!--            android:id="@+id/listTaskDeliMeasurable"-->
+    <!--            android:layout_width="305dp"-->
+    <!--            android:layout_height="45dp"-->
+    <!--            android:layout_column="1"-->
+    <!--            android:layout_marginLeft="5dp" />-->
 
-<!--    </TableRow>-->
+    <!--    </TableRow>-->
 
-<!--    </TableLayout>-->
+    <!--    </TableLayout>-->
 
 
     <TableLayout
@@ -666,48 +666,48 @@
 
     </TableLayout>
 
-<!--    <TableLayout-->
-<!--        android:id="@+id/tableLayout6"-->
-<!--        android:layout_width="fill_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@+id/tableLayout5"-->
-<!--        android:layout_marginTop="0dp">-->
+    <!--    <TableLayout-->
+    <!--        android:id="@+id/tableLayout6"-->
+    <!--        android:layout_width="fill_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@+id/tableLayout5"-->
+    <!--        android:layout_marginTop="0dp">-->
 
-<!--    <TableRow-->
-<!--        android:id="@+id/tableRow11"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:padding="5dp">-->
+    <!--    <TableRow-->
+    <!--        android:id="@+id/tableRow11"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:orientation="horizontal"-->
+    <!--        android:padding="5dp">-->
 
-<!--        <Button-->
-<!--            android:id="@+id/buttonTaskDeliCancel"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_column="1"-->
-<!--            android:layout_marginLeft="20dp"-->
-<!--            android:text="Cancel"-->
-<!--            android:textStyle="bold" />-->
+    <!--        <Button-->
+    <!--            android:id="@+id/buttonTaskDeliCancel"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_column="1"-->
+    <!--            android:layout_marginLeft="20dp"-->
+    <!--            android:text="Cancel"-->
+    <!--            android:textStyle="bold" />-->
 
-<!--        <Button-->
-<!--            android:id="@+id/buttonTaskDeligate"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_column="2"-->
-<!--            android:layout_marginLeft="100dp"-->
-<!--            android:text="Assign"-->
-<!--            android:textStyle="bold" />-->
+    <!--        <Button-->
+    <!--            android:id="@+id/buttonTaskDeligate"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_column="2"-->
+    <!--            android:layout_marginLeft="100dp"-->
+    <!--            android:text="Assign"-->
+    <!--            android:textStyle="bold" />-->
 
-<!--    </TableRow>-->
+    <!--    </TableRow>-->
 
-<!--    </TableLayout>-->
+    <!--    </TableLayout>-->
 
     <!--<ProgressBar-->
-        <!--android:id="@+id/progressBarInTaskDelegation"-->
-        <!--style="?android:attr/progressBarStyleLarge"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerInParent="true"-->
-        <!--android:clickable="false"-->
-        <!--android:progressDrawable="@drawable/circular_progress_bar" />-->
+    <!--android:id="@+id/progressBarInTaskDelegation"-->
+    <!--style="?android:attr/progressBarStyleLarge"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_centerInParent="true"-->
+    <!--android:clickable="false"-->
+    <!--android:progressDrawable="@drawable/circular_progress_bar" />-->
 </RelativeLayout>

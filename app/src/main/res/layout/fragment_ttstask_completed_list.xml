@@ -6,96 +6,110 @@
     android:orientation="vertical"
     tools:context=".TTSTaskCompletedListFragment">
 
-
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="2"
+        >
     <TextView
         android:id="@+id/textViewCompletedListUser"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
         android:textColor="@android:color/black"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:padding="5dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:layout_column="0"
+        android:layout_row="0"
+        android:gravity="left"/>
 
     <TextView
         android:id="@+id/textViewCompletedListDate"
-        android:layout_width="150dp"
-        android:layout_height="18dp"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="5dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textColor="@android:color/black"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:layout_column="1"
+        android:layout_row="0"
+        android:padding="5dp"
+        android:gravity="right"/>
 
     <TextView
         android:id="@+id/textViewCompletedListTime"
-        android:layout_width="150dp"
-        android:layout_height="18dp"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="27dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textColor="@android:color/black"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_column="1"
+        android:layout_row="1"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:gravity="right"
+        android:padding="5dp"/>
 
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout1"
-        android:layout_width="wrap_content"
+    </GridLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp">
-
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="5dp">
+        android:layout_marginTop="100dp"
+        android:orientation="horizontal"
+        android:gravity="center">
 
             <TextView
                 android:id="@+id/textViewCompletedListTaskUser"
-                android:layout_width="50dp"
-                android:layout_height="35dp"
-                android:layout_column="1"
-                android:layout_marginLeft="10dp"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:gravity="center"
+
                 android:text="User"
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textViewCompletedListTaskDate"
-                android:layout_width="50dp"
-                android:layout_height="35dp"
-                android:layout_column="2"
-                android:layout_marginLeft="25dp"
+                android:gravity="center"
                 android:text="Date"
                 android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/textViewCompletedListTask"
-                android:layout_width="70dp"
-                android:layout_height="35dp"
-                android:layout_column="3"
-                android:layout_marginLeft="12dp"
+                android:gravity="center"
                 android:text="Task"
                 android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="3"
+                />
 
             <TextView
                 android:id="@+id/textViewCompletedListStatus"
-                android:layout_width="70dp"
-                android:layout_height="35dp"
-                android:layout_column="4"
+                android:gravity="center"
                 android:text="Status"
                 android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1" />
 
-        </TableRow>
-    </TableLayout>
-
+    </LinearLayout>
 
     <ListView
         android:id="@+id/listCompleted"
         android:layout_width="match_parent"
-        android:layout_height="480dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="110dp" />
+        android:layout_marginTop="150dp"
+        android:layout_marginBottom="5dp"/>
 
 
 </RelativeLayout>

@@ -5,104 +5,121 @@
     android:layout_height="match_parent"
     tools:context=".TTSTaskApprovalCompletionListFragment">
 
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="2"
+        >
+
     <TextView
         android:id="@+id/textViewApprovalCompletionUser"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
+        android:padding="5dp"
+        android:layout_width="0dp"
+        android:layout_height="35dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:layout_column="0"
+        android:layout_row="0"
+        android:gravity="center_vertical"
         android:textColor="@android:color/black"
-        android:textStyle="bold" />
+        android:textStyle="bold"  />
 
     <TextView
         android:id="@+id/textViewApprovalCompletionListDate"
-        android:layout_width="150dp"
-        android:layout_height="18dp"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="5dp"
+        android:padding="5dp"
+        android:layout_width="0dp"
+        android:layout_height="35dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:layout_column="1"
+        android:layout_row="0"
+        android:gravity="right"
         android:textColor="@android:color/black"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textViewApprovalCompletionListTime"
-        android:layout_width="150dp"
-        android:layout_height="18dp"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="25dp"
+        android:padding="5dp"
+        android:layout_width="0dp"
+        android:layout_height="35dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:layout_column="1"
+        android:layout_row="1"
+        android:gravity="right"
         android:textColor="@android:color/black"
         android:textStyle="bold" />
 
+    </GridLayout>
     <TextView
         android:id="@+id/textViewOutgoingApprovalCompletion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="55dp"
+        android:layout_marginTop="72dp"
         android:text="OutGoing Approve Completion Task"
         android:textStyle="bold" />
 
-    <TableLayout
-        android:id="@+id/tableLayout1"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="90dp">
-
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="5dp">
+        android:layout_marginTop="100dp"
+        android:orientation="horizontal"
+        android:gravity="center">
 
             <TextView
                 android:id="@+id/textViewApprovalCompletionListTaskUser"
-                android:layout_width="50dp"
-                android:layout_height="25dp"
-                android:layout_column="1"
-                android:layout_marginLeft="10dp"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
                 android:text="User"
                 android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/textViewApprovalCompletionListTaskDate"
-                android:layout_width="50dp"
-                android:layout_height="25dp"
-                android:layout_column="2"
-                android:layout_marginLeft="25dp"
+                android:gravity="center"
                 android:text="Date"
                 android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="1dp"/>
 
             <TextView
                 android:id="@+id/textViewApprovalCompletionListTask"
-                android:layout_width="70dp"
-                android:layout_height="25dp"
-                android:layout_column="3"
-                android:layout_marginLeft="12dp"
+                android:gravity="center"
                 android:text="Task"
                 android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="3"
+                android:layout_marginEnd="1dp" />
 
             <TextView
                 android:id="@+id/textViewApprovalCompletionListStatus"
-                android:layout_width="70dp"
-                android:layout_height="25dp"
-                android:layout_column="4"
+                android:gravity="center"
                 android:text="Status"
                 android:textColor="@android:color/black"
-                android:textStyle="bold" />
-
-        </TableRow>
-    </TableLayout>
+                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="1dp" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/senderApprovalCompletionTaskList"
         android:layout_width="match_parent"
-        android:layout_height="190dp"
+        android:layout_height="310dp"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="125dp" />
+        android:layout_marginTop="150dp" />
 
     <TextView
         android:id="@+id/textViewIncomingApprovalCompletionTask"
@@ -110,15 +127,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="317dp"
+        android:layout_marginTop="477dp"
         android:text="InComing Approve Completion Task"
         android:textStyle="bold" />
 
     <ListView
         android:id="@+id/receiverApprovalCompletionTaskList"
         android:layout_width="match_parent"
-        android:layout_height="190dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="340dp" />
+        android:layout_marginTop="511dp"
+        android:layout_marginBottom="5dp"/>
 
 </RelativeLayout>

@@ -6,95 +6,170 @@
     android:orientation="vertical"
     tools:context=".TTSTaskDelegatedListFragment">
 
-
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="2"
+        >
     <TextView
         android:id="@+id/textViewDelegatedListUser"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
         android:textColor="@android:color/black"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:padding="5dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:layout_column="0"
+        android:layout_row="0"
+        android:gravity="left"/>
 
     <TextView
         android:id="@+id/textViewDelegatedListDate"
-        android:layout_width="150dp"
-        android:layout_height="18dp"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="5dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textColor="@android:color/black"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:layout_column="1"
+        android:layout_row="0"
+        android:padding="5dp"
+        android:gravity="right"/>
 
     <TextView
         android:id="@+id/textViewDelegatedListTime"
-        android:layout_width="150dp"
-        android:layout_height="18dp"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="27dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textColor="@android:color/black"
-        android:textStyle="bold" />
-
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout1"
-        android:layout_width="wrap_content"
+        android:textStyle="bold"
+        android:layout_column="1"
+        android:layout_row="1"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:gravity="right"
+        android:padding="5dp"/>
+    </GridLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp">
+        android:layout_marginTop="100dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <TextView
+            android:id="@+id/textViewDelegatedListTaskUser"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:gravity="center"
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="5dp">
+            android:text="User"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textViewDelegatedListTaskUser"
-                android:layout_width="50dp"
-                android:layout_height="35dp"
-                android:layout_column="1"
-                android:layout_marginLeft="10dp"
-                android:text="User"
-                android:textColor="@android:color/black"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/textViewDelegatedListTaskDate"
+            android:gravity="center"
+            android:text="Date"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"/>
 
-            <TextView
-                android:id="@+id/textViewDelegatedListTaskDate"
-                android:layout_width="50dp"
-                android:layout_height="35dp"
-                android:layout_column="2"
-                android:layout_marginLeft="25dp"
-                android:text="Date"
-                android:textColor="@android:color/black"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/textViewDelegatedListTask"
+            android:gravity="center"
+            android:text="Task"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="3"
+            />
 
-            <TextView
-                android:id="@+id/textViewDelegatedListTask"
-                android:layout_width="70dp"
-                android:layout_height="35dp"
-                android:layout_column="3"
-                android:layout_marginLeft="12dp"
-                android:text="Task"
-                android:textColor="@android:color/black"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/textViewDelegatedListStatus"
+            android:gravity="center"
+            android:text="Status"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1" />
 
-            <TextView
-                android:id="@+id/textViewDelegatedListStatus"
-                android:layout_width="70dp"
-                android:layout_height="35dp"
-                android:layout_column="4"
-                android:text="Status"
-                android:textColor="@android:color/black"
-                android:textStyle="bold" />
+    </LinearLayout>
 
-        </TableRow>
-    </TableLayout>
+    <!--    <TableLayout-->
+    <!--        android:id="@+id/tableLayout1"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="60dp"-->
+    <!--        android:gravity="center">-->
+
+    <!--        <TableRow-->
+    <!--            android:id="@+id/tableRow1"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:orientation="horizontal"-->
+    <!--            android:padding="5dp"-->
+    <!--            android:layout_gravity="center">-->
+
+    <!--            <TextView-->
+    <!--                android:id="@+id/textViewDelegatedListTaskUser"-->
+    <!--                android:layout_width="50dp"-->
+    <!--                android:layout_height="35dp"-->
+    <!--                android:layout_column="1"-->
+    <!--                android:layout_marginStart="10dp"-->
+    <!--                android:text="User"-->
+    <!--                android:textColor="@android:color/black"-->
+    <!--                android:textStyle="bold"-->
+    <!--                android:gravity="center"/>-->
+
+    <!--            <TextView-->
+    <!--                android:id="@+id/textViewDelegatedListTaskDate"-->
+    <!--                android:layout_width="50dp"-->
+    <!--                android:layout_height="35dp"-->
+    <!--                android:layout_column="2"-->
+    <!--                android:layout_marginStart="25dp"-->
+    <!--                android:text="Date"-->
+    <!--                android:textColor="@android:color/black"-->
+    <!--                android:textStyle="bold"-->
+    <!--                android:gravity="center"/>-->
+
+    <!--            <TextView-->
+    <!--                android:id="@+id/textViewDelegatedListTask"-->
+    <!--                android:layout_width="70dp"-->
+    <!--                android:layout_height="35dp"-->
+    <!--                android:layout_column="3"-->
+    <!--                android:layout_marginStart="12dp"-->
+    <!--                android:text="Task"-->
+    <!--                android:textColor="@android:color/black"-->
+    <!--                android:textStyle="bold"-->
+    <!--                android:gravity="center"-->
+    <!--                />-->
+
+    <!--            <TextView-->
+    <!--                android:id="@+id/textViewDelegatedListStatus"-->
+    <!--                android:layout_width="70dp"-->
+    <!--                android:layout_height="35dp"-->
+    <!--                android:layout_column="4"-->
+    <!--                android:text="Status"-->
+    <!--                android:textColor="@android:color/black"-->
+    <!--                android:textStyle="bold"-->
+    <!--                android:gravity="center"/>-->
+
+    <!--        </TableRow>-->
+    <!--    </TableLayout>-->
 
     <ListView
         android:id="@+id/listTaskDelegated"
         android:layout_width="match_parent"
-        android:layout_height="468dp"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="110dp" />
+        android:layout_marginTop="150dp"
+        android:layout_marginBottom="10dp"/>
 
 
 </RelativeLayout>

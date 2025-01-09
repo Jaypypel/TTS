@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -157,7 +158,7 @@
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/tableLayout3"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tableLayout2"
         android:layout_marginTop="0dp">
@@ -167,91 +168,126 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="5dp">
+            android:gravity="center">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputMainStartTimeLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                app:hintEnabled="true"
+                app:boxBackgroundMode="outline"
+                android:hint="Start Time">
+
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextStartTime"
-                android:layout_width="95dp"
-                android:layout_height="40dp"
-                android:layout_column="1"
-                android:layout_marginLeft="20dp"
-                android:ems="10"
-                android:hint="Start Time"
-                android:inputType="time" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:inputType="time"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText
-                android:id="@+id/editTextEndTime"
-                android:layout_width="95dp"
-                android:layout_height="40dp"
-                android:layout_column="2"
-                android:layout_marginLeft="70dp"
-                android:ems="10"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputMainEndTimeLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="70dp"
+                android:layout_marginEnd="20dp"
+                app:hintEnabled="true"
                 android:hint="End Time"
-                android:inputType="time" />
+                android:layout_weight="1"
+                app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextEndTime"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="time"
+                android:gravity="center_vertical"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
         </TableRow>
     </TableLayout>
 
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <TableLayout
         android:id="@+id/tableLayout4"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tableLayout3"
-        android:layout_marginTop="0dp">
+        android:layout_marginTop="300dp">
 
     <TableRow
         android:id="@+id/tableRow7"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="5dp">
+        android:gravity="center">
 
         <Spinner
             android:id="@+id/spinnerTimeShareMeasurable"
-            android:layout_width="130dp"
-            android:layout_height="wrap_content"
-            android:layout_column="1"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="2"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:spinnerMode="dialog"
             android:textColor="@android:color/black" />
 
-        <EditText
-            android:id="@+id/editTextTimeShareMeasurableQty"
-            android:layout_width="50dp"
-            android:layout_height="40dp"
-            android:layout_column="2"
-            android:layout_marginLeft="5dp"
-            android:ems="10"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutQty"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
             android:hint="Qty"
-            android:inputType="textPersonName" />
+            app:boxBackgroundMode="outline">
 
-        <EditText
-            android:id="@+id/editTextTimeShareMeasurableUnit"
-            android:layout_width="50dp"
-            android:layout_height="40dp"
-            android:layout_column="3"
-            android:layout_marginLeft="5dp"
-            android:ems="10"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextTimeShareMeasurableQty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="number"
+            android:gravity="center_vertical"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutUnit"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
             android:hint="Unit"
-            android:inputType="textPersonName" />
+            app:boxBackgroundMode="outline"
+            app:hintEnabled="true">
 
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextTimeShareMeasurableUnit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="number"
+            android:gravity="center_vertical"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
         <Button
             android:id="@+id/buttonTimeShareMeasurableAdd"
-            android:layout_width="58dp"
-            android:layout_height="40dp"
-            android:layout_column="4"
-            android:layout_marginLeft="5dp"
-            android:gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="ADD"
             android:textStyle="bold" />
-
+        </TableRow>
 
     </TableRow>
     </TableLayout>
 
 
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <TableLayout
         android:id="@+id/tableLayout5"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tableLayout4"
         android:layout_marginTop="0dp">
@@ -261,78 +297,92 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="5dp">
+        android:gravity="center">
 
         <ListView
             android:id="@+id/listTimeShareMeasurable"
-            android:layout_width="305dp"
-            android:layout_height="63dp"
-            android:layout_column="1"
-            android:layout_marginLeft="10dp" />
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"/>
     </TableRow>
 
         <TableRow
             android:id="@+id/tableRow9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
+            android:gravity="center"
+           >
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputMainProjectLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginBottom="5dp"
+                app:hintEnabled="true"
+                app:boxBackgroundMode="outline"
+                android:hint="Enter Description">
 
             <EditText
                 android:id="@+id/editTextDescription"
-                android:layout_width="305dp"
-                android:layout_height="40dp"
-                android:layout_column="2"
-                android:layout_marginLeft="-307dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:ems="10"
-                android:hint="Enter Description"
-                android:inputType="textMultiLine" />
+                android:inputType="text"
+                android:gravity="center"/>
+            </com.google.android.material.textfield.TextInputLayout>
         </TableRow>
     </TableLayout>
 
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/tableLayout6"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tableLayout5"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="25dp">
+
 
         <TableRow
             android:id="@+id/tableRow10"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
             android:orientation="horizontal"
             android:padding="5dp">
 
             <Button
                 android:id="@+id/buttonCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="126dp"
+                android:layout_height="58dp"
                 android:layout_column="1"
-                android:layout_marginLeft="40dp"
-                android:text="Cancel"
-                android:textStyle="bold" />
+                android:layout_marginLeft="20dp"
+                android:text="Cancel" />
 
             <!--<Button-->
-                <!--android:id="@+id/buttonPreview"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_column="2"-->
-                <!--android:layout_marginLeft="20dp"-->
-                <!--android:text="Preview"-->
-                <!--android:textStyle="bold" />-->
+            <!--android:id="@+id/buttonPreview"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_column="2"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:text="Preview"-->
+            <!--android:textStyle="bold" />-->
 
             <Button
                 android:id="@+id/buttonSubmit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="126dp"
+                android:layout_height="58dp"
                 android:layout_column="2"
-                android:layout_marginLeft="40dp"
-                android:text="Submit"
-                android:textStyle="bold" />
+                android:layout_marginLeft="100dp"
+                android:text="Submit" />
         </TableRow>
+
     </TableLayout>
+
+
 
     <!--<ProgressBar-->
         <!--android:id="@+id/progressBarInTimeShare"-->

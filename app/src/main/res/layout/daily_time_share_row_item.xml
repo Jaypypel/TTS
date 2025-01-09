@@ -2,53 +2,66 @@
     android:layout_width="match_parent"
     android:layout_height="65dp"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="5dp">
 
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <TableLayout
         android:id="@+id/tableLayout1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp">
+        android:layout_marginTop="0dp"
+        android:gravity="center">
 
         <TableRow
             android:id="@+id/tableRow1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:padding="5dp">
+            android:gravity="center">
 
             <TextView
                 android:id="@+id/dailyTimeShareStartTime"
-                android:layout_width="50dp"
-                android:layout_height="30dp"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
                 android:layout_column="1"
+                android:layout_marginRight="1dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_weight="1"/>
 
             <TextView
                 android:id="@+id/dailyTimeShareEndTime"
-                android:layout_width="50dp"
-                android:layout_height="30dp"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
                 android:layout_column="2"
+                android:layout_marginRight="1dp"
                 android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_weight="1"/>
 
             <TextView
                 android:id="@+id/dailyTimeShareTaskName"
-                android:layout_width="95dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
                 android:layout_column="3"
+                android:layout_marginRight="1dp"
                 android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_weight="3"/>
 
             <TextView
                 android:id="@+id/dailyTimeShareProjName"
-                android:layout_width="95dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
                 android:layout_column="4"
-                android:layout_marginLeft="5dp"
+                android:layout_marginRight="1dp"
                 android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_weight="1"/>
 
         </TableRow>
     </TableLayout>
