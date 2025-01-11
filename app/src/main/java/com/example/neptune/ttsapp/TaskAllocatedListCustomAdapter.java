@@ -29,6 +29,7 @@ public class TaskAllocatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
         TextView txttaskAllocateTaskDate;
         TextView txttaskAllocateTaskName;
         TextView txttaskAllocateTaskStatus;
+        TextView defaultAcknowlegment;
 
 
     }
@@ -81,7 +82,6 @@ public class TaskAllocatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
         ViewHolder viewHolder; // view lookup cache stored in tag
 
         final View result;
-
         if (convertView == null) {
 
 

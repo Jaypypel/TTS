@@ -1,6 +1,6 @@
 package com.example.neptune.ttsapp;
 
-import static android.app.ProgressDialog.show;
+
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,14 +9,13 @@ import android.content.Intent;
 
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.StrictMode;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
 import android.os.Bundle;
 
-import android.telecom.CallScreeningService;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
@@ -35,8 +34,7 @@ import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.ResponseBody;
-import com.example.neptune.ttsapp.Network.UserServiceInterface;
-import com.google.gson.JsonObject;
+import com.example.neptune.ttsapp.Network.UserServiceInterface;import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -67,33 +65,25 @@ public class TTSLoginActivity extends AppCompatActivity {
 
     private SessionManager sessionManager;
     private ProgressBar progressBarInLogin;
+    private boolean isRequestInProgress = true;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ttslogin);
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
 
-
-        userName = (EditText) findViewById(R.id.editTextLoginUsername);
-        password = (EditText) findViewById(R.id.editTextLoginPassword);
-        btnLogin = (Button) findViewById(R.id.buttonSignin);
-        btnRegister = (Button) findViewById(R.id.buttonRegister);
-
-        togglePassword = (ToggleButton) findViewById(R.id.login_password_visibility);
-
-        progressBarInLogin=(ProgressBar)findViewById(R.id.progressBarInLogin);
+        userName = findViewById(R.id.editTextLoginUsername);
+        password = findViewById(R.id.editTextLoginPassword);
+        btnLogin = findViewById(R.id.buttonSignin);
+        btnRegister = findViewById(R.id.buttonRegister);
+        togglePassword = findViewById(R.id.login_password_visibility);
+        progressBarInLogin= findViewById(R.id.progressBarInLogin);
         progressBarInLogin.setVisibility(View.INVISIBLE);
 
 
             btnLogin.setOnClickListener(view ->
-            {
-                btnLogin.setBackgroundColor(Color.GRAY);
-                userLogin();
-                btnLogin.setBackgroundResource(android.R.drawable.btn_default);
-            });
+                    userLogin());
 
         // Code for goto Registration page
         btnRegister.setOnClickListener(view -> {
@@ -157,55 +147,57 @@ public class TTSLoginActivity extends AppCompatActivity {
 
     public void userLogin()
     {
-
+        btnLogin.setBackgroundColor(Color.GRAY);
         if (InternetConnectivity.isConnected()) {
-            if (isValidUserId().isEmpty()) { userName.setError("User Name Cannot Be Empty"); }
-            else if (isValidPassword().length() < 8 || isValidPassword().isEmpty())
-            {
-                if (isValidPassword().isEmpty()) { password.setError("Password Cannot Be Empty"); }
-                if (isValidPassword().length() < 8) { password.setError("Please Enter Valid Password"); }
+            if (isValidUserId().isEmpty()) { userName.setError("User Name Cannot Be Empty");
+                btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+                return;
             }
-            else
-             {
-//                progressBarInLogin.setVisibility(View.VISIBLE);
-//                boolean result = loginUser(isValidUserId(), isValidPassword());
-//                if (result) {
-//                    String userID = userName.getText().toString().trim().replaceAll("\\s+", "");
-//                    sessionManager = new SessionManager(getApplicationContext());
-//                    sessionManager.setUserID(userID);
-//                    Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);
-//                    startActivity(i);
-//                    finish();
-//                } else {
-//                    Toast.makeText(TTSLoginActivity.this, "Incorrect Details", Toast.LENGTH_LONG).show();
-//                    progressBarInLogin.setVisibility(View.INVISIBLE);
-//                }
-                 appExecutors.getNetworkIO().execute(() -> makeUserLogin(isValidUserId(),isValidPassword()).thenAccept(isCredentialsValid -> {
-                     if(isCredentialsValid){
-                        appExecutors.getMainThread().execute(()-> {
-                            String userId = userName.getText().toString().trim().replaceAll("\\s+","");
-                            sessionManager = new SessionManager(getApplicationContext());
-                            sessionManager.setUserID(userId);
-                            Toast.makeText(TTSLoginActivity.this, "You're logged in now", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);
-                            startActivity(i);
-                            finish();
-                        });
-                     }else {
-                        appExecutors.getMainThread().execute(() -> {
-                            progressBarInLogin.setVisibility(View.INVISIBLE);
-                         Toast.makeText(TTSLoginActivity.this, "You entered incorrect details ", Toast.LENGTH_SHORT).show();
-                        });
-                     }
-                 }).exceptionally(e -> {
-                    appExecutors.getMainThread().execute(() -> {
-                        progressBarInLogin.setVisibility(View.INVISIBLE);
-                        Toast.makeText(TTSLoginActivity.this, "Error: "+e.getMessage(),Toast.LENGTH_LONG).show();
+             if (isValidPassword().length() < 8 || isValidPassword().isEmpty())
+            {
+                if (isValidPassword().isEmpty()) { password.setError("Password Cannot Be Empty"); btnLogin.setBackgroundResource(android.R.drawable.btn_default);return; }
+                if (isValidPassword().length() < 8) { password.setError("Please Enter Valid Password"); btnLogin.setBackgroundResource(android.R.drawable.btn_default);return;}
+                btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+                return;
+            }
 
-                    });
+
+                 appExecutors.getNetworkIO().execute(() -> makeUserLogin(isValidUserId(),isValidPassword()).thenAccept(isCredentialsValid -> {
+                    if (isCredentialsValid){
+                         appExecutors.getMainThread().execute(() -> {
+                             String userId = userName
+                                     .getText()
+                                     .toString()
+                                     .trim()
+                                     .replaceAll("\\s+", "");
+                             sessionManager = new SessionManager(getApplicationContext());
+                             sessionManager.setUserID(userId);
+                             Toast.makeText(TTSLoginActivity.this, "You're logged in now", Toast.LENGTH_SHORT).show();
+                             Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);
+                             startActivity(i);
+                             finish();
+                             btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+                         });
+                     }else {
+                             appExecutors
+                                     .getMainThread()
+                                     .execute(() -> {
+                                 progressBarInLogin.setVisibility(View.INVISIBLE);
+                                 Toast.makeText(TTSLoginActivity.this, "You entered incorrect details ", Toast.LENGTH_SHORT).show();
+                                 btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+                             });}
+
+                 }).exceptionally(e -> {
+                                appExecutors.getMainThread().execute(() -> {
+                                   progressBarInLogin.setVisibility(View.INVISIBLE);
+                                   Toast.makeText(TTSLoginActivity.this, "Error while making you logged in "+e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                                   btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+
+                               });
+
                      return null;
                  }));
-             }
+
         } else {
             Toast.makeText(TTSLoginActivity.this, "No Internet Connection", Toast.LENGTH_LONG).show();
             progressBarInLogin.setVisibility(View.INVISIBLE);
@@ -269,11 +261,9 @@ public class TTSLoginActivity extends AppCompatActivity {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
                     APIResponse apiResponse = APIResponse.create(response);
-                    Log.e("apiResponse", ""+apiResponse);
                     if (apiResponse != null) {
                         if (apiResponse instanceof APISuccessResponse) {
                             ResponseBody responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody();
-                            Log.e("responBody", ""+responseBody);
                             String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
                             if ("Successful".equals(message)) {
                                 isLoggedIn.complete(true);
@@ -308,29 +298,4 @@ public class TTSLoginActivity extends AppCompatActivity {
         });
         return isLoggedIn;
     }
-    // Method For Login User
-//    public boolean loginUser(String userName, String password) {
-//        boolean result = false;
-//        Connection con;
-//        try {
-//            con = DatabaseHelper.getDBConnection();
-//
-//            PreparedStatement ps = con.prepareStatement("select * from AUTHENTICATION where USER_ID=? and PASSWORD=?");
-//            ps.setString(1, userName);
-//            ps.setString(2, password);
-//
-//            ResultSet rs = ps.executeQuery();
-//
-//            if (rs.next()) { result = true; }
-//
-//            rs.close();
-//            ps.close();
-//            con.close();
-//        } catch (Exception e) { e.printStackTrace(); }
-//
-//        return result;
-//    }
-
-
-
 }

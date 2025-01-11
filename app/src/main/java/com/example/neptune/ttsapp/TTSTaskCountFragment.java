@@ -113,10 +113,10 @@ public class TTSTaskCountFragment extends Fragment {
                 // Process results once all futures are complete
                 allTasksFuture.thenRun(() -> {
                     try {
-                        String pendingTasks = pendingTasksFuture.get();
-                        String acceptedTasks = acceptedTasksFuture.get();
-                        String approvedTasks = approvedTasksFuture.get();
-                        String completedTasks = completedTasksFuture.get();
+                        String pendingTasks = pendingTasksFuture.get().isEmpty()  ? pendingTasksFuture.get() : "Error";
+                        String acceptedTasks = acceptedTasksFuture.get().isEmpty() ? acceptedTasksFuture.get() : "Error";
+                        String approvedTasks = approvedTasksFuture.get().isEmpty() ? approvedTasksFuture.get() : "Error";
+                        String completedTasks = completedTasksFuture.get().isEmpty() ? completedTasksFuture.get() : "Error";
 
                         // Update UI on the main thread
                         appExecutors.getMainThread().execute(() -> {
@@ -127,18 +127,23 @@ public class TTSTaskCountFragment extends Fragment {
                         });
                     } catch (Exception e) {
                         e.printStackTrace();
-                        appExecutors.getMainThread().execute(() ->
+                        appExecutors.getMainThread().execute(() -> {
                                 Toast.makeText(getActivity().getApplicationContext(),
                                         "Failed to fetch task counts",
-                                        Toast.LENGTH_LONG).show()
+                                        Toast.LENGTH_LONG).show();
+                            }
                         );
                     }
                 }).exceptionally(e -> {
-                    appExecutors.getMainThread().execute(() ->
-                            Toast.makeText(getActivity().getApplicationContext(),
-                                    "Failed to fetch task counts due to "+e.getMessage() ,
-                                    Toast.LENGTH_LONG).show()
-                    );
+                    appExecutors.getMainThread().execute(() -> {
+                        Toast.makeText(getContext(),
+                                "Failed to fetch task counts due to " + e.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                        tvPendingTask.setText("Pending Task      :  " + "Error");
+                        tvAcceptedTask.setText("Accepted Task     :  " + "Error");
+                        tvApprovalTask.setText("Approved Task     :  " + "Error");
+                        tvCompletedTask.setText("Completed Task    :  " + "Error");
+                    } );
                     return null;
                 });
             } catch (Exception e) {

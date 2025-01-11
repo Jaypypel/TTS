@@ -1558,7 +1558,7 @@ public class TTSMainActivity extends AppCompatActivity {
     public CompletableFuture<List<MeasurableListDataModel>> getMeasurableListAndUpdateUi() {
         CompletableFuture<List<MeasurableListDataModel>> future = new CompletableFuture<>();
 
-            Call<ResponseBody> measurableListResponse = measurableService.getMeasurables();
+            Call<ResponseBody> measurableListResponse = measurableService.getMeasurableList();
             measurableListResponse.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
