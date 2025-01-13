@@ -115,7 +115,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
 //                        return;
 //                    }
                     if (!isValidFullName() || !isValidUserId() || !checkPassword() || !isValidEmail() || !isValidMobileNo()) {
-                        runOnUiThread(() -> Toast
+                        appExecutors.getMainThread().execute(() -> Toast
                                 .makeText(TTSRegistrationActivity
                                         .this, "Details entered aren't validated, Please Entered Details Again", Toast.LENGTH_LONG)
                                 .show());
@@ -125,27 +125,25 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.VISIBLE);
                     //   String result = registerUser(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo(), delegationTime());
                     User userRegistration = new User(fName, uName, passwordck,mail,mobile);
-                    appExecutors.getNetworkIO().execute(() -> {
-                        registerUser(userRegistration).thenAccept(result -> {
-                            if(result.equals("successful")){
-                                appExecutors.getMainThread().execute(() -> {
-                                    Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_LONG).show();
-                                    startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
-                                    finish();
-                                });
-                            }else {
-                                appExecutors.getMainThread().execute(() -> {
-                                    Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " + result, Toast.LENGTH_LONG).show();
-                                });
-                            }
-                        }).exceptionally(e -> {
+                    appExecutors.getNetworkIO().execute(() -> registerUser(userRegistration).thenAccept(result -> {
+                        if(result.equals("successful")){
                             appExecutors.getMainThread().execute(() -> {
-                                progressBar.setVisibility(View.INVISIBLE);
-                                Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " +e.getMessage(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
+                                finish();
                             });
-                            return null;
+                        }else {
+                            appExecutors.getMainThread().execute(() -> {
+                                Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " + result, Toast.LENGTH_LONG).show();
+                            });
+                        }
+                    }).exceptionally(e -> {
+                        appExecutors.getMainThread().execute(() -> {
+                            progressBar.setVisibility(View.INVISIBLE);
+                            Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " +e.getMessage(), Toast.LENGTH_LONG).show();
                         });
-                    });
+                        return null;
+                    }));
                 } else {
                     Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
                     progressBar.setVisibility(View.INVISIBLE);

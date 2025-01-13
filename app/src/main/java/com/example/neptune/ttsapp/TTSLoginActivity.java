@@ -34,13 +34,11 @@ import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.ResponseBody;
-import com.example.neptune.ttsapp.Network.UserServiceInterface;import com.google.gson.JsonObject;
+import com.example.neptune.ttsapp.Network.UserServiceInterface;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -82,8 +80,13 @@ public class TTSLoginActivity extends AppCompatActivity {
         progressBarInLogin.setVisibility(View.INVISIBLE);
 
 
-            btnLogin.setOnClickListener(view ->
-                    userLogin());
+            btnLogin.setOnClickListener(view -> {if( userLogin()){
+                Toast.makeText(TTSLoginActivity.this, "Your request is in process ",Toast.LENGTH_LONG).show();
+                btnLogin.setEnabled(false);
+            }else{
+                Toast.makeText(TTSLoginActivity.this, "Your request is completed ",Toast.LENGTH_LONG).show();
+            }
+            });
 
         // Code for goto Registration page
         btnRegister.setOnClickListener(view -> {
@@ -144,64 +147,122 @@ public class TTSLoginActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 
-    public void userLogin()
+    public boolean userLogin()
     {
         btnLogin.setBackgroundColor(Color.GRAY);
         if (InternetConnectivity.isConnected()) {
             if (isValidUserId().isEmpty()) { userName.setError("User Name Cannot Be Empty");
                 btnLogin.setBackgroundResource(android.R.drawable.btn_default);
-                return;
+                return false;
             }
              if (isValidPassword().length() < 8 || isValidPassword().isEmpty())
             {
-                if (isValidPassword().isEmpty()) { password.setError("Password Cannot Be Empty"); btnLogin.setBackgroundResource(android.R.drawable.btn_default);return; }
-                if (isValidPassword().length() < 8) { password.setError("Please Enter Valid Password"); btnLogin.setBackgroundResource(android.R.drawable.btn_default);return;}
+                if (isValidPassword().isEmpty()) { password.setError("Password Cannot Be Empty"); btnLogin.setBackgroundResource(android.R.drawable.btn_default);return false; }
+                if (isValidPassword().length() < 8) { password.setError("Please Enter Valid Password"); btnLogin.setBackgroundResource(android.R.drawable.btn_default);return false;}
                 btnLogin.setBackgroundResource(android.R.drawable.btn_default);
-                return;
+                return false;
             }
+                appExecutors.getNetworkIO().execute(() -> {
 
+                  if(!makeUserLogin(isValidUserId(),isValidPassword()).isDone()) {
+                      appExecutors.getMainThread().execute(() -> {
+                          progressBarInLogin.setVisibility(View.INVISIBLE);
+                          Toast.makeText(TTSLoginActivity.this, "Your request is in process ",Toast.LENGTH_LONG).show();
+                          btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+                          btnLogin.setEnabled(false);
 
-                 appExecutors.getNetworkIO().execute(() -> makeUserLogin(isValidUserId(),isValidPassword()).thenAccept(isCredentialsValid -> {
-                    if (isCredentialsValid){
-                         appExecutors.getMainThread().execute(() -> {
-                             String userId = userName
-                                     .getText()
-                                     .toString()
-                                     .trim()
-                                     .replaceAll("\\s+", "");
-                             sessionManager = new SessionManager(getApplicationContext());
-                             sessionManager.setUserID(userId);
-                             Toast.makeText(TTSLoginActivity.this, "You're logged in now", Toast.LENGTH_SHORT).show();
-                             Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);
-                             startActivity(i);
-                             finish();
-                             btnLogin.setBackgroundResource(android.R.drawable.btn_default);
-                         });
-                     }else {
-                             appExecutors
-                                     .getMainThread()
-                                     .execute(() -> {
-                                 progressBarInLogin.setVisibility(View.INVISIBLE);
-                                 Toast.makeText(TTSLoginActivity.this, "You entered incorrect details ", Toast.LENGTH_SHORT).show();
-                                 btnLogin.setBackgroundResource(android.R.drawable.btn_default);
-                             });}
+                      });
+                      isRequestInProgress = false;
 
-                 }).exceptionally(e -> {
-                                appExecutors.getMainThread().execute(() -> {
-                                   progressBarInLogin.setVisibility(View.INVISIBLE);
-                                   Toast.makeText(TTSLoginActivity.this, "Error while making you logged in "+e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
-                                   btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+                  }
 
-                               });
+              makeUserLogin(isValidUserId(),isValidPassword()).thenAccept(isCredentialsValid -> {
+                          if(isCredentialsValid){
+                              appExecutors.getMainThread().execute(() -> {
+                                  String userId = userName
+                                          .getText()
+                                          .toString()
+                                          .trim()
+                                          .replaceAll("\\s+", "");
+                                  sessionManager = new SessionManager(getApplicationContext());
+                                  sessionManager.setUserID(userId);
+                                  Toast.makeText(TTSLoginActivity.this, "You're logged in now", Toast.LENGTH_SHORT).show();
+                                  Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);
+                                  startActivity(i);
+                                  finish();
+                                  btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+                                  isRequestInProgress = false;
+                              });
+                          }else{
+                              appExecutors
+                                      .getMainThread()
+                                      .execute(() -> {
+                                          progressBarInLogin.setVisibility(View.INVISIBLE);
+                                          Toast.makeText(TTSLoginActivity.this, "You entered incorrect details ", Toast.LENGTH_SHORT).show();
+                                          btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+                                          isRequestInProgress = false;
 
-                     return null;
-                 }));
+                                      });}
+                      }).exceptionally(e -> {
+                          appExecutors.getMainThread().execute(() -> {
+                              progressBarInLogin.setVisibility(View.INVISIBLE);
+                              Toast.makeText(TTSLoginActivity.this, "Error while making you logged in "+e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                              btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+                              isRequestInProgress = false;
+
+                          }); return null;
+                      }).whenComplete((result,throwable) -> {
+                   isRequestInProgress = false;
+               });
+                });
+
+//                 appExecutors.getNetworkIO().execute(() -> makeUserLogin(isValidUserId(),isValidPassword()).thenAccept(isCredentialsValid -> {
+//                    if (isCredentialsValid){
+//                         appExecutors.getMainThread().execute(() -> {
+//                             String userId = userName
+//                                     .getText()
+//                                     .toString()
+//                                     .trim()
+//                                     .replaceAll("\\s+", "");
+//                             sessionManager = new SessionManager(getApplicationContext());
+//                             sessionManager.setUserID(userId);
+//                             Toast.makeText(TTSLoginActivity.this, "You're logged in now", Toast.LENGTH_SHORT).show();
+//                             Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);
+//                             startActivity(i);
+//                             finish();
+//                             btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+//                         });
+//                     }else {
+//                             appExecutors
+//                                     .getMainThread()
+//                                     .execute(() -> {
+//                                 progressBarInLogin.setVisibility(View.INVISIBLE);
+//                                 Toast.makeText(TTSLoginActivity.this, "You entered incorrect details ", Toast.LENGTH_SHORT).show();
+//                                 btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+//                             });}
+//
+//                 }).exceptionally(e -> {
+//                                appExecutors.getMainThread().execute(() -> {
+//                                   progressBarInLogin.setVisibility(View.INVISIBLE);
+//                                   Toast.makeText(TTSLoginActivity.this, "Error while making you logged in "+e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+//                                   btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+//
+//                               });
+//
+//                     return null;
+//                 }));
 
         } else {
             Toast.makeText(TTSLoginActivity.this, "No Internet Connection", Toast.LENGTH_LONG).show();
             progressBarInLogin.setVisibility(View.INVISIBLE);
+            isRequestInProgress = false;
         }
+        return isRequestInProgress;
     }
 
 

@@ -438,6 +438,9 @@ public class TTSMainActivity extends AppCompatActivity {
 
 
                             appExecutor.getNetworkIO().execute(() -> {
+                                if (!addDailyTimeShare(dailyTimeShare).isDone()){
+                                    return;
+                                }
                                 addDailyTimeShare(dailyTimeShare).thenCompose(result -> {
                                     Long id = Long.valueOf(result.get(1));
                                     return addDailyTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
@@ -1028,7 +1031,7 @@ public class TTSMainActivity extends AppCompatActivity {
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle("EXIT")
                 .setMessage(Html.fromHtml("<b>"+"Do You Want To Logged Out..?"+"</b>"))
-                .setPositiveButton("Yes", (dialog, which) -> finish())
+                .setPositiveButton("Yes", (dialog, which) -> {Intent i = new Intent(TTSMainActivity.this,TTSLoginActivity.class);startActivity(i);})
                 .setNegativeButton("No", null)
                 .show();
     }

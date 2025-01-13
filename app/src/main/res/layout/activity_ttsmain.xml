@@ -432,6 +432,9 @@
                             android:layout_column="1"
                             android:layout_marginLeft="20dp"
                             android:text="Cancel"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+
                             />
 
                         <Button
@@ -441,7 +444,10 @@
                             android:layout_column="2"
                             android:layout_marginLeft="100dp"
                             android:text="Submit"
-                             />
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+
+                            />
 
                     </TableRow>
 
