@@ -22,7 +22,7 @@
 
             <include
                 android:id="@+id/toolbar"
-                layout="@layout/toolbar" />
+                layout="@layout/app_bar_main" />
             <FrameLayout
                 android:id="@+id/content_frame"
                 android:layout_width="match_parent"
@@ -43,29 +43,29 @@
                         android:gravity="center">
 
 
-                       <LinearLayout
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:orientation="vertical"
-                           android:layout_marginLeft="20dp">
-                           <TextView
-                               android:id="@+id/textViewMainDate"
-                               android:layout_width="80dp"
-                               android:layout_height="wrap_content"
-                               android:layout_column="1"
-                               android:textColor="@android:color/black"
-                               android:textStyle="bold"
-                               android:layout_gravity="top"/>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginLeft="20dp">
+                            <TextView
+                                android:id="@+id/textViewMainDate"
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:layout_column="1"
+                                android:textColor="@android:color/black"
+                                android:textStyle="bold"
+                                android:layout_gravity="top"/>
 
-                           <TextView
-                               android:id="@+id/textViewMainTime"
-                               android:layout_width="wrap_content"
-                               android:layout_height="wrap_content"
-                               android:layout_column="3"
-                               android:layout_gravity="top"
-                               android:textColor="@android:color/black"
-                               android:textStyle="bold" />
-                       </LinearLayout>
+                            <TextView
+                                android:id="@+id/textViewMainTime"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_column="3"
+                                android:layout_gravity="top"
+                                android:textColor="@android:color/black"
+                                android:textStyle="bold" />
+                        </LinearLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textInputMainDateLayout"
@@ -105,7 +105,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center"
-                       >
+                        >
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textInputMainStartTimeLayout"
@@ -314,7 +314,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="410dp"
                     >
-           <TableRow
+                    <TableRow
                         android:id="@+id/tableRow8"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -337,20 +337,20 @@
                             android:id="@+id/textInputLayoutQty"
                             android:layout_width="0dp"
                             android:layout_height="56dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:hint="Qty"
-                        app:boxBackgroundMode="outline">
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:hint="Qty"
+                            app:boxBackgroundMode="outline">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextMainQty"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                        android:inputType="number"
-                        android:gravity="center_vertical" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editTextMainQty"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:inputType="number"
+                                android:gravity="center_vertical" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Unit Input Field -->
+                        <!-- Unit Input Field -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textInputLayoutUnit"
                             android:layout_width="0dp"
@@ -370,7 +370,7 @@
                     </TableRow>
 
 
-            <!-- Bottom Row with Button -->
+                    <!-- Bottom Row with Button -->
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -398,7 +398,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center"
-                       >
+                        >
 
                         <ListView
                             android:id="@+id/listMainMeasurable"

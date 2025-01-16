@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_home"
+            android:title="Home" />
+        <item android:id="@+id/nav_activity"
+            android:title="Add activity" />
+        <item android:id="@+id/nav_project"
+            android:title="Add Project" />
+        <item android:id="@+id/nav_task"
+            android:title="Add task" />
+        <item android:id="@+id/nav_measurable"
+            android:title="Add Measurable" />
+        <item android:id="@+id/nav_other_activity"
+            android:title="Add Other Activity" />
+        <item android:id="@+id/nav_report_generation"
+            android:title="Report Generation" />
+
+    </group>
+</menu>

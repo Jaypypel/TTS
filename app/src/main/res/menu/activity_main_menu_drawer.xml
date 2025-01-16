@@ -1,0 +1,32 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_daily_time_share"
+            android:title="Daily Time Share" />
+        <item android:id="@+id/nav_dts_view"
+            android:title="DTS View"/>
+        <item android:id="@+id/nav_received_tasks"
+            android:title="Received Tasks"/>
+        <item android:id="@+id/nav_committed_tasks"
+            android:title="Committed Tasks" />
+        <item android:id="@+id/nav_approval_completion_tasks"
+            android:title="Approval Completion Tasks" />
+        <item android:id="@+id/nav_work_done_status"
+            android:title="Work Done Status" />
+        <item android:id="@+id/nav_assign_task"
+            android:title="Assign Task" />
+        <item android:id="@+id/nav_assigned_tasks"
+            android:title="Assigned Tasks" />
+        <item android:id="@+id/nav_accepted_tasks"
+            android:title="Accepted Tasks" />
+        <item android:id="@+id/nav_completed_tasks"
+            android:title="Completed Tasks" />
+        <item android:id="@+id/nav_modified_tasks"
+            android:title="Modification Tasks" />
+        <item android:id="@+id/nav_task_admin"
+            android:title="Task Admin" />
+    </group>
+</menu>

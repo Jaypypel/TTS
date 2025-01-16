@@ -23,6 +23,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,6 +33,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -60,6 +65,7 @@ import com.example.neptune.ttsapp.Network.TaskServiceInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -128,10 +134,7 @@ public class TTSMainActivity extends AppCompatActivity {
     @Inject
     DTSMeasurableInterface dtsMeasurableInterface;
 
-
-
-
-    DailyTimeShareDTO dailyTimeShareDTO;
+//    private AppBarConfiguration mAppBarConfiguration;
 
 
 
@@ -154,13 +157,9 @@ public class TTSMainActivity extends AppCompatActivity {
             tsTaskName,tsProjectName,tsMeasurableUnit;
     ArrayList<MeasurableListDataModel> measurableListDataModels = new ArrayList<>();
 
-
+//    private NavigationView navigationView;
     private ListView listView;
     private MeasurableListCustomAdapter measurableListCustomAdapter;
-
-
-    private int mYear, mMonth, mDay, mHour, mMinute;
-
 
 
     // Code for Finishing activity from TimeShareList Activity
@@ -176,6 +175,7 @@ public class TTSMainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_ttsmain);
 
+        //navigationView = findViewById(R.id.nav_view);
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles= getResources().getStringArray(R.array.navigation_drawer_items_array);
         mDrawerLayout =  findViewById(R.id.drawer_layout);
@@ -215,8 +215,28 @@ public class TTSMainActivity extends AppCompatActivity {
 
         // Setup AutoCompleteTextViews
 
-
-
+//       setSupportActionBar(R.id.);
+//        mAppBarConfiguration = new AppBarConfiguration.Builder(
+//                                 R.id.nav_daily_time_share,
+//                                 R.id.nav_dts_view,
+//                R.id.nav_received_tasks,
+//                R.id.nav_committed_tasks,
+//                R.id.nav_approval_completion_tasks,
+//                R.id.nav_work_done_status,
+//                R.id.nav_assign_task,
+//                R.id.nav_assigned_tasks,
+//                R.id.nav_accepted_tasks,
+//                R.id.nav_completed_tasks,
+//                R.id.nav_modified_tasks,
+//                R.id.nav_task_admin)
+//                .setOpenableLayout(mDrawerLayout)
+//                .build();
+//
+//        NavController navController = Navigation
+//                .findNavController(this,R.id.nav_host_fragment_content_main);
+//        NavigationUI
+//                .setupActionBarWithNavController(this,navController,mAppBarConfiguration);
+//        NavigationUI.setupWithNavController(navigationView,navController);
         // Code for Measurable list
         listView=findViewById(R.id.listMainMeasurable);
         timeShareAddMeasurable=findViewById(R.id.buttonMainMeasurableAdd);
@@ -514,7 +534,6 @@ public class TTSMainActivity extends AppCompatActivity {
             MaterialDatePicker<Long> datePicker = MaterialDatePicker
                     .Builder
                     .datePicker()
-                    .setTheme(R.style.CustomPickerTheme)
                     .setTitleText("Select Date")
                     .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                     .build();
@@ -682,6 +701,22 @@ public class TTSMainActivity extends AppCompatActivity {
         setupDrawerToggle();
 
     }
+
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//
+//        //Inflate the menu; this adds items to the action bar if it is present
+//        getMenuInflater().inflate(R.menu.activity_main_menu_drawer,menu);
+//        return  true;
+//    }
+
+
+//    @Override
+//    public boolean onSupportNavigateUp() {
+//        NavController navController = Navigation.findNavController(this,R.id.nav_host_fragment_content_main);
+//        return NavigationUI.navigateUp(navController,mAppBarConfiguration) || super.onSupportNavigateUp();
+//    }
 
     private void updateMeasurableObjectsAdapter(List<MeasurableListDataModel> measurableObjects) {
         ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_spinner_item, measurableObjects);
@@ -1014,11 +1049,13 @@ public class TTSMainActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
     }
 
+
     void setupToolbar(){
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
+
 
     void setupDrawerToggle(){
         mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,toolbar,R.string.app_name, R.string.app_name);
@@ -1187,18 +1224,6 @@ public class TTSMainActivity extends AppCompatActivity {
 
     }
 
-    private static int converToMinutes(String time){
-        int hour = Integer.parseInt(time.substring(0,2));
-        Log.e("debugging", "hour :" +hour);
-        int minute = Integer.parseInt(time.substring(3,5));
-        Log.e("debugging", "minute :" +minute);
-        String period = time.substring(5);
-        Log.e("debugging", "period :" +period);
-        if (time.contains("pm") && hour != 12){ hour +=12;}
-        else if (period.contains("am") && hour == 12){ hour = 0;}
-        Log.e("debugging", "hour :" +hour);
-        return hour * 60 + minute;
-    }
 
     private CompletableFuture<ArrayList<String>> addDailyTimeShare(DailyTimeShare dailyTimeShare) {
         CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
@@ -1391,9 +1416,7 @@ public class TTSMainActivity extends AppCompatActivity {
 
     public CompletableFuture<ArrayList<String>> getActivityNames() {
         CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
-
-
-            Call<ResponseBody> call = activityService.getActivitiesName();
+        Call<ResponseBody> call = activityService.getActivitiesName();
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

@@ -21,7 +21,7 @@
 
             <include
                 android:id="@+id/toolbar_admin"
-                layout="@layout/toolbar" />
+                layout="@layout/app_bar_main" />
             <FrameLayout
                 android:id="@+id/content_frame_admin"
                 android:layout_width="match_parent"

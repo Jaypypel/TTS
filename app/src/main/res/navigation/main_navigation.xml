@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/TTSMainActivity">
+
+    <activity
+        android:id="@+id/TTSMainActivity"
+        android:name="com.example.neptune.ttsapp.TTSMainActivity"
+        android:label="activity_ttsmain"
+        tools:layout="@layout/activity_ttsmain" />
+    <fragment
+        android:id="@+id/TTSDailyTimeShareListFragment"
+        android:name="com.example.neptune.ttsapp.TTSDailyTimeShareListFragment"
+        android:label="fragment_ttsdaily_time_share_list"
+        tools:layout="@layout/fragment_ttsdaily_time_share_list" />
+    <fragment
+        android:id="@+id/TTSTaskAllocatedListFragment"
+        android:name="com.example.neptune.ttsapp.TTSTaskAllocatedListFragment"
+        android:label="TTSTaskAllocatedListFragment" />
+    <fragment
+        android:id="@+id/TTSTaskCommittedListFragment"
+        android:name="com.example.neptune.ttsapp.TTSTaskCommittedListFragment"
+        android:label="fragment_ttstask_committed_list"
+        tools:layout="@layout/fragment_ttstask_committed_list" />
+    <fragment
+        android:id="@+id/TTSTaskApprovalCompletionListFragment"
+        android:name="com.example.neptune.ttsapp.TTSTaskApprovalCompletionListFragment"
+        android:label="fragment_ttsapproval_completion_list"
+        tools:layout="@layout/fragment_ttsapproval_completion_list" />
+    <fragment
+        android:id="@+id/TTSTaskCountFragment"
+        android:name="com.example.neptune.ttsapp.TTSTaskCountFragment"
+        android:label="fragment_ttstask_count"
+        tools:layout="@layout/fragment_ttstask_count" />
+    <fragment
+        android:id="@+id/TTSTaskDelegationFragment"
+        android:name="com.example.neptune.ttsapp.TTSTaskDelegationFragment"
+        android:label="TTSTaskDelegationFragment" />
+    <fragment
+        android:id="@+id/TTSTaskDelegatedListFragment"
+        android:name="com.example.neptune.ttsapp.TTSTaskDelegatedListFragment"
+        android:label="fragment_ttstask_delegated_list"
+        tools:layout="@layout/fragment_ttstask_delegated_list" />
+    <fragment
+        android:id="@+id/TTSTaskAcceptedListFragment"
+        android:name="com.example.neptune.ttsapp.TTSTaskAcceptedListFragment"
+        android:label="fragment_ttstask_accepted_list"
+        tools:layout="@layout/fragment_ttstask_accepted_list" />
+    <fragment
+        android:id="@+id/TTSTaskCompletedListFragment"
+        android:name="com.example.neptune.ttsapp.TTSTaskCompletedListFragment"
+        android:label="fragment_ttstask_completed_list"
+        tools:layout="@layout/fragment_ttstask_completed_list" />
+    <fragment
+        android:id="@+id/TTSTaskModificationListFragment"
+        android:name="com.example.neptune.ttsapp.TTSTaskModificationListFragment"
+        android:label="fragment_ttsmodification_task_list"
+        tools:layout="@layout/fragment_ttsmodification_task_list" />
+    <activity
+        android:id="@+id/TTSAdminActivity"
+        android:name="com.example.neptune.ttsapp.TTSAdminActivity"
+        android:label="activity_ttsadmin"
+        tools:layout="@layout/activity_ttsadmin" />
+</navigation>
