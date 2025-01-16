@@ -156,37 +156,37 @@ public class TTSReportGenerationFragment extends Fragment {
         });
 
         btnReportGenerate.setOnClickListener(v -> {
-            try
-            {
+            btnReportGenerate.setEnabled(false);
                 if (InternetConnectivity.isConnected())
                 {
                     if (isStartDateValid().isEmpty()){startDate.setError("Start Date Cannot Be Empty");
+                        btnReportGenerate.setEnabled(true);
                         return;
                     }
                     if (isEndDateValid().isEmpty()){endDate.setError("Start Date Cannot Be Empty");
-                    return;
+                        btnReportGenerate.setEnabled(true);
+                        return;
                     }
 
-//                    if (isStartDateValid().equals(isEndDateValid())){
-//                        Toast.makeText(getActivity().getApplicationContext(), "Start and End can't be same", Toast.LENGTH_LONG).show();
-//                    }
-
                     getReportByUsernameAndDateRange(isUserValid(),isStartDateValid(),isEndDateValid()).thenAccept(file -> {
-                        Log.e("file",  "running into future call");
+
                         saveToPublicDownloads(getContext(),isUserValid()+ " Report "+ " For " +isStartDateValid() + " And " + isEndDateValid(),file);
-                        Log.e("Debugging",  "calling the save to public downloads");
+                        btnReportGenerate.setEnabled(true);
+
                     }).exceptionally(e -> {
                         Toast.makeText(getActivity().getApplicationContext(), "Failed to get the file from the server ", Toast.LENGTH_LONG).show();
                         Log.e("Error", "getting error : "+e.getMessage() +" cause : "+e.getCause()+" error : "+e);
+                        btnReportGenerate.setEnabled(true);
+
                         return null;
                     });
 //                        generateUserDTSExcelReport(getUserDTSReportDetails(isUserValid(), isStartDateValid(), isEndDateValid()));
                         startDate.setText("");
                         endDate.setText("");
 
-                }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
-
-            } catch (Exception e){e.printStackTrace();}
+                }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                    btnReportGenerate.setEnabled(true);
+                }
         });
 
         return view;

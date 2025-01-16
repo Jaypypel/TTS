@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
@@ -104,7 +105,7 @@ public class TTSTaskCRUDFragment extends Fragment {
         userSelect= view.findViewById(R.id.spinnerTaskCRUDUserSelect);
 
 
-        if (InternetConnectivity.isConnected()== true)
+        if (InternetConnectivity.isConnected())
         {
             getUsernames().thenAccept(usernames -> {
                 ArrayList<String>  users = usernames;
@@ -122,7 +123,7 @@ public class TTSTaskCRUDFragment extends Fragment {
 
         activitySelect= view.findViewById(R.id.spinnerTaskCRUDActivitySelect);
 
-        if (InternetConnectivity.isConnected()== true)
+        if (InternetConnectivity.isConnected())
         {
             userSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
             {
@@ -131,31 +132,27 @@ public class TTSTaskCRUDFragment extends Fragment {
                 {
 
                     taskName.setText("");
-                    appExecutors.getNetworkIO().execute(() -> {
-                        getTaskNamesByUsername(getUser()).thenAccept(taskNames -> {
-                            ArrayAdapter<String> taskNameAdapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,taskNames);
-                            taskName.setAdapter(taskNameAdapter);
-                        }).exceptionally(e -> {
-                            Toast.makeText(getActivity().getApplicationContext(), "can't update task names", Toast.LENGTH_LONG).show();
-                            return null;
-                        });
-                    });
+                    appExecutors.getNetworkIO().execute(() -> getTaskNamesByUsername(getUser()).thenAccept(taskNames -> {
+                        ArrayAdapter<String> taskNameAdapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,taskNames);
+                        taskName.setAdapter(taskNameAdapter);
+                    }).exceptionally(e -> {
+                        Toast.makeText(getActivity().getApplicationContext(), "can't update task names", Toast.LENGTH_LONG).show();
+                        return null;
+                    }));
 
 
 
 
-                    appExecutors.getNetworkIO().execute(() -> {
-                        getActivities(getUser()).thenAccept(activities ->{
-                            activityDataModels = activities;
-                            ArrayAdapter<ActivityDataModel> activitySelectAdapter = new ArrayAdapter<ActivityDataModel>
-                                    (getActivity(), android.R.layout.simple_spinner_item,activityDataModels);
-                            activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            activitySelect.setAdapter(activitySelectAdapter);
-                        }).exceptionally(e -> {
-                            Toast.makeText(getActivity().getApplicationContext(),"Failed to get activities",Toast.LENGTH_LONG).show();
-                            return null;
-                        });
-                    });
+                    appExecutors.getNetworkIO().execute(() -> getActivities(getUser()).thenAccept(activities ->{
+                        activityDataModels = activities;
+                        ArrayAdapter<ActivityDataModel> activitySelectAdapter = new ArrayAdapter<ActivityDataModel>
+                                (requireContext(), android.R.layout.simple_spinner_item,activityDataModels);
+                        activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        activitySelect.setAdapter(activitySelectAdapter);
+                    }).exceptionally(e -> {
+                        Toast.makeText(requireContext(),"Failed to get activities",Toast.LENGTH_LONG).show();
+                        return null;
+                    }));
 
                 }
                 @Override
@@ -166,12 +163,13 @@ public class TTSTaskCRUDFragment extends Fragment {
 
 
         addTask.setOnClickListener(v -> {
-
+            addTask.setEnabled(false);
             try
             {
                 if (InternetConnectivity.isConnected()) {
                     if (isTaskName().isEmpty()) {
                         taskName.setError("Task Name Be Empty");
+                        addTask.setEnabled(true);
                         return;
                     }
 
@@ -181,20 +179,24 @@ public class TTSTaskCRUDFragment extends Fragment {
                                 {
                                     Toast.makeText(getActivity().getApplicationContext(), "Task Inserted ", Toast.LENGTH_LONG).show();
                                     taskName.setText("");
+                                    addTask.setEnabled(true);
                                 });
                             }else {
-                                appExecutors.getMainThread().execute(() -> Toast
+                                appExecutors.getMainThread().execute(() -> { Toast
                                         .makeText(getActivity()
                                                 .getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG)
-                                        .show());
+                                        .show();
+                                    addTask.setEnabled(true);
+                                });
                             }
                         }).exceptionally(e -> {
                             Toast.makeText(getActivity().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
-
+                            addTask.setEnabled(true);
                             return null;
                         });
 
-                }else { Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+                }else { Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                    addTask.setEnabled(true);}
 
             }
             catch (Exception e){e.printStackTrace();}

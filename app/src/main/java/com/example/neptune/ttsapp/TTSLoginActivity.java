@@ -227,6 +227,7 @@ public class TTSLoginActivity extends AppCompatActivity {
                           progressBarInLogin.setVisibility(View.INVISIBLE);
                           Toast.makeText(TTSLoginActivity.this, "Error while making you logged in "+e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
                           btnLogin.setBackgroundResource(android.R.drawable.btn_default);
+                          btnLogin.setEnabled(true);
                           isRequestInProgress = false;
 
                       }); return null;

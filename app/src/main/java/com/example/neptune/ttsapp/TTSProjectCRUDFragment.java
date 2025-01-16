@@ -147,12 +147,7 @@ public class TTSProjectCRUDFragment extends Fragment {
             }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
                 return null;
             });
-//            userSelect=(Spinner) view.findViewById(R.id.spinnerProjectCRUDUserSelect);
-//            ArrayList users = getUserList();
-//            users.add(0, "Select User");
-//            ArrayAdapter<String> adapterMeasurable = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
-//            adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            userSelect.setAdapter(adapterMeasurable);
+
         }else { Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
@@ -162,24 +157,16 @@ public class TTSProjectCRUDFragment extends Fragment {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                    appExecutors.getNetworkIO().execute(() -> {
-                        getActivities(getUser()).thenAccept(activities ->{
-                            activityDataModels = activities;
-                            ArrayAdapter<ActivityDataModel> activitySelectAdapter = new ArrayAdapter<ActivityDataModel>
-                                    (getActivity(), android.R.layout.simple_spinner_item,activityDataModels);
-                            activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            activitySelect.setAdapter(activitySelectAdapter);
-                        }).exceptionally(e -> {
-                            Toast.makeText(getActivity().getApplicationContext(),"Failed to get activities",Toast.LENGTH_LONG).show();
-                            return null;
-                        });
-                    });
-
-//                    activityDataModels = getActivityList(getUser());
-//                    ArrayAdapter<ActivityDataModel> activitySelectAdapter = new ArrayAdapter<ActivityDataModel>
-//                            (getActivity(), android.R.layout.simple_spinner_item,activityDataModels);
-//                    activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//                    activitySelect.setAdapter(activitySelectAdapter);
+                    appExecutors.getNetworkIO().execute(() -> getActivities(getUser()).thenAccept(activities ->{
+                        activityDataModels = activities;
+                        ArrayAdapter<ActivityDataModel> activitySelectAdapter = new ArrayAdapter<>
+                                (requireActivity(), android.R.layout.simple_spinner_item, activityDataModels);
+                        activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        activitySelect.setAdapter(activitySelectAdapter);
+                    }).exceptionally(e -> {
+                        Toast.makeText(getActivity().getApplicationContext(),"Failed to get activities",Toast.LENGTH_LONG).show();
+                        return null;
+                    }));
 
                 }
                 @Override
@@ -191,55 +178,48 @@ public class TTSProjectCRUDFragment extends Fragment {
 
 
         addProject.setOnClickListener(v -> {
+            addProject.setEnabled(false);
 
-            try
-            {
                 if (InternetConnectivity.isConnected())
                 {
-                   if (isProjectCode().isEmpty()){projectCode.setError("Project Code Be Empty");
+
+                    if (isProjectCode().isEmpty()){projectCode.setError("Project Code Be Empty");
+                        addProject.setEnabled(true);
                         return ;
-
-                   }
+                    }
                    if (isProjectName().isEmpty()){projectName.setError("Project Name Be Empty");
-                   return;}
-
-
-
-                       addProject(getUser(), getAct(), isProjectCode(), isProjectName(), createdOn()).thenAccept(isProjectAdded -> {
+                       addProject.setEnabled(true);
+                       return;}
+                      addProject(getUser(), getAct(), isProjectCode(), isProjectName(), createdOn()).thenAccept(isProjectAdded -> {
                            if(isProjectAdded.equals("successful")){
                                appExecutors.getMainThread().execute(() ->
                                {
                                    Toast.makeText(getActivity().getApplicationContext(), "Project Inserted ", Toast.LENGTH_LONG).show();
                                    projectCode.setText("");
                                    projectName.setText("");
+                                   addProject.setEnabled(true);
+
                                });
                            }else {
                                appExecutors.getMainThread().execute(() ->
                                {
                                    Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed ", Toast.LENGTH_LONG).show();
-
+                                   addProject.setEnabled(true);
                                });
                            }
                        }).exceptionally(e -> {
                            Toast.makeText(getActivity().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                          addProject.setEnabled(true);
 
-                           return null;
+                          return null;
                        });
-//
-//                       String result = insertProject(getUser(), getAct(), isProjectCode(), isProjectName(), createdOn());
-//                       if (result.equals("true")) {
-//                           Toast.makeText(getActivity().getApplicationContext(), "Project Inserted ", Toast.LENGTH_LONG).show();
-//                           projectCode.setText("");
-//                           projectName.setText("");
-//                       } else {
-//                           Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
-//                       }
 
-                }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+                }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();  addProject.setEnabled(true);
+                }
 
 
-            }
-            catch (Exception e){e.printStackTrace();}
+
+
         });
 
         return view;

@@ -278,7 +278,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="ADD"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:focusableInTouchMode="true"
+            android:clickable="true"/>
         </TableRow>
 
     </TableRow>
@@ -356,8 +358,10 @@
 
             <Button
                 android:id="@+id/buttonCancel"
-                android:layout_width="126dp"
-                android:layout_height="58dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
                 android:layout_column="1"
                 android:layout_marginLeft="20dp"
                 android:text="Cancel" />
@@ -373,8 +377,10 @@
 
             <Button
                 android:id="@+id/buttonSubmit"
-                android:layout_width="126dp"
-                android:layout_height="58dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
                 android:layout_column="2"
                 android:layout_marginLeft="100dp"
                 android:text="Submit" />

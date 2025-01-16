@@ -83,12 +83,12 @@ public class TTSActivityCRUDFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ttsactivity_crud, container, false);
 
-        user=(TextView)view.findViewById(R.id.textViewActCRUDUser);
+        user=view.findViewById(R.id.textViewActCRUDUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         user.setText(sessionManager.getUserID());
 
-        date=(TextView)view.findViewById(R.id.textViewActCRUDDate);
-        time=(TextView)view.findViewById(R.id.textViewActCRUDTime);
+        date=view.findViewById(R.id.textViewActCRUDDate);
+        time=view.findViewById(R.id.textViewActCRUDTime);
         
         
         appExecutors.getMainThread().execute(() -> {
@@ -97,14 +97,14 @@ public class TTSActivityCRUDFragment extends Fragment {
         });
 
 
-        activityName =(AutoCompleteTextView) view.findViewById(R.id.editTextActCRUDActivity);
+        activityName =view.findViewById(R.id.editTextActCRUDActivity);
 
-        userSelect=(Spinner) view.findViewById(R.id.spinnerActCRUDUserSelect);
-        if (InternetConnectivity.isConnected()== true) {
+        userSelect=view.findViewById(R.id.spinnerActCRUDUserSelect);
+        if (InternetConnectivity.isConnected()) {
 
             getUsernames().thenAccept(usernames -> {
                ArrayList<String>  users = usernames;
-                //users.add(0,"Select user");
+                users.add(0,"Select user");
                 ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
                 userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 userSelect.setAdapter(userSelectAdapter);
@@ -112,10 +112,6 @@ public class TTSActivityCRUDFragment extends Fragment {
                 return null;
             });
 
-
-//            ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
-//            userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            userSelect.setAdapter(userSelectAdapter);
         }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
@@ -128,17 +124,14 @@ public class TTSActivityCRUDFragment extends Fragment {
 
                         activityName.setText("");
                         getActivityNameByUsername(getUser()).thenAccept(activityNames -> {
-                            Log.e("activityNames",""+activityNames);
-                            ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, activityNames);
+                            ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1, activityNames);
                             activityName.setAdapter(activityNameAdapter);
-                        }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update activity names", Toast.LENGTH_LONG).show();
+                        }).exceptionally(e -> {Toast.makeText(requireContext(), "can't update activity names", Toast.LENGTH_LONG).show();
                                     return null;
                                 });
-//                        ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, getActivityList(getUser()));
-//                        activityName.setAdapter(activityNameAdapter);
 
                     } else {
-                        Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                        Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
                     }
                 }
 
@@ -151,13 +144,13 @@ public class TTSActivityCRUDFragment extends Fragment {
 
 
         addActivity.setOnClickListener(v -> {
+                addActivity.setEnabled(false);
 
-            try
-            {
                 if (InternetConnectivity.isConnected())
                 {
                     if(isActivityName().isEmpty()){activityName.setError("Activity Name Be Empty");
-                     return ;
+                        addActivity.setEnabled(true);
+                        return ;
                     }
 
                             addActivity(getUser(),isActivityName(),createdOn()).thenAccept(isActivityAdded -> {
@@ -166,32 +159,24 @@ public class TTSActivityCRUDFragment extends Fragment {
                                     {
                                         Toast.makeText(getActivity().getApplicationContext(), "Activity Inserted ", Toast.LENGTH_LONG).show();
                                         activityName.setText("");
+                                        addActivity.setEnabled(true);
+
                                     });
                                 }else {
                                     appExecutors.getMainThread().execute(() ->
-                                    {
-                                        Toast.makeText(getActivity().getApplicationContext(), "insertion failed ", Toast.LENGTH_LONG).show();
-
-                                    });
+                                    {Toast.makeText(getActivity().getApplicationContext(), "insertion failed ", Toast.LENGTH_LONG).show();
+                                        addActivity.setEnabled(true);});
                                 }
                             }).exceptionally(e -> {
                                 Toast.makeText(getActivity().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
-
+                                addActivity.setEnabled(true);
                                 return null;
                             });
 
-//                            String result = insertActivity(getUser(), isActivityName(), createdOn());
-//                            if (result.equals("true")) {
-//                                Toast.makeText(getActivity().getApplicationContext(), "Activity Inserted ", Toast.LENGTH_LONG).show();
-//                                activityName.setText("");
-//                            } else {
-//                                Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
-//                            }
+                }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                    addActivity.setEnabled(true);
+                }
 
-                }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
-
-            }
-            catch (Exception e){e.printStackTrace();}
         });
 
 

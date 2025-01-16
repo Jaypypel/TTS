@@ -87,9 +87,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
 
         btnSubmit.setOnClickListener(view -> {
             processUserRegistration();
-            if(isRequestInProcess){
-                Toast.makeText(TTSRegistrationActivity.this,"Request in process",Toast.LENGTH_LONG).show();
-            }
+
         });
 
 
@@ -186,7 +184,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
 
 
     public void processUserRegistration(){
-
+            btnSubmit.setEnabled(false);
             if (InternetConnectivity.isConnected()) {
                 if (!isValidFullName() || !isValidUserId() || !checkPassword() || !isValidEmail() || !isValidMobileNo()) {
                     appExecutors.getMainThread().execute(() -> Toast
@@ -196,32 +194,37 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                     btnSubmit.setEnabled(true);
                     return;
                 }
-                Log.d("Reg", "In else");
                 progressBar.setVisibility(View.VISIBLE);
+                if(isRequestInProcess){
+                    Toast.makeText(TTSRegistrationActivity.this,"Request in process",Toast.LENGTH_LONG).show();
+                    return;
+                }
                 //   String result = registerUser(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo(), delegationTime());
-                User userRegistration = new User(fName, uName, passwordck,mail,mobile);
+                User newUser= new User(fName, uName, passwordck,mail,mobile);
 
-                    CompletableFuture<String> isRegistrationDone = registerUser(userRegistration);
+
 
                     isRequestInProcess = true;
-                    isRegistrationDone.thenRun(() -> {
-                        if(isRegistrationDone.equals("successful")){
+                    registerUser(newUser).thenAccept(result -> {
+                        if(result.equals("successful")){
                             appExecutors.getMainThread().execute(() -> {
                                 Toast.makeText(TTSRegistrationActivity.this, "Registration Successful", Toast.LENGTH_LONG).show();
                                 startActivity(new Intent(TTSRegistrationActivity.this,TTSLoginActivity.class));
                                 finish();
-                                isRequestInProcess = false;
+
                             });
-                        }else {
-                            appExecutors.getMainThread().execute(() -> Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_LONG).show());
+                        }else{
+                            appExecutors.getMainThread().execute(() -> {Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_LONG).show();  btnSubmit.setEnabled(true);});
                             isRequestInProcess = false;
                         }
                     }).exceptionally(e -> {
                         appExecutors.getMainThread().execute(() -> {
                             progressBar.setVisibility(View.INVISIBLE);
                             Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " +e.getMessage(), Toast.LENGTH_LONG).show();
+                            btnSubmit.setEnabled(true);
                         });
                         isRequestInProcess = false;
+
                         return null;
                     }).whenComplete((result,throwable)-> isRequestInProcess = false);
 
@@ -229,6 +232,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
                 progressBar.setVisibility(View.INVISIBLE);
+                btnSubmit.setEnabled(true);
 
             }
     }
@@ -361,6 +365,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                                 .getBody()
                                 .getMessage()
                                 .getAsString();
+                        Log.e("Response","msg - "+msg);
                         future.complete(msg);
                     }
 

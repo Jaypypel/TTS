@@ -74,12 +74,12 @@ public class TTSOtherActivityCRUDFragment extends Fragment {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        user=(TextView)view.findViewById(R.id.textViewOtherActivityCRUDUser);
+        user=view.findViewById(R.id.textViewOtherActivityCRUDUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
         user.setText(sessionManager.getUserID());
 
-        date=(TextView)view.findViewById(R.id.textViewOtherActivityCRUDDate);
-        time=(TextView)view.findViewById(R.id.textViewOtherActivityCRUDTime);
+        date=view.findViewById(R.id.textViewOtherActivityCRUDDate);
+        time=view.findViewById(R.id.textViewOtherActivityCRUDTime);
 
 
            appExecutors.getMainThread().execute(() -> {
@@ -87,66 +87,58 @@ public class TTSOtherActivityCRUDFragment extends Fragment {
             time.setText(DateConverter.currentTime());
         });
 
-        otherActivityName=(AutoCompleteTextView) view.findViewById(R.id.editTextOtherActivityCRUDOtherActivity);
-        if (InternetConnectivity.isConnected()== true) {
+        otherActivityName= view.findViewById(R.id.editTextOtherActivityCRUDOtherActivity);
+        if (InternetConnectivity.isConnected()) {
             getOtherActivityNames().thenAccept(names -> {
-                ArrayList<String>  otherActivityNames = names;
-                ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,otherActivityNames);
+                ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, names);
                 userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 otherActivityName.setAdapter(userSelectAdapter);
             }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update activityNames", Toast.LENGTH_LONG).show();
                 return null;
             });
-            
-       //     ArrayAdapter<String> measurableNameAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,getOtherActivityList());
-       //     otherActivityName.setAdapter(measurableNameAdapter);
+
         }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
-        addOtherActivity=(Button)view.findViewById(R.id.buttonOtherActivityCRUDAddOtherActivity);
+        addOtherActivity= view.findViewById(R.id.buttonOtherActivityCRUDAddOtherActivity);
 
 
         addOtherActivity.setOnClickListener(v -> {
-
-            try
+            addOtherActivity.setEnabled(false);
+            if (InternetConnectivity.isConnected())
             {
-                if (InternetConnectivity.isConnected()== true)
-                {
-                    if (isOtherActivityName().isEmpty()){otherActivityName.setError("Other Activity Name Be Empty");
-                        return;
+                if (isOtherActivityName().isEmpty()){otherActivityName.setError("Other Activity Name Be Empty");
+                    addOtherActivity.setEnabled(true);
+                    return;
+                }
+                addOtherActivity(isOtherActivityName(), createdOn()).thenAccept(isMeasurableAdded -> {
+                    if(isMeasurableAdded.equals("successful")){
+                        appExecutors.getMainThread().execute(() ->
+                        {
+                            Toast.makeText(getActivity().getApplicationContext(), "Other Activity Inserted ", Toast.LENGTH_LONG).show();
+                            otherActivityName.setText("");
+                            addOtherActivity.setEnabled(true);
+
+                        });
+                    }else {
+                        appExecutors.getMainThread().execute(() -> { Toast
+                                .makeText(getActivity()
+                                        .getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG)
+                                .show();addOtherActivity.setEnabled(true);
+                        });
                     }
-                     addOtherActivity(isOtherActivityName(), createdOn()).thenAccept(isMeasurableAdded -> {
-                        if(isMeasurableAdded.equals("successful")){
-                            appExecutors.getMainThread().execute(() ->
-                            {
-                                Toast.makeText(getActivity().getApplicationContext(), "Other Activity Inserted ", Toast.LENGTH_LONG).show();
-                                otherActivityName.setText("");
-                            });
-                        }else {
-                            appExecutors.getMainThread().execute(() -> Toast
-                                    .makeText(getActivity()
-                                            .getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG)
-                                    .show());
-                        }
-                    }).exceptionally(e -> {
-                        Toast.makeText(getActivity().getApplicationContext(), "Failed to add other activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                }).exceptionally(e -> {
+                    Toast.makeText(getActivity().getApplicationContext(), "Failed to add other activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                    addOtherActivity.setEnabled(true);
 
-                        return null;
-                    });
+                    return null;
+                });
 
-//                            String result = insertOtherActivity(isOtherActivityName(), createdOn());
-//                            if (result.equals("true")) {
-//                                Toast.makeText(getActivity().getApplicationContext(), "Other Activity Inserted ", Toast.LENGTH_LONG).show();
-//                                otherActivityName.setText("");
-//                            } else {
-//                                Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
-//                            }
-
-                }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
-
-
+            }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();addOtherActivity.setEnabled(true);
             }
-            catch (Exception e){e.printStackTrace();}
+
+
+
         });
 
         return view;

@@ -203,7 +203,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                 String[]   parts = tmeShrMsrble.split("-");
                 String numberPart = parts[0].split("\\.")[0]; // Cast to int to remove decimal
                 String wordPart = parts[1];
-                Log.e("wordPart",""+wordPart);
+
                 if (tmeShreMsrbleQty.isEmpty()){
                     timeShareMeasurableQty.setError("Qty can't be blank");
                     return;
@@ -231,26 +231,50 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                 }
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getApplicationContext());
                 listView.setAdapter(measurableListCustomAdapter);
-                Log.e("measurablesTS",""+measurableListDataModels);
                 clear();
             }catch (Exception e){e.printStackTrace();}
         });
 
 
         btnSubmit.setOnClickListener(v -> {
-            try
-            {
-                if (InternetConnectivity.isConnected())
+            btnSubmit.setEnabled(false);
+              if (InternetConnectivity.isConnected())
                 {
+                    if (isDateValid().isEmpty()){date.setError("Date Cannot Be Empty");
+                        btnSubmit.setEnabled(true);
+                        return;
+                    }
+                   if (isStartTimeValid().isEmpty()){startTime.setError("Start Time Cannot Be Empty");
+                       btnSubmit.setEnabled(true);
+                       return;
+                   }
+                    if (isEndTimeValid().isEmpty()){endTime.setError("End Time Cannot Be Empty");
+                        btnSubmit.setEnabled(true);
+                        return;
+                    }
+                    if (timeDifference().contains("-")) {
+                        Toast
+                                .makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG)
+                                .show();
+                        btnSubmit.setEnabled(true);
+                        return;
+                    }
+                    if (isDescriptionValid().isEmpty()){
+                        Toast
+                                .makeText(getApplicationContext(), "Description can't be empty", Toast.LENGTH_LONG)
+                                .show();
+                        btnSubmit.setEnabled(true);
+                        return;
+                    }
+                    if (measurableListDataModels.isEmpty() && measurableListDataModels.containsAll(null) || listView == null) {
 
-                    if (isDateValid().isEmpty()){date.setError("Date Cannot Be Empty");}
-                    else if (isStartTimeValid().isEmpty()){startTime.setError("Start Time Cannot Be Empty");}
-                    else if (isEndTimeValid().isEmpty()){endTime.setError("End Time Cannot Be Empty");}
-                    else if (timeDifference().contains("-")) { Toast.makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show(); }
-                    else
-                    {
+                        Toast.makeText(getApplicationContext(), "Measurable list is empty", Toast.LENGTH_LONG).show();
+                        btnSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                        btnSubmit.setEnabled(true);
+                        return;
+                    }
 
-//                            progressBar.setVisibility(View.VISIBLE);
+//                          progressBar.setVisibility(View.VISIBLE);
                         TimeShareDTO timeShare = new TimeShareDTO();
                         timeShare.setTaskHandlerId(processingDelegationTaskId);
                         timeShare.setDate(isDateValid());
@@ -267,7 +291,9 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                                         appExecutor.getMainThread().execute(() -> {
                                             Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
                                             clearAll();
-                                           // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                                            btnSubmit.setEnabled(true);
+
+                                            // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
                                         });
                                     }
                                 });
@@ -275,21 +301,25 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                                 appExecutor.getMainThread().execute(() -> {
                                    // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
                                     Toast.makeText(getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
+                                    btnSubmit.setEnabled(true);
+
                                 });
                                 return null;
 
                             }).join();
                         });
 
-                    }
+
                 }
                 else
                 {
                     Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                    btnSubmit.setEnabled(true);
+
 //                        progressBar.setVisibility(View.INVISIBLE);
                 }
 
-            } catch (Exception e){e.printStackTrace();}
+
         });
 
         btnCancel.setOnClickListener(v -> {

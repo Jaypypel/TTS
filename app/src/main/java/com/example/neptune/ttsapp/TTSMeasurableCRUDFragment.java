@@ -101,7 +101,7 @@ public class TTSMeasurableCRUDFragment extends Fragment {
         measurableName=(AutoCompleteTextView) view.findViewById(R.id.editTextMeasurableCRUDMeasurable);
 
         userSelect=(Spinner) view.findViewById(R.id.spinnerMeasurableCRUDUserSelect);
-        if (InternetConnectivity.isConnected()== true) {
+        if (InternetConnectivity.isConnected()) {
 
             getUsernames().thenAccept(usernames -> {
                 ArrayList<String>  users = usernames;
@@ -124,7 +124,7 @@ public class TTSMeasurableCRUDFragment extends Fragment {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     // Set AutoCompleteTextView
-                    if (InternetConnectivity.isConnected() == true) {
+                    if (InternetConnectivity.isConnected()) {
                             measurableName.setText("");
                         appExecutors.getNetworkIO().execute(() -> {
                             getMeasurableNames(getUser()).thenAccept(measurableNames -> {
@@ -140,7 +140,7 @@ public class TTSMeasurableCRUDFragment extends Fragment {
 
 
                     } else {
-                        Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                        Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
                     }
                 }
 
@@ -153,51 +153,43 @@ public class TTSMeasurableCRUDFragment extends Fragment {
         addMeasurable=(Button)view.findViewById(R.id.buttonMeasurableCRUDAddMeasurable);
 
 
-        addMeasurable.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                try
+        addMeasurable.setOnClickListener(v -> {
+            addMeasurable.setEnabled(false);
+            try
+            {
+                if (InternetConnectivity.isConnected())
                 {
-                    if (InternetConnectivity.isConnected()== true)
-                    {
-                     if (isMeasurableName().isEmpty()){measurableName.setError("Measurable Name Be Empty");
+                    if (isMeasurableName().isEmpty()){measurableName.setError("Measurable Name Be Empty");
+                        addMeasurable.setEnabled(true);
                         return;
-                     }
+                    }
 
-                         addTask(getUser(), isMeasurableName(), createdOn()).thenAccept(isMeasurbaleAdded -> {
-                             if(isMeasurbaleAdded.equals("successful")){
-                                 appExecutors.getMainThread().execute(() ->
-                                 {
-                                     Toast.makeText(getActivity().getApplicationContext(), "Measurable Inserted ", Toast.LENGTH_LONG).show();
-                                     measurableName.setText("");
-                                 });
-                             }else {
-                                 appExecutors.getMainThread().execute(() -> Toast
-                                         .makeText(getActivity()
-                                                 .getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG)
-                                         .show());
-                             }
-                         }).exceptionally(e -> {
-                             Toast.makeText(getActivity().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                    addTask(getUser(), isMeasurableName(), createdOn()).thenAccept(isMeasurbaleAdded -> {
+                        if(isMeasurbaleAdded.equals("successful")){
+                            appExecutors.getMainThread().execute(() ->
+                            {
+                                Toast.makeText(getActivity().getApplicationContext(), "Measurable Inserted ", Toast.LENGTH_LONG).show();
+                                measurableName.setText("");
+                                addMeasurable.setEnabled(true);
+                            });
+                        }else {
+                            appExecutors.getMainThread().execute(() -> Toast
+                                    .makeText(getActivity()
+                                            .getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG)
+                                    .show());
+                            addMeasurable.setEnabled(true);
+                        }
+                    }).exceptionally(e -> {
+                        Toast.makeText(getActivity().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                        addMeasurable.setEnabled(true);
+                        return null;
+                    });
 
-                             return null;
-                         });
-
-//                         String result = insertMeasurable(getUser(), isMeasurableName(), createdOn());
-//                         if (result.equals("true")) {
-//                             Toast.makeText(getActivity().getApplicationContext(), "Measurable Inserted ", Toast.LENGTH_LONG).show();
-//                             measurableName.setText("");
-//                         } else {
-//                             Toast.makeText(getActivity().getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
-//                         }
-
-                    }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+                }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();addMeasurable.setEnabled(true);}
 
 
-                }
-                catch (Exception e){e.printStackTrace();}
             }
+            catch (Exception e){e.printStackTrace();}
         });
 
 
@@ -207,8 +199,7 @@ public class TTSMeasurableCRUDFragment extends Fragment {
 
     private String getUser()
     {
-        String user = userSelect.getSelectedItem().toString().trim();
-        return user;
+        return userSelect.getSelectedItem().toString().trim();
     }
 
     private String isMeasurableName()

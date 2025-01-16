@@ -145,32 +145,44 @@ public class TTSTaskModificationActivity extends AppCompatActivity {
 
 
         submit.setOnClickListener(v -> {
-
-            if (InternetConnectivity.isConnected())
-            {
-            String description = modificationDescription.getText().toString().trim();
-
-                updateModificationTaskStatusAndDescription(description,modifyTaskDetails.getId()).thenAccept(isTaskAdded -> {
-                    if(isTaskAdded.equals("updated")){
-                        appExecutor.getMainThread().execute(() ->
-                        {
-                            Toast.makeText(getApplicationContext().getApplicationContext(), "Sending Modification Request Successfully ", Toast.LENGTH_LONG).show();
-                            modificationDescription.setText("");
-                        });
-                    }else {
-                        appExecutor.getMainThread().execute(() -> Toast
-                                .makeText(getApplicationContext()
-                                        .getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG)
-                                .show());
+            try {
+                submit.setEnabled(false);
+                if (InternetConnectivity.isConnected())
+                {
+                    String description = modificationDescription.getText().toString().trim();
+                    if(description.isEmpty()){
+                        modificationDescription.setError("Modified description can't blank");
+                        submit.setEnabled(true);
+                        return;
                     }
-                }).exceptionally(e -> {
-                    Toast.makeText(getApplicationContext().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
 
-                    return null;
-                });
+                    updateModificationTaskStatusAndDescription(description,modifyTaskDetails.getId()).thenAccept(isTaskAdded -> {
+                        if(isTaskAdded.equals("updated")){
+                            appExecutor.getMainThread().execute(() ->
+                            {
+                                Toast.makeText(getApplicationContext().getApplicationContext(), "Sending Modification Request Successfully ", Toast.LENGTH_LONG).show();
+                                modificationDescription.setText("");
+                                submit.setEnabled(true);
+                            });
+                        }else {
+                            appExecutor.getMainThread().execute(() -> Toast
+                                    .makeText(getApplicationContext()
+                                            .getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG)
+                                    .show());
+                            submit.setEnabled(true);
+                        }
+                    }).exceptionally(e -> {
+                        Toast.makeText(getApplicationContext().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                        submit.setEnabled(true);
+                        return null;
+                    });
 
 
-            }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+                }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                    submit.setEnabled(true);}
+            }catch (Exception exception){
+                Log.e("Logs","Error:" + exception.getLocalizedMessage());
+            }
         });
 
     }
