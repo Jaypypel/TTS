@@ -55,8 +55,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -520,24 +522,14 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
     {
         String start= startTime.getText().toString().trim().replaceAll("\\s+","");
         String end= endTime.getText().toString().trim().replaceAll("\\s+","");
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-        String difference=null;
-
-        if(!start.isEmpty() && !end.isEmpty()) {
-            try {
-                Date date1 = format.parse(start);
-                Date date2 = format.parse(end);
-                long mills = date2.getTime() - date1.getTime();
-                int hours = (int) (mills / (1000 * 60 * 60));
-                int mins = (int) (mills / (1000 * 60)) % 60;
-                difference = hours + ":" + mins;
-
-            } catch (ParseException e) { e.printStackTrace(); }
-
-        }
-        return difference;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma");
+        LocalTime startTime = LocalTime.parse(start,formatter);
+        LocalTime endTime = LocalTime.parse(end,formatter);
+        long difference = ChronoUnit.MINUTES.between(startTime, endTime);
+        int hours = (int) (difference/ 60);
+        int mins = (int) (difference % 60);
+        String timeConsumed = hours + " hr : "+mins+" mins";
+        return timeConsumed;
     }
 
     //Calculate Actual Total Time

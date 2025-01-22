@@ -102,21 +102,9 @@ public class TaskAllocatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
         }
 
         viewHolder.txttaskAllocateOwnerName.setText(dataModel.getTaskOwnerUserID());
-//       if(dataModel.getTaskAssignedOn() != null){
-//           Log.e("delegationDate from dataModel",dataModel.getTaskAssignedOn());
-//           String d = dataModel.getTaskAssignedOn();
-//           Log.e("delegationDate funciton"," "+extractDate(d));
-//       }else{
-//           Log.e("delegationDate", "is null ");
-//           Log.e("taskAllocationModle", ""+dataModel);
-//
-//       }
-
         viewHolder.txttaskAllocateTaskDate.setText(extractDate(dataModel.getTaskAssignedOn()));
         viewHolder.txttaskAllocateTaskName.setText(dataModel.getTaskName());
         viewHolder.txttaskAllocateTaskStatus.setText(dataModel.getStatus());
-
-
         return convertView;
     }
 
@@ -125,27 +113,12 @@ public class TaskAllocatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
         String currentDate = "";
         try
         {
-//            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
-//            Date date = sdf.parse(timestamp);
-//
-//            SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yy");
-//            dateStr = sdf2.format(date);
-//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-//            Date date = sdf.parse(timestamp);
-//
-//            // Format for display
-//            SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yy");
-//            dateStr = sdf2.format(date);
-
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
-            ZonedDateTime dateTimeInIst = ZonedDateTime.of(LocalDateTime.parse(timestamp, formatter), ZoneId.of("Asia/Kolkata"));
-            Log.e("dateIst",""+dateTimeInIst);
+            ZonedDateTime dateTimeInIst = ZonedDateTime.of(LocalDateTime
+                    .parse(timestamp, formatter), ZoneId.of("Asia/Kolkata"));
+
             DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             currentDate = dateTimeInIst.format(dateformatter);
-//            currentDate = String.valueOf(dateTimeInIst);
-            Log.e("currentDate",""+currentDate);
-
-
         }catch (Exception e){e.printStackTrace();}
 
         return currentDate;

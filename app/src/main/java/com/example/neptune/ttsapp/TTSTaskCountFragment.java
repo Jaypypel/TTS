@@ -99,52 +99,46 @@ public class TTSTaskCountFragment extends Fragment {
             try {
                 user.setText(sessionManager.getUserID());
 
-                // Execute network tasks asynchronously
-                CompletableFuture<String> pendingTasksFuture = countPendingTaskByUser(sessionManager.getUserID());
-                CompletableFuture<String> acceptedTasksFuture = countAcceptedTaskByUser(sessionManager.getUserID());
-                CompletableFuture<String> approvedTasksFuture = countApprovedTaskByUser(sessionManager.getUserID());
-                CompletableFuture<String> completedTasksFuture = countCompletedTaskByUser(sessionManager.getUserID());
+                appExecutors.getNetworkIO().execute(() -> {
+                    // Execute network tasks asynchronously
+                    CompletableFuture<String> pendingTasksFuture = countPendingTaskByUser(sessionManager.getUserID()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                        return "";
+                    });
+                    Log.d("Logs","pending Count "+pendingTasksFuture.join());
+                    CompletableFuture<String> acceptedTasksFuture = countAcceptedTaskByUser(sessionManager.getUserID()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                        return "";
+                    });
+                    Log.d("Logs","accepted Count "+acceptedTasksFuture.join());
+                    CompletableFuture<String> approvedTasksFuture = countApprovedTaskByUser(sessionManager.getUserID()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                        return "";
+                    });
+                    Log.d("Logs","approved Count "+approvedTasksFuture.join());
+                    CompletableFuture<String> completedTasksFuture = countCompletedTaskByUser(sessionManager.getUserID()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                        return "";
+                    });
+                    Log.d("Logs","completed Count "+completedTasksFuture.join());
 
-                // Combine all futures
-                CompletableFuture<Void> allTasksFuture = CompletableFuture.allOf(
-                        pendingTasksFuture, acceptedTasksFuture, approvedTasksFuture, completedTasksFuture
-                );
-
-                // Process results once all futures are complete
-                allTasksFuture.thenRun(() -> {
-                    try {
-                        String pendingTasks = pendingTasksFuture.get().isEmpty()  ? pendingTasksFuture.get() : "Error";
-                        String acceptedTasks = acceptedTasksFuture.get().isEmpty() ? acceptedTasksFuture.get() : "Error";
-                        String approvedTasks = approvedTasksFuture.get().isEmpty() ? approvedTasksFuture.get() : "Error";
-                        String completedTasks = completedTasksFuture.get().isEmpty() ? completedTasksFuture.get() : "Error";
-
-                        // Update UI on the main thread
+                    // Combine all futures
+                   CompletableFuture.allOf(
+                            pendingTasksFuture, acceptedTasksFuture, approvedTasksFuture, completedTasksFuture
+                    ).thenRun(() -> appExecutors.getMainThread().execute(() -> {
+                       Toast.makeText(getContext(), "Running main thread to display tasks count", Toast.LENGTH_LONG).show();
+                        tvPendingTask.setText("Pending Task      :  " + pendingTasksFuture.getNow("Loading..."));
+                        tvAcceptedTask.setText("Accepted Task     :  " + acceptedTasksFuture.getNow("Loading..."));
+                        tvApprovalTask.setText("Approved Task     :  " + approvedTasksFuture.getNow("Loading..."));
+                        tvCompletedTask.setText("Completed Task    :  " + completedTasksFuture.getNow("Loading..."));
+                    })).exceptionally(e -> {
                         appExecutors.getMainThread().execute(() -> {
-                            tvPendingTask.setText("Pending Task      :  " + pendingTasks);
-                            tvAcceptedTask.setText("Accepted Task     :  " + acceptedTasks);
-                            tvApprovalTask.setText("Approved Task     :  " + approvedTasks);
-                            tvCompletedTask.setText("Completed Task    :  " + completedTasks);
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        appExecutors.getMainThread().execute(() -> {
-                                Toast.makeText(getActivity().getApplicationContext(),
-                                        "Failed to fetch task counts",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        );
-                    }
-                }).exceptionally(e -> {
-                    appExecutors.getMainThread().execute(() -> {
-                        Toast.makeText(getContext(),
-                                "Failed to fetch task counts due to " + e.getMessage(),
-                                Toast.LENGTH_LONG).show();
-                        tvPendingTask.setText("Pending Task      :  " + "Error");
-                        tvAcceptedTask.setText("Accepted Task     :  " + "Error");
-                        tvApprovalTask.setText("Approved Task     :  " + "Error");
-                        tvCompletedTask.setText("Completed Task    :  " + "Error");
-                    } );
-                    return null;
+                            Toast.makeText(getContext(),
+                                    "Failed to fetch task counts due to " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                            tvPendingTask.setText("Pending Task      :  " + "Error");
+                            tvAcceptedTask.setText("Accepted Task     :  " + "Error");
+                            tvApprovalTask.setText("Approved Task     :  " + "Error");
+                            tvCompletedTask.setText("Completed Task    :  " + "Error");
+                        } );
+                        return null;
+                    });
                 });
             } catch (Exception e) {
                 e.printStackTrace();
@@ -186,7 +180,6 @@ public class TTSTaskCountFragment extends Fragment {
                     startActivity(i);
                 });
             }).exceptionally(e -> {
-                Log.e("Error", "Failed to get Tasks " );
                 Toast.makeText(getActivity().getApplicationContext(),"Failed to get the  accepted Tasks", Toast.LENGTH_LONG).show();
                 return  null;
             });
@@ -201,14 +194,11 @@ public class TTSTaskCountFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
-                Log.e("Response",""+response);
-
                 try{
                     APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
                     Log.e("apiResponse",""+apiResponse);
                     if(apiResponse instanceof APISuccessResponse){
                         String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
-                        Log.e("bodyContent","-response body - : "+bodyContent);
                         count.complete(bodyContent);
                     }  if (apiResponse instanceof APIErrorResponse) {
                         String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
@@ -245,14 +235,11 @@ public class TTSTaskCountFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
-                Log.e("Response",""+response);
-
                 try{
                     APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
-                    Log.e("apiResponse",""+apiResponse);
+
                     if(apiResponse instanceof APISuccessResponse){
                         String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
-                        Log.e("bodyContent","-response body - : "+bodyContent);
                         count.complete(bodyContent);
                     }  if (apiResponse instanceof APIErrorResponse) {
                         String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
@@ -289,14 +276,11 @@ public class TTSTaskCountFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
-                Log.e("Response",""+response);
 
                 try{
                     APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
-                    Log.e("apiResponse",""+apiResponse);
                     if(apiResponse instanceof APISuccessResponse){
                         String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
-                        Log.e("bodyContent","-response body - : "+bodyContent);
                         count.complete(bodyContent);
                     }  if (apiResponse instanceof APIErrorResponse) {
                         String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
@@ -333,16 +317,11 @@ public class TTSTaskCountFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
-                Log.e("Response",""+response);
-
                 try{
                     APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
-                    Log.e("apiResponse",""+apiResponse);
-
                     if(apiResponse instanceof APISuccessResponse){
 
                         String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
-                        Log.e("bodyContent","-response body - : "+bodyContent);
                         count.complete(bodyContent);
                     }
                     if (apiResponse instanceof APIErrorResponse) {

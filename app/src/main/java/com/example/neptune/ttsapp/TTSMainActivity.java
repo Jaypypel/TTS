@@ -1167,61 +1167,17 @@ public class TTSMainActivity extends AppCompatActivity {
     }
 
     //Calculate Time Difference between startTime and endTime
-    private String getConsumedTime()
-    {
-
+    private String getConsumedTime() {
         String start= timeShareStartTime!=null ? timeShareStartTime.getText().toString().trim().replaceAll("\\s+","") : "N.I";
-
         String end=timeShareEndTime !=null ? timeShareEndTime.getText().toString().trim().replaceAll("\\s+","") : "N.I" ;
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma");
-
-        // Parse start and end times into LocalTime
         LocalTime startTime = LocalTime.parse(start,formatter);
         LocalTime endTime = LocalTime.parse(end,formatter);
-
-        // Calculate difference in minutes
         long difference = ChronoUnit.MINUTES.between(startTime, endTime);
-//            int startMinutes = converToMinutes(start);
-//        Log.e("time","timeConsumed "+startMinutes);
-//            int endMinutes = converToMinutes(end);
-//        Log.e("time","timeConsumed "+endMinutes);
-//            int difference = endMinutes - startMinutes;
-//        Log.e("time","timeConsumed "+difference);
-            int hours = (int) (difference/ 60);
-        Log.e("time","hours "+hours);
-            int mins = (int) (difference % 60);
-        Log.e("time","mins "+mins);
-
-            String timeConsumed = hours + " hr : "+mins+" mins";
-        Log.e("time","hours "+timeConsumed);
-            return timeConsumed;
-//        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-//        format.setTimeZone(TimeZone.getTimeZone("IST"));
-//
-//        String difference=null;
-//
-//        if(!start.isEmpty() && !end.isEmpty()) {
-//            try {
-//                Date date1 = format.parse(start);
-//                Log.e("time","date1 "+date1);
-//
-//                Date date2 = format.parse(end);
-//                Log.e("time","date2 "+date2);
-//                long mills = date2.getTime() - date1.getTime();
-//                Log.e("time","mills "+mills);
-//                int hours = (int) (mills / (1000 * 60 * 60));
-//                Log.e("time","hours "+hours);
-//                int mins = (int) (mills / (1000 * 60)) % 60;
-//                Log.e("time","mins "+mins);
-//                difference = convertDateTime(hours) + ":" + convertDateTime(mins);
-//                Log.e("time","difference "+difference);
-//
-//            } catch (ParseException e) { e.printStackTrace(); }
-//
-//        }
-//        return difference;
-
+        int hours = (int) (difference/ 60);
+        int mins = (int) (difference % 60);
+        String timeConsumed = hours + " hr : "+mins+" mins";
+        return timeConsumed;
     }
 
 

@@ -117,12 +117,9 @@ public class TaskDelegatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
         viewHolder.txttaskDeligateTaskDate.setText(extractDate(dataModel.getTaskAssignedOn()));
 //        viewHolder.txttaskDeligateTaskDate.setText("25-08-2001");
                if(dataModel.getTaskAssignedOn() != null){
-           Log.e("delegationDate from dataModel",dataModel.getTaskAssignedOn());
+
            String d = dataModel.getTaskAssignedOn();
-           Log.e("delegationDate funciton"," "+extractDate(d));
        }else{
-           Log.e("delegationDate", "is null ");
-           Log.e("taskAllocationModle", ""+dataModel);
 
        }
         viewHolder.txttaskDeligateTaskName.setText(dataModel.getTaskName());
