@@ -1,12 +1,8 @@
 package com.example.neptune.ttsapp;
 
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-
-import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
@@ -23,24 +19,20 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.Menu;
+
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.fragment.app.FragmentManager;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+
 
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
+
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
@@ -49,8 +41,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.neptune.ttsapp.DTO.DailyTimeShareDTO;
-import com.example.neptune.ttsapp.Network.APIEmptyResponse;
 import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
@@ -58,14 +48,14 @@ import com.example.neptune.ttsapp.Network.ActivityServiceInterface;
 import com.example.neptune.ttsapp.Network.DTSMeasurableInterface;
 import com.example.neptune.ttsapp.Network.DailyTimeShareInterface;
 import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
-import com.example.neptune.ttsapp.Network.NetworkResult;
+
 import com.example.neptune.ttsapp.Network.ProjectServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskServiceInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.navigation.NavigationView;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -78,13 +68,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -92,11 +76,11 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
-import java.util.TimeZone;
+
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -164,6 +148,13 @@ public class TTSMainActivity extends AppCompatActivity {
 
     // Code for Finishing activity from TimeShareList Activity
     public static TTSMainActivity mainActivity;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mainActivity = null; // Prevent memory leaks
+    }
+
 
 
     @Override
@@ -277,59 +268,6 @@ public class TTSMainActivity extends AppCompatActivity {
             { timeShareMeasurableUnit.requestFocus(); }
             return false;
         });
-    //Code For set measurable list to spinner
-//        if (InternetConnectivity.isConnected())
-//        {
-//            // Create a progress bar or loading spinner
-//            ProgressBar loadingIndicator = findViewById(R.id.progressBarInMainPage);
-//
-//            // Show loading before network calls
-//            loadingIndicator.setVisibility(View.VISIBLE);
-//
-//            appExecutor.getMainThread().execute(() -> {
-//                timeShareDate.setText("");
-//                timeShareStartTime.setText("");
-//                timeShareEndTime.setText("");
-//                timeShareDescription.setText("");
-//                timeShareMeasurableQty.setText("");
-//                timeShareProjCode.setText("");
-//                timeShareActivityName.setText("");
-//                timeShareTaskName.setText("");
-//                timeShareProjName.setText("");
-//                timeShareMeasurableUnit.setText("");
-//            });
-//            appExecutor.getNetworkIO().execute(() -> {
-//                CompletableFuture<ArrayList<String>> activityNames = getActivityNames();
-//                CompletableFuture<ArrayList<String>> projectNames = getProjectNames();
-//                CompletableFuture<ArrayList<String>> taskNames = getTaskNames();
-//                CompletableFuture<List<MeasurableListDataModel>> measurableObjects = getMeasurableListAndUpdateUi();
-//                CompletableFuture.allOf(
-//                        activityNames,
-//                        projectNames,
-//                        taskNames,
-//                        measurableObjects
-//                ).thenRun(() ->
-//                    appExecutor.getMainThread().execute(() -> {
-//                        updateActivityNamesAdapter(activityNames.join());
-//                        updateTaskNamesAdapter(taskNames.join());
-//                        updateProjectNamesAdapter(projectNames.join());
-//                        updateMeasurableObjectsAdapter(measurableObjects.join());
-//
-//                    })
-//                ).exceptionally(e -> {
-//                    appExecutor.getMainThread().execute(() -> {
-//                            loadingIndicator.setVisibility(View.GONE);
-//                            Toast
-//                            .makeText(getApplicationContext(),"Failed to load data",Toast.LENGTH_LONG)
-//                            .show();
-//                    });
-//                    return null;
-//                });
-//            });
-//
-//
-//
-//        }else {Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
         recreateMainView();
 
         timeShareMeasurable.setOnTouchListener((v, event) -> {
@@ -427,7 +365,7 @@ public class TTSMainActivity extends AppCompatActivity {
 //                                .show();
 //                        return;
 //                    }
-                    if (!(sessionManager.getUserID().equals("Prerna") || sessionManager.getUserID().equals("YoKo")) && !isDateValid().equals(getTodayDate()))
+                    if (!(sessionManager.getToken().equals("Prerna") || sessionManager.getToken().equals("YoKo")) && !isDateValid().equals(getTodayDate()))
                             { Toast.makeText(getApplicationContext(), "Date Has Been Expired Contact to Admin", Toast.LENGTH_LONG).show();
 
                                 timeShareSubmit.setEnabled(true);
@@ -445,7 +383,7 @@ public class TTSMainActivity extends AppCompatActivity {
                     if (getConsumedTime().contains("-")) { Toast.makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show();   timeShareSubmit.setEnabled(false); return; }
 
 
-                    if (measurableListDataModels.isEmpty() && measurableListDataModels.containsAll(null) || listView == null) {
+                    if (measurableListDataModels != null && measurableListDataModels.isEmpty() || listView == null) {
 
                         Toast.makeText(getApplicationContext(), "Measurable list is empty", Toast.LENGTH_LONG).show();
                         timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
@@ -455,7 +393,7 @@ public class TTSMainActivity extends AppCompatActivity {
                     timeShareSubmit.setBackgroundColor(Color.GRAY);
 
                              String projectcode = !isProjectNameValid().isEmpty()? isProjectCodeValid(): "No code received";
-                             User user = new User(sessionManager.getUserID());
+                             User user = new User(sessionManager.getToken());
 
                              DailyTimeShare dailyTimeShare = new DailyTimeShare(isDateValid(),projectcode
                                      ,isProjectNameValid(),isActivityNameValid(),
@@ -830,7 +768,7 @@ public class TTSMainActivity extends AppCompatActivity {
                 fragment = new TTSTaskModificationListFragment();
                 break;
             case 11:
-                if (sessionManager.getUserID().equals("Prerna") || sessionManager.getUserID().equals("YoKo") || sessionManager.getUserID().equals("swar") || sessionManager.getUserID().equals("mangal"))
+                if (sessionManager.getToken().equals("Prerna") || sessionManager.getToken().equals("YoKo") || sessionManager.getToken().equals("swar") || sessionManager.getToken().equals("mangal"))
                 { startActivity(new Intent(this,TTSAdminActivity.class));}
                 else {Toast.makeText(getApplicationContext(), "You Are Not Admin", Toast.LENGTH_LONG).show(); }
                 break;
@@ -1071,7 +1009,7 @@ public class TTSMainActivity extends AppCompatActivity {
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle("EXIT")
                 .setMessage(Html.fromHtml("<b>"+"Do You Want To Logged Out..?"+"</b>"))
-                .setPositiveButton("Yes", (dialog, which) -> {Intent i = new Intent(TTSMainActivity.this,TTSLoginActivity.class);
+                .setPositiveButton("Yes", (dialog, which) -> {sessionManager.logout(); Intent i = new Intent(TTSMainActivity.this,TTSLoginActivity.class);
                     startActivity(i);
                 })
                 .setNegativeButton("No", null)
@@ -1566,20 +1504,6 @@ public class TTSMainActivity extends AppCompatActivity {
                                 ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurableType);
                                 future.complete(measurables);
                             }
-//                                ArrayList<MeasurableListDataModel> measurableListDataModels = new ArrayList<>();
-//                                for (JsonElement element : responseBody) {
-//                                    JsonObject obj = element.getAsJsonObject();
-//                                    double id = obj.get("id").getAsDouble();
-//                                    String measurableName = obj.get("measurableName").getAsString();
-//                                    MeasurableListDataModel m = new MeasurableListDataModel();
-//                                    m.setId(String.valueOf(id));
-//                                    m.setMeasurableName(measurableName);
-//                                    measurableListDataModels.add(m);
-//                                }
-//                                future.complete(measurableListDataModels);
-//                                Log.d("Meaurable List", "list" + measurableListDataModels);
-//
-//
                         }
 
 

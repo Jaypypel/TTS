@@ -87,7 +87,7 @@ public class TTSReportGenerationFragment extends Fragment {
 
         user=view.findViewById(R.id.textViewRGUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        user.setText(sessionManager.getUserID());
+        user.setText(sessionManager.getToken());
 
         date=view.findViewById(R.id.textViewRGDate);
         time=view.findViewById(R.id.textViewRGTime);

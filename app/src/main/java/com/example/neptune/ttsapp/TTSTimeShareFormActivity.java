@@ -101,13 +101,13 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
     private SessionManager sessionManager;
 
-    ArrayList<MeasurableListDataModel> measurableListDataModels;
+
     private ListView listView;
     private MeasurableListCustomAdapter measurableListCustomAdapter;
 
     private TaskDataModel allocatedTaskDetails,acceptedTaskDetails,processingTaskDetails;
     Long allocatedDelegationTaskId,acceptedDelegationTaskId,processingDelegationTaskId;
-    ArrayList<MeasurableListDataModel> measurables;
+    ArrayList<MeasurableListDataModel> measurables = new ArrayList<>();
 
         @Override
 
@@ -120,7 +120,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
         user=findViewById(R.id.textViewUser);
         sessionManager = new SessionManager(getApplicationContext());
-        user.setText(sessionManager.getUserID());
+        user.setText(sessionManager.getToken());
 
         date=findViewById(R.id.editTextDate);
 
@@ -169,23 +169,20 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
             if (InternetConnectivity.isConnected()) {
 
 
-                appExecutor.getNetworkIO().execute(() -> {
-                    getAllocatedMeasurableList(processingDelegationTaskId).thenAccept(measurableList -> {
-                        Log.e("measurableList"," "+measurableList);
-                        runOnUiThread(() -> {
-                            measurables = measurableList;
-                            spinnerMeasurableName = findViewById(R.id.spinnerTimeShareMeasurable);
-                            ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, measurables);
-                            adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            spinnerMeasurableName.setAdapter(adapterMeasurable);
+                appExecutor.getNetworkIO().execute(() -> getAllocatedMeasurableList(processingDelegationTaskId).thenAccept(measurableList -> {
+                    Log.e("measurableList"," "+measurableList);
+                   appExecutor.getMainThread().execute(() -> {
+                        spinnerMeasurableName = findViewById(R.id.spinnerTimeShareMeasurable);
+                        ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, measurableList);
+                        adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinnerMeasurableName.setAdapter(adapterMeasurable);
 
-                        });
-                    }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
-                        appExecutor.getMainThread().execute(() ->
-                                Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
-                        return null;
                     });
-                });
+                }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
+                    appExecutor.getMainThread().execute(() ->
+                            Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
+                    return null;
+                }));
 
             }else {Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
@@ -194,7 +191,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
 
 
-        measurableListDataModels = new ArrayList<>();
+
         addMeasurable.setOnClickListener(v ->
         {
             try
@@ -221,8 +218,8 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                 m.setMeasurableQty(tmeShreMsrbleQty);
                 m.setMeasurableUnit(tmeShreMsrblUnit);
 
-                if(!measurableListDataModels.contains(m)){
-                    measurableListDataModels.add(m);
+                if(!measurables.contains(m)){
+                    measurables.add(m);
                 }else {
                     Snackbar snackbar = Snackbar.make(v, "Warning! measurable entry is already present", Snackbar.LENGTH_LONG);
                     View snackbarView = snackbar.getView();
@@ -231,7 +228,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                     snackbarView.setLayoutParams(params);
                     snackbar.show();
                 }
-                measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getApplicationContext());
+                measurableListCustomAdapter = new MeasurableListCustomAdapter(measurables, getApplicationContext());
                 listView.setAdapter(measurableListCustomAdapter);
                 clear();
             }catch (Exception e){e.printStackTrace();}
@@ -255,8 +252,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                         return;
                     }
                     if (timeDifference().contains("-")) {
-                        Toast
-                                .makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG)
+                        Toast.makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG)
                                 .show();
                         btnSubmit.setEnabled(true);
                         return;
@@ -268,7 +264,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                         btnSubmit.setEnabled(true);
                         return;
                     }
-                    if (measurableListDataModels.isEmpty() && measurableListDataModels.containsAll(null) || listView == null) {
+                    if (measurables != null & measurables.isEmpty() || listView == null) {
 
                         Toast.makeText(getApplicationContext(), "Measurable list is empty", Toast.LENGTH_LONG).show();
                         btnSubmit.setBackgroundResource(android.R.drawable.btn_default);
@@ -285,31 +281,29 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                         timeShare.setTimeDifference(timeDifference());
                         timeShare.setDescription(isDescriptionValid());
                         timeShare.setCreatedOn(delegationTime());
-                        appExecutor.getNetworkIO().execute(() -> {
-                            addTimeShare(timeShare).thenCompose(result -> {
-                                Long id = Long.valueOf(result.get(1));
-                                return addTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
-                                    if (finalResult) {
-                                        appExecutor.getMainThread().execute(() -> {
-                                            Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
-                                            clearAll();
-                                            btnSubmit.setEnabled(true);
+                        appExecutor.getNetworkIO().execute(() -> addTimeShare(timeShare).thenCompose(result -> {
+                            Long id = Long.valueOf(result.get(1));
+                            return addTimeShareMeasurables(id,measurables).thenAccept(finalResult -> {
+                                if (finalResult) {
+                                    appExecutor.getMainThread().execute(() -> {
+                                        Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
+                                        clearAll();
+                                        btnSubmit.setEnabled(true);
 
-                                            // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                                        });
-                                    }
-                                });
-                            }).exceptionally(e -> {
-                                appExecutor.getMainThread().execute(() -> {
-                                   // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                                    Toast.makeText(getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
-                                    btnSubmit.setEnabled(true);
+                                        // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                                    });
+                                }
+                            });
+                        }).exceptionally(e -> {
+                            appExecutor.getMainThread().execute(() -> {
+                               // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                                Toast.makeText(getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
+                                btnSubmit.setEnabled(true);
 
-                                });
-                                return null;
+                            });
+                            return null;
 
-                            }).join();
-                        });
+                        }).join());
 
 
                 }
@@ -436,8 +430,8 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
         startTime.setText("");
         endTime.setText("");
         description.setText("");
-        measurableListDataModels.removeAll(measurableListDataModels);
-        listView.setAdapter(new MeasurableListCustomAdapter(measurableListDataModels,getApplicationContext()));
+        measurables.removeAll(measurables );
+        listView.setAdapter(new MeasurableListCustomAdapter(measurables,getApplicationContext()));
     }
 
     // Add leading 0 when input date or time is single No like 5
@@ -678,7 +672,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
             future.complete(false);
             return future;
         }
-        AtomicInteger pendingTasks = new AtomicInteger(measurableListDataModels.size());
+        AtomicInteger pendingTasks = new AtomicInteger(measurableListDataModel.size());
         AtomicBoolean allSuccessful = new AtomicBoolean(true);
         for (MeasurableListDataModel m: measurableListDataModel
         ) {

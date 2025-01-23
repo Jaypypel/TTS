@@ -88,7 +88,7 @@ public class TTSTaskModificationActivity extends AppCompatActivity {
 
         // Set UserName
         sessionManager = new SessionManager(getApplicationContext());
-        prevUserName.setText(sessionManager.getUserID());
+        prevUserName.setText(sessionManager.getToken());
 
 
 //        //Get Data from TTSTimeShareFragment Intent

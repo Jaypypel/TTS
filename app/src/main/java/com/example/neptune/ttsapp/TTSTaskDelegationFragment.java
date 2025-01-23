@@ -133,7 +133,7 @@ public class TTSTaskDelegationFragment extends Fragment {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
 
         taskDeliUser=view.findViewById(R.id.textViewTaskdeliUser);
-        taskDeliUser.setText(sessionManager.getUserID());
+        taskDeliUser.setText(sessionManager.getToken());
 
 
         taskDeliDate=view.findViewById(R.id.textViewDate);
@@ -725,7 +725,7 @@ public class TTSTaskDelegationFragment extends Fragment {
     private String deligateOwnerUserId()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getUserID();
+        return sessionManager.getToken();
     }
 
     private String isReceivedUserValid()

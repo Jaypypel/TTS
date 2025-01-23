@@ -77,7 +77,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_ttsapproval_completion_list, container, false);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getUserID();
+        userId = sessionManager.getToken();
         user=view.findViewById(R.id.textViewApprovalCompletionUser);
         user.setText(userId);
 
@@ -117,7 +117,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
         //Get Data From Database for Modification Task And set to the ListView
         if (InternetConnectivity.isConnected()) {
             appExecutors.getNetworkIO().execute(() -> {
-                getSendModificationTasks(getUserId(),"unapproved").thenAccept(tasks -> {
+                getSendModificationTasks(getToken(),"unapproved").thenAccept(tasks -> {
                     senderDataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity().getApplicationContext());
                     senderApprovalCompletionTaskList.setAdapter(adapter);
@@ -127,7 +127,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
                 });
             });
             appExecutors.getNetworkIO().execute(() -> {
-                getReceiveModificationTasks(getUserId(),"unapproved").thenAccept(tasks -> {
+                getReceiveModificationTasks(getToken(),"unapproved").thenAccept(tasks -> {
                     receiverDataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity().getApplicationContext());
                     receiverApprovalCompletionTaskList.setAdapter(adapter);
@@ -198,10 +198,10 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
         return view;
     }
 
-    private String getUserId()
+    private String getToken()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getUserID();
+        return sessionManager.getToken();
     }
 
 

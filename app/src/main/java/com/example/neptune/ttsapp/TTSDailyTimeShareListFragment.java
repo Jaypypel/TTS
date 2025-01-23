@@ -85,7 +85,7 @@ public class TTSDailyTimeShareListFragment extends Fragment {
         listViewDailyTimeShares=(ListView)view.findViewById(R.id.listDailyTimeShare);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getUserID();
+        userId = sessionManager.getToken();
         user=(TextView)view.findViewById(R.id.textViewDailyTimeShareListUser);
         user.setText(userId);
 

@@ -52,7 +52,7 @@ public class TTSTimeShareListFragment extends Fragment {
         StrictMode.setThreadPolicy(policy);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getUserID();
+        userId = sessionManager.getToken();
         user=view.findViewById(R.id.textViewTimeShareListFragmentUser);
         user.setText(userId);
 

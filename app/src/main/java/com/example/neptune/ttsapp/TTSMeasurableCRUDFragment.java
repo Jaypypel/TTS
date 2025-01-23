@@ -86,7 +86,7 @@ public class TTSMeasurableCRUDFragment extends Fragment {
 
         user=(TextView)view.findViewById(R.id.textViewMeasurableCRUDUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        user.setText(sessionManager.getUserID());
+        user.setText(sessionManager.getToken());
 
         date=(TextView)view.findViewById(R.id.textViewMeasurableCRUDDate);
         time=(TextView)view.findViewById(R.id.textViewMeasurableCRUDTime);

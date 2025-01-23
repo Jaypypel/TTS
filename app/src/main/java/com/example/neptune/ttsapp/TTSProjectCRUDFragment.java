@@ -96,7 +96,7 @@ public class TTSProjectCRUDFragment extends Fragment {
 
         user=(TextView)view.findViewById(R.id.textViewProjectCRUDUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        user.setText(sessionManager.getUserID());
+        user.setText(sessionManager.getToken());
 
         date=(TextView)view.findViewById(R.id.textViewProjectCRUDDate);
         time=(TextView)view.findViewById(R.id.textViewProjectCRUDTime);

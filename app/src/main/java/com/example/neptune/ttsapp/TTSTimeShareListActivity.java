@@ -206,7 +206,11 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                 finish();
             }
             // Code for finishing Accepted List
-            TTSMainActivity.mainActivity.finish();
+            if (TTSMainActivity.mainActivity != null) {
+                TTSMainActivity.mainActivity.finish();
+            } else {
+                Log.e("TTSTimeShareListActivity", "TTSMainActivity is null");
+            }
 
         });
 

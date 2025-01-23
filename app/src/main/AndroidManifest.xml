@@ -31,7 +31,7 @@
         <activity
             android:name=".TTSTimeShareFormActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".TTSLoginActivity"
+        <activity android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,6 +44,9 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".TTSMainActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".TTSLoginActivity"
             android:windowSoftInputMode="adjustPan" />
     </application>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

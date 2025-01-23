@@ -53,7 +53,7 @@ public class TTSManagementReportFragment extends Fragment {
 
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getUserID();
+        userId = sessionManager.getToken();
         user=(TextView)view.findViewById(R.id.textViewMgmtReportUser);
         user.setText(userId);
 

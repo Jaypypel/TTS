@@ -85,7 +85,7 @@ public class TTSTaskAcceptedListFragment extends Fragment {
         listView=view.findViewById(R.id.listAccepted);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getUserID();
+        userId = sessionManager.getToken();
         user=view.findViewById(R.id.textViewAcceptedListUser);
         user.setText(userId);
 
@@ -99,7 +99,7 @@ public class TTSTaskAcceptedListFragment extends Fragment {
 
         if (InternetConnectivity.isConnected()){
             appExecutors.getNetworkIO().execute(() -> {
-                getAcceptedTask(getUserId(),"accepted").thenAccept(result -> {
+                getAcceptedTask(getToken(),"accepted").thenAccept(result -> {
                     dataModels = result;
                     adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
                     listView.setAdapter(adapter);
@@ -114,7 +114,7 @@ public class TTSTaskAcceptedListFragment extends Fragment {
 
 //        //Get Data From Database for Accepted Task And set to the ListView
 //        if (InternetConnectivity.isConnected()) {
-//        dataModels = getAcceptedTaskList(getUserId(),"ACCEPTED");
+//        dataModels = getAcceptedTaskList(getToken(),"ACCEPTED");
 //        adapter= new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
 //        listView.setAdapter(adapter);
 //        }else {
@@ -171,10 +171,10 @@ public class TTSTaskAcceptedListFragment extends Fragment {
          return view;
     }
 
-    private String getUserId()
+    private String getToken()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getUserID();
+        return sessionManager.getToken();
     }
 
 

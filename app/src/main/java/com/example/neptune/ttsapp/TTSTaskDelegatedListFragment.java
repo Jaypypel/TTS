@@ -84,7 +84,7 @@ public class TTSTaskDelegatedListFragment extends Fragment {
         listView=view.findViewById(R.id.listTaskDelegated);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getUserID();
+        userId = sessionManager.getToken();
         user=view.findViewById(R.id.textViewDelegatedListUser);
         user.setText(userId);
 
@@ -98,7 +98,7 @@ public class TTSTaskDelegatedListFragment extends Fragment {
 
         if (InternetConnectivity.isConnected()){
             appExecutors.getNetworkIO().execute(() -> {
-                getAssignedTask(getUserId()).thenAccept(result -> {
+                getAssignedTask(getToken()).thenAccept(result -> {
                     Log.e("datamodels","dataModels");
                     dataModels = result;
                     adapter = new TaskDelegatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
@@ -137,10 +137,10 @@ public class TTSTaskDelegatedListFragment extends Fragment {
         return view;
     }
 
-    private String getUserId()
+    private String getToken()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getUserID();
+        return sessionManager.getToken();
     }
 
     public CompletableFuture<ArrayList<MeasurableListDataModel>> getAllocatedMeasurableList(Long taskId){

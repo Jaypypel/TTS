@@ -76,7 +76,7 @@ public class TTSTaskCommittedListFragment extends Fragment {
         listView=view.findViewById(R.id.processingTaskList);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getUserID();
+        userId = sessionManager.getToken();
         user=view.findViewById(R.id.textViewProcessingListUser);
         user.setText(userId);
 
@@ -94,7 +94,7 @@ public class TTSTaskCommittedListFragment extends Fragment {
         if (InternetConnectivity.isConnected()) {
 
             appExecutors.getNetworkIO().execute(() -> {
-                getProcessingTasks(getUserId(),"In_Process").thenAccept(tasks -> {
+                getProcessingTasks(getToken(),"In_Process").thenAccept(tasks -> {
                     dataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
                     listView.setAdapter(adapter);
@@ -135,10 +135,10 @@ public class TTSTaskCommittedListFragment extends Fragment {
         return view;
     }
 
-    private String getUserId()
+    private String getToken()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getUserID();
+        return sessionManager.getToken();
     }
 
     public CompletableFuture<ArrayList<TaskDataModel>> getProcessingTasks(String receivedUsername, String status){

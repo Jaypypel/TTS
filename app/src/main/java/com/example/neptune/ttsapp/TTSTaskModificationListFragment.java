@@ -80,7 +80,7 @@ public class TTSTaskModificationListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_ttsmodification_task_list, container, false);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getUserID();
+        userId = sessionManager.getToken();
         user=view.findViewById(R.id.textViewModificationListUser);
         user.setText(userId);
 
@@ -98,7 +98,7 @@ public class TTSTaskModificationListFragment extends Fragment {
 
 
         if (InternetConnectivity.isConnected()) {
-            appExecutors.getNetworkIO().execute(() -> getSendModificationTaskList(getUserId(),"revised").thenAccept(tasks -> {
+            appExecutors.getNetworkIO().execute(() -> getSendModificationTaskList(getToken(),"revised").thenAccept(tasks -> {
                 senderDataModels = tasks;
                 adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity().getApplicationContext());
                 senderModificationTaskList.setAdapter(adapter);
@@ -106,7 +106,7 @@ public class TTSTaskModificationListFragment extends Fragment {
                 Toast.makeText(getContext().getApplicationContext(),"Failed to fetch outgoing tasks due to "+ e,Toast.LENGTH_LONG).show();
                 return null;
             }));
-            appExecutors.getNetworkIO().execute(() -> getReceiveModificationTaskList(getUserId(),"revised").thenAccept(tasks -> {
+            appExecutors.getNetworkIO().execute(() -> getReceiveModificationTaskList(getToken(),"revised").thenAccept(tasks -> {
                 receiverDataModels = tasks;
                 adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity().getApplicationContext());
                 receiverModificationTaskList.setAdapter(adapter);
@@ -150,10 +150,10 @@ public class TTSTaskModificationListFragment extends Fragment {
         return view;
     }
 
-    private String getUserId()
+    private String getToken()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getUserID();
+        return sessionManager.getToken();
     }
 
     public CompletableFuture<ArrayList<TaskDataModel>> getSendModificationTaskList(String taskOwnerUsername, String status){

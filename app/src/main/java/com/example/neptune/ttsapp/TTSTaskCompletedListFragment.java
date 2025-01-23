@@ -94,7 +94,7 @@ public class TTSTaskCompletedListFragment extends Fragment {
         listView=(ListView)view.findViewById(R.id.listCompleted);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getUserID();
+        userId = sessionManager.getToken();
         user=(TextView)view.findViewById(R.id.textViewCompletedListUser);
         user.setText(userId);
 
@@ -109,7 +109,7 @@ public class TTSTaskCompletedListFragment extends Fragment {
 
         if (InternetConnectivity.isConnected()){
             appExecutors.getNetworkIO().execute(() -> {
-                getCompletedTasks(getUserId(),"completed").thenAccept(tasks -> {
+                getCompletedTasks(getToken(),"completed").thenAccept(tasks -> {
                     dataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
                     listView.setAdapter(adapter);
@@ -152,10 +152,10 @@ public class TTSTaskCompletedListFragment extends Fragment {
     }
 
 
-    private String getUserId()
+    private String getToken()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getUserID();
+        return sessionManager.getToken();
     }
 
 

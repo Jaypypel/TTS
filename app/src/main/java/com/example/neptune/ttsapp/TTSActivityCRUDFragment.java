@@ -85,7 +85,7 @@ public class TTSActivityCRUDFragment extends Fragment {
 
         user=view.findViewById(R.id.textViewActCRUDUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        user.setText(sessionManager.getUserID());
+        user.setText(sessionManager.getToken());
 
         date=view.findViewById(R.id.textViewActCRUDDate);
         time=view.findViewById(R.id.textViewActCRUDTime);

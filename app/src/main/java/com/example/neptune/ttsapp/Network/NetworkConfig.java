@@ -1,10 +1,5 @@
 package com.example.neptune.ttsapp.Network;
 
-import androidx.core.view.WindowInsetsCompat;
-
-import com.example.neptune.ttsapp.DTO.DailyTimeShareDTO;
-import com.example.neptune.ttsapp.User;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -19,6 +14,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 @InstallIn(SingletonComponent.class)
 public class NetworkConfig {
+
+    private static final String BASE_URL = "http://192.168.0.108:8080";
 
     @Provides
     @Singleton
@@ -35,80 +32,73 @@ public class NetworkConfig {
 
     @Provides
     @Singleton
-    public static UserServiceInterface provideService(){
-        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
-                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
-                build().create(UserServiceInterface.class);
+    public static Retrofit provideRetroFit(OkHttpClient okHttpClient){
+        return new Retrofit
+                .Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient).
+                build();
     }
+
 
 
     @Provides
     @Singleton
-    public static MeasurableServiceInterface provideMeasurableService(){
-        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
-                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
-                build().create(MeasurableServiceInterface.class);
-    }
-    @Provides
-    @Singleton
-    public static ProjectServiceInterface provideProejectService(){
-        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
-                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
-                build().create(ProjectServiceInterface.class);
+    public static UserServiceInterface provideService(Retrofit retrofit){
+        return retrofit.create(UserServiceInterface.class);
     }
 
     @Provides
     @Singleton
-    public static DailyTimeShareInterface provideDTSService(){
-        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
-                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
-                build().create(DailyTimeShareInterface.class);
-    }
-    @Provides
-    @Singleton
-    public static TaskServiceInterface provideTask0Service(){
-        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
-                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
-                build().create(TaskServiceInterface.class);
-    }
-    @Provides
-    @Singleton
-    public static ActivityServiceInterface provideActivityService(){
-        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
-                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
-                build().create(ActivityServiceInterface.class);
+    public static MeasurableServiceInterface provideMeasurableService(Retrofit retrofit){
+        return retrofit.create(MeasurableServiceInterface.class);
     }
 
     @Provides
     @Singleton
-    public static DTSMeasurableInterface provideDTSMeasurableService(){
-        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
-                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
-                build().create(DTSMeasurableInterface.class);
+    public static ProjectServiceInterface provideProejectService(Retrofit retrofit){
+        return retrofit.create(ProjectServiceInterface.class);
     }
 
     @Provides
     @Singleton
-    public static TaskHandlerInterface provideTaskHandlerService(){
-        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
-                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
-                build().create(TaskHandlerInterface.class);
+    public static DailyTimeShareInterface provideDTSService(Retrofit retrofit){
+        return retrofit.create(DailyTimeShareInterface.class);
+    }
+    @Provides
+    @Singleton
+    public static TaskServiceInterface provideTask0Service(Retrofit retrofit){
+        return retrofit.create(TaskServiceInterface.class);
+    }
+    @Provides
+    @Singleton
+    public static ActivityServiceInterface provideActivityService(Retrofit retrofit){
+        return retrofit.create(ActivityServiceInterface.class);
     }
 
     @Provides
     @Singleton
-    public static TimeShareServiceInterface provideTimeShareService(){
-        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
-                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
-                build().create(TimeShareServiceInterface.class);
+    public static DTSMeasurableInterface provideDTSMeasurableService(Retrofit retrofit){
+        return retrofit.create(DTSMeasurableInterface.class);
     }
 
     @Provides
     @Singleton
-    public static ReportServiceInterface provideReportService(){
-        return new Retrofit.Builder().baseUrl("http://192.168.0.108:8080")
-                .addConverterFactory(GsonConverterFactory.create()).client(provideOkHttpClient()).
-                build().create(ReportServiceInterface.class);
+    public static TaskHandlerInterface provideTaskHandlerService(Retrofit retrofit){
+        return retrofit.create(TaskHandlerInterface.class);
+    }
+
+    @Provides
+    @Singleton
+    public static TimeShareServiceInterface provideTimeShareService(Retrofit retrofit){
+        return retrofit.create(TimeShareServiceInterface.class);
+    }
+
+    @Provides
+    @Singleton
+    public static ReportServiceInterface provideReportService(Retrofit retrofit){
+        return retrofit.create(ReportServiceInterface.class);
     }
 
 
