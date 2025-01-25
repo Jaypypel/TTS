@@ -61,7 +61,7 @@ public class TTSLoginActivity extends AppCompatActivity {
     private Button btnLogin, btnRegister;
     private ToggleButton togglePassword;
 
-    private SessionManager sessionManager = new SessionManager(this);
+    private SessionManager sessionManager;
     private ProgressBar progressBarInLogin;
     private boolean isRequestInProgress = true;
 
@@ -203,7 +203,7 @@ public class TTSLoginActivity extends AppCompatActivity {
                                            .toString()
                                            .trim()
                                            .replaceAll("\\s+", "");
-                                   sessionManager = new SessionManager(getApplicationContext());
+                                   sessionManager = new SessionManager(this);
                                    sessionManager.saveSession(userId);
                                    Toast.makeText(TTSLoginActivity.this, "You're logged in now", Toast.LENGTH_SHORT).show();
                                    Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);

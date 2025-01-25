@@ -23,6 +23,16 @@
             <include
                 android:id="@+id/toolbar"
                 layout="@layout/app_bar_main" />
+
+
+            <com.google.android.material.navigation.NavigationView
+                android:id="@+id/nav_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:fitsSystemWindows="true"
+                app:headerLayout="@layout/nav_header"
+                app:menu="@menu/activity_main_menu_drawer" />
             <FrameLayout
                 android:id="@+id/content_frame"
                 android:layout_width="match_parent"
@@ -469,17 +479,25 @@
 
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/left_drawer"
-        android:layout_width="240dp"
+    <!--    <ListView-->
+    <!--        android:id="@+id/left_drawer"-->
+    <!--        android:layout_width="240dp"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:layout_gravity="start"-->
+    <!--        android:layout_marginTop="60dp"-->
+    <!--        android:background="#FFFFFF"-->
+    <!--        android:choiceMode="singleChoice"-->
+    <!--        android:divider="@android:color/darker_gray"-->
+    <!--        android:dividerHeight="1dp"-->
+    <!--        android:listSelector="@android:color/darker_gray" />-->
+
+    <androidx.fragment.app.FragmentContainerView
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:id="@+id/nav_host_fragment"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:layout_marginTop="60dp"
-        android:background="#FFFFFF"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"
-        android:listSelector="@android:color/darker_gray" />
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/main_navigation" />
 
 
 

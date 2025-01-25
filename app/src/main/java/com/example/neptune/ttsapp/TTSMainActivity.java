@@ -28,6 +28,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 
 import android.widget.ArrayAdapter;
@@ -56,6 +61,7 @@ import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -118,7 +124,7 @@ public class TTSMainActivity extends AppCompatActivity {
     @Inject
     DTSMeasurableInterface dtsMeasurableInterface;
 
-//    private AppBarConfiguration mAppBarConfiguration;
+    private AppBarConfiguration mAppBarConfiguration;
 
 
 
@@ -141,7 +147,7 @@ public class TTSMainActivity extends AppCompatActivity {
             tsTaskName,tsProjectName,tsMeasurableUnit;
     ArrayList<MeasurableListDataModel> measurableListDataModels = new ArrayList<>();
 
-//    private NavigationView navigationView;
+    private NavigationView navigationView;
     private ListView listView;
     private MeasurableListCustomAdapter measurableListCustomAdapter;
 
@@ -166,11 +172,11 @@ public class TTSMainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_ttsmain);
 
-        //navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles= getResources().getStringArray(R.array.navigation_drawer_items_array);
         mDrawerLayout =  findViewById(R.id.drawer_layout);
-        mDrawerList =  findViewById(R.id.left_drawer);
+        //  mDrawerList =  findViewById(R.id.left_drawer);
         sessionManager = new SessionManager(getApplicationContext());
         timeShareDate=findViewById(R.id.editTextMainDate);
         timeShareProjCode=findViewById(R.id.editTextMainProjNo);
@@ -180,6 +186,8 @@ public class TTSMainActivity extends AppCompatActivity {
         timeShareStartTime=findViewById(R.id.editTextMainStartTime);
         timeShareEndTime=findViewById(R.id.editTextMainEndTime);
         timeShareDescription=findViewById(R.id.editTextMainDescription);
+
+        toolbar =  findViewById(R.id.toolbar);
 
         tsDate = findViewById(R.id.textInputMainDateLayout);
         tsStartTime = findViewById(R.id.textInputMainStartTimeLayout);
@@ -203,32 +211,37 @@ public class TTSMainActivity extends AppCompatActivity {
             time.setText(DateConverter.currentTime());
         });
 
+        setSupportActionBar(toolbar);
 
         // Setup AutoCompleteTextViews
 
 //       setSupportActionBar(R.id.);
-//        mAppBarConfiguration = new AppBarConfiguration.Builder(
-//                                 R.id.nav_daily_time_share,
-//                                 R.id.nav_dts_view,
-//                R.id.nav_received_tasks,
-//                R.id.nav_committed_tasks,
-//                R.id.nav_approval_completion_tasks,
-//                R.id.nav_work_done_status,
-//                R.id.nav_assign_task,
-//                R.id.nav_assigned_tasks,
-//                R.id.nav_accepted_tasks,
-//                R.id.nav_completed_tasks,
-//                R.id.nav_modified_tasks,
-//                R.id.nav_task_admin)
-//                .setOpenableLayout(mDrawerLayout)
-//                .build();
 //
 //        NavController navController = Navigation
-//                .findNavController(this,R.id.nav_host_fragment_content_main);
-//        NavigationUI
-//                .setupActionBarWithNavController(this,navController,mAppBarConfiguration);
-//        NavigationUI.setupWithNavController(navigationView,navController);
-        // Code for Measurable list
+//                .findNavController(this,R.id.nav_host_fragment);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
+        NavController navController = navHostFragment.getNavController();
+
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_daily_time_share,
+                R.id.nav_dts_view,
+                R.id.nav_received_tasks,
+                R.id.nav_committed_tasks,
+                R.id.nav_approval_completion_tasks,
+                R.id.nav_work_done_status,
+                R.id.nav_assign_task,
+                R.id.nav_assigned_tasks,
+                R.id.nav_accepted_tasks,
+                R.id.nav_completed_tasks,
+                R.id.nav_modified_tasks,
+                R.id.nav_task_admin)
+                .setOpenableLayout(mDrawerLayout)
+                .build();
+        NavigationUI
+                .setupActionBarWithNavController(this,navController,mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView,navController);
+//     //    Code for Measurable list
         listView=findViewById(R.id.listMainMeasurable);
         timeShareAddMeasurable=findViewById(R.id.buttonMainMeasurableAdd);
         timeShareMeasurableQty=findViewById(R.id.editTextMainQty);
@@ -349,7 +362,7 @@ public class TTSMainActivity extends AppCompatActivity {
                         return;
                     }
                     if (isStartTimeValid().equals(isEndTimeValid())){
-                       Snackbar snackbar = Snackbar.make(v, "Warning! Start and End Time are the same", Snackbar.LENGTH_LONG);
+                        Snackbar snackbar = Snackbar.make(v, "Warning! Start and End Time are the same", Snackbar.LENGTH_LONG);
                         View snackbarView = snackbar.getView();
                         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
                         params.gravity = Gravity.CENTER;
@@ -366,20 +379,20 @@ public class TTSMainActivity extends AppCompatActivity {
 //                        return;
 //                    }
                     if (!(sessionManager.getToken().equals("Prerna") || sessionManager.getToken().equals("YoKo")) && !isDateValid().equals(getTodayDate()))
-                            { Toast.makeText(getApplicationContext(), "Date Has Been Expired Contact to Admin", Toast.LENGTH_LONG).show();
+                    { Toast.makeText(getApplicationContext(), "Date Has Been Expired Contact to Admin", Toast.LENGTH_LONG).show();
 
-                                timeShareSubmit.setEnabled(true);
-                            return;
-                            }
+                        timeShareSubmit.setEnabled(true);
+                        return;
+                    }
                     if (isStartTimeValid().isEmpty()) { timeShareStartTime.setError("Start Time Cannot Be Empty");
 
                         timeShareSubmit.setEnabled(true);
-                    return;
+                        return;
                     }
                     if (isEndTimeValid().isEmpty()) { timeShareEndTime.setError("End Time Cannot Be Empty");   timeShareSubmit.setEnabled(true);return; }
                     if (isTaskNameValid().isEmpty()) { timeShareTaskName.setError("Task Name Cannot Be Empty");  timeShareSubmit.setEnabled(true);return;}
-                     if (isProjectNameValid().isEmpty()) { timeShareProjName.setError("Project Name Cannot Be Empty");  timeShareSubmit.setEnabled(true);return; }
-               if (isActivityNameValid().isEmpty()) { timeShareActivityName.setError("Activity Name Cannot Be Empty");  timeShareSubmit.setEnabled(true);return; }
+                    if (isProjectNameValid().isEmpty()) { timeShareProjName.setError("Project Name Cannot Be Empty");  timeShareSubmit.setEnabled(true);return; }
+                    if (isActivityNameValid().isEmpty()) { timeShareActivityName.setError("Activity Name Cannot Be Empty");  timeShareSubmit.setEnabled(true);return; }
                     if (getConsumedTime().contains("-")) { Toast.makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show();   timeShareSubmit.setEnabled(false); return; }
 
 
@@ -392,35 +405,35 @@ public class TTSMainActivity extends AppCompatActivity {
                     }
                     timeShareSubmit.setBackgroundColor(Color.GRAY);
 
-                             String projectcode = !isProjectNameValid().isEmpty()? isProjectCodeValid(): "No code received";
-                             User user = new User(sessionManager.getToken());
+                    String projectcode = !isProjectNameValid().isEmpty()? isProjectCodeValid(): "No code received";
+                    User user = new User(sessionManager.getToken());
 
-                             DailyTimeShare dailyTimeShare = new DailyTimeShare(isDateValid(),projectcode
-                                     ,isProjectNameValid(),isActivityNameValid(),
-                                     isTaskNameValid(),isStartTimeValid(),isEndTimeValid(),getConsumedTime(),
-                                     isDescriptionValid(),delegationTime(),user );
-                             appExecutor.getNetworkIO().execute(() -> addDailyTimeShare(dailyTimeShare).thenCompose(result -> {
-                                Long id = Long.valueOf(result.get(1));
-                                return addDailyTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
-                                    if (finalResult) {
-                                        appExecutor.getMainThread().execute(() -> {
-                                            Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
-                                            clearAll();
-                                            clear();
-                                            timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                                            timeShareSubmit.setEnabled(true);
-                                        });
-                                    }
-                                });
-                            }).exceptionally(e -> {
+                    DailyTimeShare dailyTimeShare = new DailyTimeShare(isDateValid(),projectcode
+                            ,isProjectNameValid(),isActivityNameValid(),
+                            isTaskNameValid(),isStartTimeValid(),isEndTimeValid(),getConsumedTime(),
+                            isDescriptionValid(),delegationTime(),user );
+                    appExecutor.getNetworkIO().execute(() -> addDailyTimeShare(dailyTimeShare).thenCompose(result -> {
+                        Long id = Long.valueOf(result.get(1));
+                        return addDailyTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
+                            if (finalResult) {
                                 appExecutor.getMainThread().execute(() -> {
+                                    Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
+                                    clearAll();
+                                    clear();
                                     timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                                    Toast.makeText(getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
                                     timeShareSubmit.setEnabled(true);
                                 });
-                                return null;
+                            }
+                        });
+                    }).exceptionally(e -> {
+                        appExecutor.getMainThread().execute(() -> {
+                            timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                            Toast.makeText(getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
+                            timeShareSubmit.setEnabled(true);
+                        });
+                        return null;
 
-                            }).join());
+                    }).join());
 
 
                 } else {
@@ -442,8 +455,8 @@ public class TTSMainActivity extends AppCompatActivity {
                     getProjectCodeAndUpdateUi(projectName).thenAccept(projectCode -> {
                                 runOnUiThread(() -> timeShareProjCode.setText(projectCode));
 
-                    }
-                        ).exceptionally(e -> {
+                            }
+                    ).exceptionally(e -> {
                         // Handle error and log it
                         Log.e("Project Code Error", "Failed to fetch project code: " + e.getMessage());
                         runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Failed to fetch project code", Toast.LENGTH_LONG).show());
@@ -564,15 +577,15 @@ public class TTSMainActivity extends AppCompatActivity {
                 timePicker.show(getSupportFragmentManager(),"Time_Picker");
             }
             timePicker.addOnPositiveButtonClickListener(selection -> {
-               appExecutor.getNetworkIO().execute(() -> {
-                   int hour = timePicker.getHour();
-                   int minute = timePicker.getMinute();
-                   String amPm = (hour < 12) ? "AM" : "PM";
-                   int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
-                   String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
-                   appExecutor.getMainThread().execute(() -> timeShareEndTime
-                           .setText(formattedTime));
-               });
+                appExecutor.getNetworkIO().execute(() -> {
+                    int hour = timePicker.getHour();
+                    int minute = timePicker.getMinute();
+                    String amPm = (hour < 12) ? "AM" : "PM";
+                    int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
+                    String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
+                    appExecutor.getMainThread().execute(() -> timeShareEndTime
+                            .setText(formattedTime));
+                });
 
 
             });
@@ -595,48 +608,48 @@ public class TTSMainActivity extends AppCompatActivity {
         timeShareEndTime.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s)
             {
-                    try
+                try
+                {
+                    if (getConsumedTime() != null)
                     {
-                        if (getConsumedTime() != null)
+                        if (getConsumedTime().contains("-"))
                         {
-                            if (getConsumedTime().contains("-"))
-                            {
-                                Toast.makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show();
-                            }
+                            Toast.makeText(getApplicationContext(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show();
                         }
-                    } catch (Exception e) { e.printStackTrace(); }
+                    }
+                } catch (Exception e) { e.printStackTrace(); }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) { }
         });
 
-        setupToolbar();
-
-        DataModel[] drawerItem = new DataModel[12];
-
-        drawerItem[0] = new DataModel("Daily Time Share");
-        drawerItem[1] = new DataModel("DTS View");
-        drawerItem[2] = new DataModel("Received Tasks");
-        drawerItem[3] = new DataModel("Committed Tasks");
-        drawerItem[4] = new DataModel("Approval Completion Tasks");
-        drawerItem[5] = new DataModel("Work Done Status");
-        drawerItem[6] = new DataModel("Assign Task");
-        drawerItem[7] = new DataModel("Assigned Tasks");
-        drawerItem[8] = new DataModel("Accepted Tasks");
-        drawerItem[9] = new DataModel("Completed Tasks");
-        drawerItem[10] = new DataModel("Modification Tasks");
-        drawerItem[11] = new DataModel("Task Admin");
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
-        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.list_view_item_row, drawerItem);
-        mDrawerList.setAdapter(adapter);
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        setupDrawerToggle();
+//        setupToolbar();
+//
+//        DataModel[] drawerItem = new DataModel[12];
+//
+//        drawerItem[0] = new DataModel("Daily Time Share");
+//        drawerItem[1] = new DataModel("DTS View");
+//        drawerItem[2] = new DataModel("Received Tasks");
+//        drawerItem[3] = new DataModel("Committed Tasks");
+//        drawerItem[4] = new DataModel("Approval Completion Tasks");
+//        drawerItem[5] = new DataModel("Work Done Status");
+//        drawerItem[6] = new DataModel("Assign Task");
+//        drawerItem[7] = new DataModel("Assigned Tasks");
+//        drawerItem[8] = new DataModel("Accepted Tasks");
+//        drawerItem[9] = new DataModel("Completed Tasks");
+//        drawerItem[10] = new DataModel("Modification Tasks");
+//        drawerItem[11] = new DataModel("Task Admin");
+//
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+//        getSupportActionBar().setHomeButtonEnabled(true);
+//
+//        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.list_view_item_row, drawerItem);
+//        mDrawerList.setAdapter(adapter);
+//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        mDrawerLayout.setDrawerListener(mDrawerToggle);
+//        setupDrawerToggle();
 
     }
 
@@ -650,11 +663,11 @@ public class TTSMainActivity extends AppCompatActivity {
 //    }
 
 
-//    @Override
-//    public boolean onSupportNavigateUp() {
-//        NavController navController = Navigation.findNavController(this,R.id.nav_host_fragment_content_main);
-//        return NavigationUI.navigateUp(navController,mAppBarConfiguration) || super.onSupportNavigateUp();
-//    }
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this,R.id.nav_host_fragment);
+        return NavigationUI.navigateUp(navController,mAppBarConfiguration) || super.onSupportNavigateUp();
+    }
 
     private void updateMeasurableObjectsAdapter(List<MeasurableListDataModel> measurableObjects) {
         ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_spinner_item, measurableObjects);
@@ -795,12 +808,12 @@ public class TTSMainActivity extends AppCompatActivity {
             hideMainActivityViews();
             getSupportFragmentManager()
                     .beginTransaction()
-                            .setCustomAnimations(
-                                    R.anim.slide_in_right,
-                                    R.anim.slide_out_left,
-                                    R.anim.slide_in_right,
-                                    R.anim.slide_out_right
-                            ).replace(R.id.content_frame, fragment)
+                    .setCustomAnimations(
+                            R.anim.slide_in_right,
+                            R.anim.slide_out_left,
+                            R.anim.slide_in_right,
+                            R.anim.slide_out_right
+                    ).replace(R.id.content_frame, fragment)
                     .commit();
 
 
@@ -981,11 +994,11 @@ public class TTSMainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(mTitle);
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
+//    @Override
+//    protected void onPostCreate(Bundle savedInstanceState) {
+//        super.onPostCreate(savedInstanceState);
+//        mDrawerToggle.syncState();
+//    }
 
 
     void setupToolbar(){
@@ -995,11 +1008,11 @@ public class TTSMainActivity extends AppCompatActivity {
     }
 
 
-    void setupDrawerToggle(){
-        mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,toolbar,R.string.app_name, R.string.app_name);
-        //This is necessary to change the icon of the Drawer Toggle upon state change.
-        mDrawerToggle.syncState();
-    }
+//    void setupDrawerToggle(){
+//        mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,toolbar,R.string.app_name, R.string.app_name);
+//        //This is necessary to change the icon of the Drawer Toggle upon state change.
+//        mDrawerToggle.syncState();
+//    }
 
     @Override
     public void onBackPressed()
@@ -1014,11 +1027,12 @@ public class TTSMainActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("No", null)
                 .show();
+
     }
 
     private String getTodayDate()
     {
-     return DateConverter.currentDate();
+        return DateConverter.currentDate();
     }
 
     //Validation Start
@@ -1039,7 +1053,7 @@ public class TTSMainActivity extends AppCompatActivity {
 
     private String isTaskNameValid() {
         if(timeShareTaskName != null){
-        return timeShareTaskName.getText().toString().trim();
+            return timeShareTaskName.getText().toString().trim();
         }
         return "N.I";
 
@@ -1047,9 +1061,9 @@ public class TTSMainActivity extends AppCompatActivity {
 
     private String isProjectCodeValid() { if (timeShareProjCode != null){
         return timeShareProjCode.getText().toString().trim();
-     }else {
+    }else {
         return "N.I";
-      }
+    }
     }
 
     private String isProjectNameValid() {
@@ -1131,123 +1145,123 @@ public class TTSMainActivity extends AppCompatActivity {
                     try {
                         APIResponse apiResponse = APIResponse.create(response);
                         if (apiResponse != null) {
-                        if (apiResponse instanceof APISuccessResponse) {
-                            String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
-                             JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();
-                             String dtsId = dtsobject.get("id").getAsString();
-                             if ("successful".equals(message)) {
-                                messageAndId.add(message);
-                                messageAndId.add(dtsId);
-                                future.complete(messageAndId);
+                            if (apiResponse instanceof APISuccessResponse) {
+                                String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+                                JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();
+                                String dtsId = dtsobject.get("id").getAsString();
+                                if ("successful".equals(message)) {
+                                    messageAndId.add(message);
+                                    messageAndId.add(dtsId);
+                                    future.complete(messageAndId);
+                                }
+                            }
+                            if (apiResponse instanceof APIErrorResponse) {
+                                String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                                future.completeExceptionally(new Throwable(erMsg));
+
+                            }
+                            if (apiResponse instanceof APIErrorResponse) {
+                                future.completeExceptionally(new Throwable("empty response"));
                             }
                         }
-                        if (apiResponse instanceof APIErrorResponse) {
-                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                            future.completeExceptionally(new Throwable(erMsg));
-
-                        }
-                        if (apiResponse instanceof APIErrorResponse) {
-                            future.completeExceptionally(new Throwable("empty response"));
-                        }
                     }
-                }
-                catch (ClassCastException e){
+                    catch (ClassCastException e){
                         future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
                     }
-                catch (IOException e) {
+                    catch (IOException e) {
                         Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
                         future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
                     }
-                catch (RuntimeException e) {
+                    catch (RuntimeException e) {
                         future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                     }
 
-            }
+                }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                future.completeExceptionally(new Throwable(t.getMessage()));
-            }
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    future.completeExceptionally(new Throwable(t.getMessage()));
+                }
+            });
         });
-    });
 
-    return future;
-}
+        return future;
+    }
 
-      public CompletableFuture<Boolean> addDailyTimeShareMeasurables(Long timeShareId,List<MeasurableListDataModel> measurableListDataModel){
-            CompletableFuture<Boolean> future  = new CompletableFuture<>();
-          if(measurableListDataModel.isEmpty()) {
-              future.complete(false);
-              return future;
-          }
-          AtomicInteger pendingTasks = new AtomicInteger(measurableListDataModels.size());
-          AtomicBoolean allSuccessful = new AtomicBoolean(true);
-            for (MeasurableListDataModel m: measurableListDataModel
-               ) {
+    public CompletableFuture<Boolean> addDailyTimeShareMeasurables(Long timeShareId,List<MeasurableListDataModel> measurableListDataModel){
+        CompletableFuture<Boolean> future  = new CompletableFuture<>();
+        if(measurableListDataModel.isEmpty()) {
+            future.complete(false);
+            return future;
+        }
+        AtomicInteger pendingTasks = new AtomicInteger(measurableListDataModels.size());
+        AtomicBoolean allSuccessful = new AtomicBoolean(true);
+        for (MeasurableListDataModel m: measurableListDataModel
+        ) {
 
-              appExecutor.getNetworkIO().execute(() -> {
-                  Long measurableId = Long.valueOf(m.getId().split("\\.")[0]);
-                  Long measurableQty =  Long.valueOf(m.getMeasurableQty());
-                  String measurableUnit =  String.valueOf(m.getMeasurableUnit());
-                  Call<ResponseBody> call = dtsMeasurableInterface.addDailyTimeShareMeasurable(timeShareId,measurableId, measurableQty,measurableUnit);
-                  call.enqueue(new Callback<ResponseBody>() {
-                      @Override
-                      public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                          Log.d("Debug", "Response received for addDailyTimeShareMeasurables"+response.body());
-                          APIResponse apiResponse = null;
-                          try {
-                              apiResponse = APIResponse.create(response);
-                              if (apiResponse != null) {
-                                  if (apiResponse instanceof APISuccessResponse) {
-                                      String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
-                                      Log.d("Debug", "Message from API: " + message);
-                                      if (!"successful".equals(message)) {
-                                          Log.d("Debug", "Measurable completed with success");
-                                          allSuccessful.set(false);
-                                      }
-                                  }else {
-                                      Log.e("Result", "apiresponse is nul");
-                                      allSuccessful.set(false);
+            appExecutor.getNetworkIO().execute(() -> {
+                Long measurableId = Long.valueOf(m.getId().split("\\.")[0]);
+                Long measurableQty =  Long.valueOf(m.getMeasurableQty());
+                String measurableUnit =  String.valueOf(m.getMeasurableUnit());
+                Call<ResponseBody> call = dtsMeasurableInterface.addDailyTimeShareMeasurable(timeShareId,measurableId, measurableQty,measurableUnit);
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        Log.d("Debug", "Response received for addDailyTimeShareMeasurables"+response.body());
+                        APIResponse apiResponse = null;
+                        try {
+                            apiResponse = APIResponse.create(response);
+                            if (apiResponse != null) {
+                                if (apiResponse instanceof APISuccessResponse) {
+                                    String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+                                    Log.d("Debug", "Message from API: " + message);
+                                    if (!"successful".equals(message)) {
+                                        Log.d("Debug", "Measurable completed with success");
+                                        allSuccessful.set(false);
+                                    }
+                                }else {
+                                    Log.e("Result", "apiresponse is nul");
+                                    allSuccessful.set(false);
 
-                                  } if (apiResponse instanceof APIErrorResponse) {
-                                      String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                                      future.completeExceptionally(new Throwable(erMsg));
+                                } if (apiResponse instanceof APIErrorResponse) {
+                                    String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                                    future.completeExceptionally(new Throwable(erMsg));
 
-                                  }
-                                  if (apiResponse instanceof APIErrorResponse) {
-                                      future.completeExceptionally(new Throwable("empty response"));
-                                  }
-                              }}
-                catch (ClassCastException e){
-                                  future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                              }
-                catch (IOException e) {
-                                  Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                                  future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
-                              }
-                catch (RuntimeException e) {
-                                  future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
-                              }
-                          finally {
-                              if (pendingTasks.decrementAndGet() == 0){
-                                  future.complete(allSuccessful.get());
-                              }
-                          }
-                      }
+                                }
+                                if (apiResponse instanceof APIErrorResponse) {
+                                    future.completeExceptionally(new Throwable("empty response"));
+                                }
+                            }}
+                        catch (ClassCastException e){
+                            future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                        }
+                        catch (IOException e) {
+                            Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                            future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
+                        }
+                        catch (RuntimeException e) {
+                            future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                        }
+                        finally {
+                            if (pendingTasks.decrementAndGet() == 0){
+                                future.complete(allSuccessful.get());
+                            }
+                        }
+                    }
 
-                      @Override
-                      public void onFailure(Call<ResponseBody> call, Throwable t) {
-                          Log.e("IOException", "Exception occurred: " + t.getMessage(), t);
-                          allSuccessful.set(false);
-                          if (pendingTasks.decrementAndGet() == 0) {
-                              future.completeExceptionally(new Throwable(t.getMessage()));
-                          }
-                      }
-                  });
-              });
-          }
-          return future;
-      }
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Log.e("IOException", "Exception occurred: " + t.getMessage(), t);
+                        allSuccessful.set(false);
+                        if (pendingTasks.decrementAndGet() == 0) {
+                            future.completeExceptionally(new Throwable(t.getMessage()));
+                        }
+                    }
+                });
+            });
+        }
+        return future;
+    }
 
 
 
@@ -1311,55 +1325,55 @@ public class TTSMainActivity extends AppCompatActivity {
     public CompletableFuture<ArrayList<String>> getActivityNames() {
         CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
         Call<ResponseBody> call = activityService.getActivitiesName();
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
 
-                    try {
-                        APIResponse apiResponse =   APIResponse.create(response);
-                         if(apiResponse instanceof  APISuccessResponse){
-                             JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse)
-                                     .getBody().getBody();
-                             Gson gson = new Gson();
-                             Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+                try {
+                    APIResponse apiResponse =   APIResponse.create(response);
+                    if(apiResponse instanceof  APISuccessResponse){
+                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse)
+                                .getBody().getBody();
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
 
-                             if(result.isJsonArray()){
-                                 JsonArray activityNames = result.getAsJsonArray();
-                                 ArrayList<String> list = gson.fromJson(activityNames, listType);
-                                 future.complete(list);
-
-                             }
-                         }
-
-                        if (apiResponse instanceof APIErrorResponse) {
-                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                            future.completeExceptionally(new Throwable(erMsg));
+                        if(result.isJsonArray()){
+                            JsonArray activityNames = result.getAsJsonArray();
+                            ArrayList<String> list = gson.fromJson(activityNames, listType);
+                            future.complete(list);
 
                         }
-                        if (apiResponse instanceof APIErrorResponse) {
-                            future.completeExceptionally(new Throwable("empty response"));
-                        }
-                    }
-                    catch (ClassCastException e){
-                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                    }
-                    catch (IOException e) {
-                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                        future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
-                    }
-                    catch (RuntimeException e) {
-                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                     }
 
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
+
+                    }
+                    if (apiResponse instanceof APIErrorResponse) {
+                        future.completeExceptionally(new Throwable("empty response"));
+                    }
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
 
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                  future.completeExceptionally(new Throwable(t.getMessage()));
+            }
 
-                }
-            });
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                future.completeExceptionally(new Throwable(t.getMessage()));
+
+            }
+        });
 
 
 
@@ -1370,54 +1384,54 @@ public class TTSMainActivity extends AppCompatActivity {
     public CompletableFuture<ArrayList<String>> getTaskNames() {
         CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
         Call<ResponseBody> call = taskService.getTaskNames();
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
 
-                    try {
-                        APIResponse apiResponse =   APIResponse.create(response);
-                         if(apiResponse instanceof  APISuccessResponse){
-                             JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
-                             Gson gson = new Gson();
-                             Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+                try {
+                    APIResponse apiResponse =   APIResponse.create(response);
+                    if(apiResponse instanceof  APISuccessResponse){
+                        JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
 
-                             if(result.isJsonArray()){
-                                 JsonArray activityNames = result.getAsJsonArray();
-                                 ArrayList<String> list = gson.fromJson(activityNames, listType);
-                                 future.complete(list);
-
-                             }
-                         }
-
-                        if (apiResponse instanceof APIErrorResponse) {
-                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                            future.completeExceptionally(new Throwable(erMsg));
+                        if(result.isJsonArray()){
+                            JsonArray activityNames = result.getAsJsonArray();
+                            ArrayList<String> list = gson.fromJson(activityNames, listType);
+                            future.complete(list);
 
                         }
-                        if (apiResponse instanceof APIErrorResponse) {
-                            future.completeExceptionally(new Throwable("empty response"));
-                        }
-                    }
-                    catch (ClassCastException e){
-                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                    }
-                    catch (IOException e) {
-                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                        future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
-                    }
-                    catch (RuntimeException e) {
-                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                     }
 
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
+
+                    }
+                    if (apiResponse instanceof APIErrorResponse) {
+                        future.completeExceptionally(new Throwable("empty response"));
+                    }
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
 
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                   future.completeExceptionally(new Throwable(t.getMessage()));
+            }
 
-                }
-            });
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                future.completeExceptionally(new Throwable(t.getMessage()));
+
+            }
+        });
 
 
 
@@ -1442,7 +1456,7 @@ public class TTSMainActivity extends AppCompatActivity {
                             JsonElement jsonElement = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
                             String projectCode = jsonElement != null ? jsonElement.getAsString(): "";
 
-                             future.complete(projectCode);  Log.e("ProjectCode",projectCode);
+                            future.complete(projectCode);  Log.e("ProjectCode",projectCode);
                         }
 
                         if (apiResponse instanceof APIErrorResponse) {
@@ -1483,61 +1497,61 @@ public class TTSMainActivity extends AppCompatActivity {
     public CompletableFuture<List<MeasurableListDataModel>> getMeasurableListAndUpdateUi() {
         CompletableFuture<List<MeasurableListDataModel>> future = new CompletableFuture<>();
 
-            Call<ResponseBody> measurableListResponse = measurableService.getMeasurableList();
-            measurableListResponse.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+        Call<ResponseBody> measurableListResponse = measurableService.getMeasurableList();
+        measurableListResponse.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
 
-                    try {
+                try {
 
-                        APIResponse  apiResponse = APIResponse.create(response);
-                        if (apiResponse instanceof APISuccessResponse) {
-                            JsonElement bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse)
-                                        .getBody().getBody();
+                    APIResponse  apiResponse = APIResponse.create(response);
+                    if (apiResponse instanceof APISuccessResponse) {
+                        JsonElement bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse)
+                                .getBody().getBody();
 
-                            Gson gson = new Gson();
-                            Type measurableType = new TypeToken<ArrayList<MeasurableListDataModel>>(){}
-                                        .getType();
-                            if (bodyContent.isJsonArray()){
-                                JsonArray content = bodyContent.getAsJsonArray();
-                                ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurableType);
-                                future.complete(measurables);
-                            }
-                        }
-
-
-                        if (apiResponse instanceof APIErrorResponse) {
-                            String erMsg = ((APIErrorResponse<?>) apiResponse).getErrorMessage();
-                            future.completeExceptionally(new Throwable(erMsg));
-
-                        }
-                        if (apiResponse instanceof APIErrorResponse) {
-                            future.completeExceptionally(new Throwable("empty response"));
+                        Gson gson = new Gson();
+                        Type measurableType = new TypeToken<ArrayList<MeasurableListDataModel>>(){}
+                                .getType();
+                        if (bodyContent.isJsonArray()){
+                            JsonArray content = bodyContent.getAsJsonArray();
+                            ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurableType);
+                            future.complete(measurables);
                         }
                     }
-                    catch (ClassCastException e){
-                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                    }
-                    catch (IOException e) {
-                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                        future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
-                    }
-                    catch (RuntimeException e) {
-                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
-                    }
 
 
+                    if (apiResponse instanceof APIErrorResponse) {
+                        String erMsg = ((APIErrorResponse<?>) apiResponse).getErrorMessage();
+                        future.completeExceptionally(new Throwable(erMsg));
+
+                    }
+                    if (apiResponse instanceof APIErrorResponse) {
+                        future.completeExceptionally(new Throwable("empty response"));
+                    }
+                }
+                catch (ClassCastException e){
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                }
+                catch (IOException e) {
+                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                    future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
+                }
+                catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
 
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    future.completeExceptionally(new Throwable(t.getMessage()));
 
-                }
-            });
+            }
 
-            return future;
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                future.completeExceptionally(new Throwable(t.getMessage()));
+
+            }
+        });
+
+        return future;
     }
 
 }
