@@ -69,8 +69,6 @@ public class TTSActivityCRUDFragment extends Fragment {
     @Inject
     ActivityServiceInterface activityService;
 
-    public TTSActivityCRUDFragment() { }
-
     private TextView user,date,time;
     private AutoCompleteTextView activityName;
     private Button addActivity;

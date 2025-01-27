@@ -3,64 +3,60 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
-    app:startDestination="@id/TTSMainActivity">
-
-    <activity
-        android:id="@+id/TTSMainActivity"
-        android:name="com.example.neptune.ttsapp.TTSMainActivity"
-        android:label="activity_ttsmain"
-        tools:layout="@layout/activity_ttsmain" />
+    app:startDestination="@id/nav_daily_time_share">
     <fragment
-        android:id="@+id/TTSDailyTimeShareListFragment"
+        android:id="@+id/nav_daily_time_share"
+        android:name="com.example.neptune.ttsapp.AddDTSFragment"
+        android:label="Daily Time Share"
+        tools:layout="@layout/fragment_add_dts" />
+
+    <fragment
+        android:id="@+id/nav_dts_view"
         android:name="com.example.neptune.ttsapp.TTSDailyTimeShareListFragment"
-        android:label="fragment_ttsdaily_time_share_list"
+        android:label="Today Time Shares"
         tools:layout="@layout/fragment_ttsdaily_time_share_list" />
     <fragment
-        android:id="@+id/TTSTaskAllocatedListFragment"
+        android:id="@+id/nav_received_tasks"
         android:name="com.example.neptune.ttsapp.TTSTaskAllocatedListFragment"
-        android:label="TTSTaskAllocatedListFragment" />
+        android:label="Received Tasks" />
     <fragment
-        android:id="@+id/TTSTaskCommittedListFragment"
+        android:id="@+id/nav_committed_tasks"
         android:name="com.example.neptune.ttsapp.TTSTaskCommittedListFragment"
-        android:label="fragment_ttstask_committed_list"
+        android:label="Committed Tasks"
         tools:layout="@layout/fragment_ttstask_committed_list" />
     <fragment
-        android:id="@+id/TTSTaskApprovalCompletionListFragment"
+        android:id="@+id/nav_approval_completion_tasks"
         android:name="com.example.neptune.ttsapp.TTSTaskApprovalCompletionListFragment"
-        android:label="fragment_ttsapproval_completion_list"
+        android:label="Approval Completion Tasks"
         tools:layout="@layout/fragment_ttsapproval_completion_list" />
     <fragment
-        android:id="@+id/TTSTaskCountFragment"
+        android:id="@+id/nav_work_done_status"
         android:name="com.example.neptune.ttsapp.TTSTaskCountFragment"
-        android:label="fragment_ttstask_count"
+        android:label="Work Done Status"
         tools:layout="@layout/fragment_ttstask_count" />
     <fragment
-        android:id="@+id/TTSTaskDelegationFragment"
+        android:id="@+id/nav_assign_task"
         android:name="com.example.neptune.ttsapp.TTSTaskDelegationFragment"
-        android:label="TTSTaskDelegationFragment" />
+        android:label="Assign Task" />
     <fragment
-        android:id="@+id/TTSTaskDelegatedListFragment"
+        android:id="@+id/nav_assigned_tasks"
         android:name="com.example.neptune.ttsapp.TTSTaskDelegatedListFragment"
-        android:label="fragment_ttstask_delegated_list"
+        android:label="Assigned Tasks"
         tools:layout="@layout/fragment_ttstask_delegated_list" />
     <fragment
-        android:id="@+id/TTSTaskAcceptedListFragment"
+        android:id="@+id/nav_accepted_tasks"
         android:name="com.example.neptune.ttsapp.TTSTaskAcceptedListFragment"
-        android:label="fragment_ttstask_accepted_list"
+        android:label="Accepted Tasks"
         tools:layout="@layout/fragment_ttstask_accepted_list" />
     <fragment
-        android:id="@+id/TTSTaskCompletedListFragment"
+        android:id="@+id/nav_completed_tasks"
         android:name="com.example.neptune.ttsapp.TTSTaskCompletedListFragment"
-        android:label="fragment_ttstask_completed_list"
+        android:label="Completed Tasks"
         tools:layout="@layout/fragment_ttstask_completed_list" />
     <fragment
-        android:id="@+id/TTSTaskModificationListFragment"
+        android:id="@+id/nav_modified_tasks"
         android:name="com.example.neptune.ttsapp.TTSTaskModificationListFragment"
-        android:label="fragment_ttsmodification_task_list"
+        android:label="Modification Tasks"
         tools:layout="@layout/fragment_ttsmodification_task_list" />
-    <activity
-        android:id="@+id/TTSAdminActivity"
-        android:name="com.example.neptune.ttsapp.TTSAdminActivity"
-        android:label="activity_ttsadmin"
-        tools:layout="@layout/activity_ttsadmin" />
+
 </navigation>
