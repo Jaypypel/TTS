@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/admin_navigation"
+    app:startDestination="@id/nav_activity">
+
+    <fragment
+        android:id="@+id/nav_activity"
+        android:name="com.example.neptune.ttsapp.TTSProjectCRUDFragment"
+        android:label="Add Activity"
+        tools:layout="@layout/fragment_ttsproject_crud" />
+    <fragment
+        android:id="@+id/nav_task"
+        android:name="com.example.neptune.ttsapp.TTSProjectCRUDFragment"
+        android:label="Add Task"
+        tools:layout="@layout/fragment_ttstask_crud" />
+    <fragment
+        android:id="@+id/nav_project"
+        android:name="com.example.neptune.ttsapp.TTSTaskCRUDFragment"
+        android:label="Add Project"
+        tools:layout="@layout/fragment_ttstask_crud" />
+    <fragment
+        android:id="@+id/nav_measurable"
+        android:name="com.example.neptune.ttsapp.TTSMeasurableCRUDFragment"
+        android:label="Add Measurable"
+        tools:layout="@layout/fragment_ttsmeasurable_crud" />
+    <fragment
+        android:id="@+id/nav_other_activity"
+        android:name="com.example.neptune.ttsapp.TTSOtherActivityCRUDFragment"
+        android:label="Add Other Activity"
+        tools:layout="@layout/fragment_ttsother_activity_crud" />
+    <fragment
+        android:id="@+id/nav_report_generation"
+        android:name="com.example.neptune.ttsapp.TTSReportGenerationFragment"
+        android:label="Generate Report"
+        tools:layout="@layout/fragment_ttsreport_generation" />
+</navigation>
