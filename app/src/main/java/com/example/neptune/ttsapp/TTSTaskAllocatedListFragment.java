@@ -26,6 +26,7 @@ import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.example.neptune.ttsapp.Util.Debounce;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -78,21 +79,18 @@ public class TTSTaskAllocatedListFragment extends Fragment {
     private static TaskAllocatedListCustomAdapter adapter;
 
     private String userId;
-
+    private long lastTimeClick = 0;
 //    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_ttstask_allocated_list, container, false);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
         listView=view.findViewById(R.id.list);
         
 
 
-        sessionManager = new SessionManager(getActivity().getApplicationContext());
+        sessionManager = new SessionManager(requireContext());
         userId = sessionManager.getToken();
         user=view.findViewById(R.id.textViewAllocatedListUser);
         user.setText(userId);
@@ -108,7 +106,7 @@ public class TTSTaskAllocatedListFragment extends Fragment {
         appExecutors.getNetworkIO().execute(() -> {
            getAssignedTask(getToken(),"Pending").thenAccept(result -> {
                tasks = result;
-               adapter = new TaskAllocatedListCustomAdapter(tasks,getActivity().getApplicationContext());
+               adapter = new TaskAllocatedListCustomAdapter(tasks,requireContext());
                listView.setAdapter(adapter);
            }).exceptionally( e -> {
                Log.e("Error", "Failed to get Tasks ");
@@ -116,39 +114,33 @@ public class TTSTaskAllocatedListFragment extends Fragment {
            });
         });
         } else {
-            Toast.makeText(getActivity().getApplicationContext(),"No Internet Connection", Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(),"No Internet Connection", Toast.LENGTH_LONG).show();
         }
 
 
 
-        listView.setOnItemClickListener((parent, view1, position, id) -> {
-
+        listView.setOnItemClickListener((parent, view1, position, id) -> Debounce
+                .debounceEffect(() -> {
             TaskDataModel dataModel= tasks.get(position);
-
-            if (dataModel.getTaskSeenOn().equals(notSeen.name())){
-                updateTaskManagementSeenTime(dataModel.getId());
-            }
-            appExecutors.getNetworkIO().execute(()-> {
-                getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
-                    appExecutors.getMainThread().execute(() -> {
-                        Intent i = new Intent(getActivity(), TTSTaskAllocatedListItemDetailsActivity.class);
-                        i.putExtra("TaskAllocatedListItemDetails",dataModel);
-                        i.putExtra("TaskAllocatedListMeasurableList",measurables);
-                        startActivity(i);
-                    });
-                }).exceptionally(e -> {
-                    Log.e("Error", "Failed to get Tasks " );
-                    Toast.makeText(getActivity().getApplicationContext(),"Failed to get Tasks", Toast.LENGTH_LONG).show();
-                    return  null;
-                });
-            });
-
-
-
-        });
-
-
-
+        if (dataModel.getTaskSeenOn().equals(notSeen.name())){
+            updateTaskManagementSeenTime(dataModel.getId());
+        }
+        appExecutors
+                .getNetworkIO()
+                .execute(()-> getAllocatedMeasurableList(dataModel.getId())
+                        .thenAccept(measurables -> appExecutors
+                                .getMainThread()
+                                .execute(() -> {
+                                    Intent i = new Intent(requireContext(), TTSTaskAllocatedListItemDetailsActivity.class);
+                                    i.putExtra("TaskAllocatedListItemDetails",dataModel);
+                                    i.putExtra("TaskAllocatedListMeasurableList",measurables);
+                                    startActivity(i);
+                                })).exceptionally(e -> {
+                            Log.e("Error", "Failed to get Tasks " );
+                            Toast.makeText(requireContext(),"Failed to get Tasks", Toast.LENGTH_LONG).show();
+                            return  null;
+                        }));
+        }));
         return view;
     }
 
@@ -157,13 +149,13 @@ public class TTSTaskAllocatedListFragment extends Fragment {
 
     private String getToken()
     {
-        sessionManager = new SessionManager(getActivity().getApplicationContext());
+        sessionManager = new SessionManager(requireContext());
         return sessionManager.getToken();
     }
 
 
 
-
+    // Update Task Seen TimeStamp
     public CompletableFuture<String> updateTaskManagementSeenTime(Long taskId){
         CompletableFuture<String> future = new CompletableFuture<>();
         Call<ResponseBody> call = taskHandlerInterface.updateSeenTimeTaskManagement(taskId);
@@ -197,30 +189,8 @@ public class TTSTaskAllocatedListFragment extends Fragment {
         });
         return future;
     }
-    // Update Task Seen TimeStamp
-//    public void seenUpdateTimestamp(Long id){
-//        Connection con;
-//        try {
-//            con = DatabaseHelper.getDBConnection();
-//
-//            Calendar calendar = Calendar.getInstance();
-//            Timestamp seenTimestamp = new Timestamp(calendar.getTime().getTime());
-//
-//            PreparedStatement ps = con.prepareStatement("UPDATE TASK_MANAGEMENT SET SEEN_ON = ? WHERE ID = ?");
-//            ps.setString(1, seenTimestamp.toString());
-//            ps.setLong(2,id);
-//            ps.executeUpdate();
-//
-//            ps.close();
-//            con.close();
-//        }
-//        catch(Exception e){
-//            e.printStackTrace();
-//        }
-//    }
 
-
-    public CompletableFuture<ArrayList<MeasurableListDataModel>> getAllocatedMeasurableList(Long taskId){
+   public CompletableFuture<ArrayList<MeasurableListDataModel>> getAllocatedMeasurableList(Long taskId){
         CompletableFuture<ArrayList<MeasurableListDataModel>> future = new CompletableFuture<>();
         Call<ResponseBody> call = measurableService.getAllocatedMeasurableList(taskId);
         call.enqueue(new Callback<ResponseBody>() {
@@ -240,14 +210,7 @@ public class TTSTaskAllocatedListFragment extends Fragment {
                             future.complete(measurables);
 
                         }
-//                        for (JsonElement e : bodyContent){
-//                            JsonObject msrObj = e.getAsJsonObject();
-//                            measurable = new MeasurableListDataModel();
-//                            measurable.setId(msrObj.get("id").getAsString());
-//                            measurable.setMeasurableName(msrObj.get("name").getAsString());
-//                            measurables.add(measurable);
-//                        }
-//                        future.complete(measurables);
+
                     }
                     if (apiResponse instanceof APIErrorResponse) {
                         String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
@@ -299,31 +262,7 @@ public class TTSTaskAllocatedListFragment extends Fragment {
                             ArrayList<TaskDataModel> tasks = gson.fromJson(content,taskType);
                             future.complete(tasks);
                         }
-
-//                        for (JsonElement item: bodyContent
-//                             ) {
-//                            JsonObject taskObj = item.getAsJsonObject();
-//                            task = new TaskDataModel();
-//                            task.setId(taskObj.get("id").getAsLong());
-//                            JsonObject usr = taskObj.get("taskOwnerUserID").getAsJsonObject();
-//                            task.setTaskOwnerUserID(usr.get("username").getAsString());
-//                            task.setActivityName(taskObj.get("activityName").getAsString());
-//                            task.setTaskName(taskObj.get("taskName").getAsString());
-//                            task.setProjectCode(taskObj.get("projectCode").getAsString());
-//                            task.setProjectName(taskObj.get("projectName").getAsString());
-//                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
-//
-//                            task.setExpectedTotalTime(taskObj.get("expectedTime").getAsString());
-//                            task.setDescription(taskObj.get("description").getAsString());
-//                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
-//                            task.setTaskAssignedOn(taskObj.get("taskAssignedOn").getAsString());
-//                            task.setTaskSeenOn(taskObj.get("taskSeenOn").getAsString());
-//                            task.setTaskAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
-//                            task.setStatus(taskObj.get("status").getAsString());
-//                            tasks.add(task);
-//
-//                        }future.complete(tasks);
-                    }
+             }
 
                     if (apiResponse instanceof APIErrorResponse) {
                         String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();

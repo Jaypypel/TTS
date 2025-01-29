@@ -22,6 +22,7 @@ import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.example.neptune.ttsapp.Util.Debounce;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -118,8 +119,7 @@ public class TTSTaskModificationListFragment extends Fragment {
 
         }else { Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
-        senderModificationTaskList.setOnItemClickListener((parent, view1, position, id) -> {
-
+        senderModificationTaskList.setOnItemClickListener((parent, view1, position, id) -> Debounce.debounceEffect(() -> {
             TaskDataModel dataModel= senderDataModels.get(position);
             appExecutors.getNetworkIO().execute(() -> getModificationTaskMeasurableList(dataModel.getId()).thenAccept(measurables -> {
                 Intent i = new Intent(getActivity(), TTSTaskModificationListItemDetailsActivity.class);
@@ -131,10 +131,9 @@ public class TTSTaskModificationListFragment extends Fragment {
                 return  null;
             }));
 
-        });
+        }));
 
-        receiverModificationTaskList.setOnItemClickListener((parent, view1, position, id) -> {
-
+        receiverModificationTaskList.setOnItemClickListener((parent, view1, position, id) -> Debounce.debounceEffect(() -> {
             TaskDataModel dataModel= receiverDataModels.get(position);
             appExecutors.getNetworkIO().execute(() -> getModificationTaskMeasurableList(dataModel.getId()).thenAccept(measurables -> {
                 Intent i = new Intent(getActivity(), TTSTaskModificationListItemDetailsActivity.class);
@@ -145,7 +144,7 @@ public class TTSTaskModificationListFragment extends Fragment {
                 Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
                 return  null;
             }));
-        });
+        }));
 
         return view;
     }

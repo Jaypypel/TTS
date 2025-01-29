@@ -214,7 +214,8 @@ public class AddDTSFragment extends Fragment{
         timeShareAddMeasurable.setOnClickListener(v -> {
 
             try {
-                String tmeShrMsrble =  timeShareMeasurable.getSelectedItem().toString() != null ? timeShareMeasurable.getSelectedItem().toString(): "undefined";
+                timeShareMeasurable.getSelectedItem().toString();
+                String tmeShrMsrble = timeShareMeasurable.getSelectedItem().toString();
                 String tmeShreMsrbleQty = timeShareMeasurableQty.getText().toString();
 
                 String tmeShreMsrblUnit = timeShareMeasurableUnit.getText().toString();

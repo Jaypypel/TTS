@@ -25,6 +25,7 @@ import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.example.neptune.ttsapp.Util.Debounce;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -125,27 +126,24 @@ public class TTSTaskCompletedListFragment extends Fragment {
 
 
 
-        listView.setOnItemClickListener((parent, view1, position, id) -> {
+        listView.setOnItemClickListener((parent, view1, position, id) -> Debounce.debounceEffect(() -> {
             TaskDataModel dataModel= dataModels.get(position);
-
-
-
-            appExecutors.getNetworkIO().execute(()-> {
-                getCompletedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
-                    appExecutors.getMainThread().execute(() -> {
-                        Intent i = new Intent(getActivity(), TTSTaskAllocatedListItemDetailsActivity.class);
-                        i.putExtra("TaskCompletedListItemDetails",dataModel);
-                        i.putExtra("TaskCompletedListMeasurableList",measurables);
-                        startActivity(i);
-                    });
-                }).exceptionally(e -> {
-                    Log.e("Error", "Failed to get Tasks " );
-                    Toast.makeText(getActivity().getApplicationContext(),"Failed to get Tasks", Toast.LENGTH_LONG).show();
-                    return  null;
-                });
-            });
-
-        });
+            appExecutors
+                    .getNetworkIO()
+                    .execute(()-> getCompletedMeasurableList(dataModel.getId())
+                            .thenAccept(measurables -> appExecutors
+                                    .getMainThread()
+                                    .execute(() -> {
+                                        Intent i = new Intent(getActivity(), TTSTaskAllocatedListItemDetailsActivity.class);
+                                        i.putExtra("TaskCompletedListItemDetails",dataModel);
+                                        i.putExtra("TaskCompletedListMeasurableList",measurables);
+                                        startActivity(i);
+                                    })).exceptionally(e -> {
+                                Log.e("Error", "Failed to get Tasks " );
+                                Toast.makeText(getActivity().getApplicationContext(),"Failed to get Tasks", Toast.LENGTH_LONG).show();
+                                return  null;
+                            }));
+        }));
 
 
         return view;

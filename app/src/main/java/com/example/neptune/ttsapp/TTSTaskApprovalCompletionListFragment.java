@@ -21,6 +21,7 @@ import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.example.neptune.ttsapp.Util.Debounce;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -93,26 +94,6 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
             date.setText("Date : "+DateConverter.currentDate());
             time.setText("Time : "+DateConverter.currentTime());
         });
-//        final Handler someHandler = new Handler(Looper.getMainLooper());
-//        someHandler.postDelayed(new Runnable()
-//        {
-//            @Override
-//            public void run()
-//            {
-//                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-//                Date date1 = new Date();
-//                String currentDate = formatter.format(date1);
-//                date.setText("Date :  " +currentDate);
-//
-//                SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-//                Date time1 = new Date();
-//                String currentTime = timeFormatter.format(time1);
-//                time.setText("Time :  " +currentTime);
-//
-//                someHandler.postDelayed(this, 1000);
-//            }
-//        }, 10);
-
 
         //Get Data From Database for Modification Task And set to the ListView
         if (InternetConnectivity.isConnected()) {
@@ -142,57 +123,40 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
 
 
         senderApprovalCompletionTaskList.setOnItemClickListener((parent, view1, position, id) -> {
-
-            if(senderDataModels == null ){
-                Log.e("TTSTaskModificationListFragment", "Data not loaded yet");
-                return;
-            }
-            TaskDataModel dataModel= senderDataModels.get(position);
-            appExecutors.getNetworkIO().execute(() -> {
-
-
-                getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
+            Debounce.debounceEffect(() -> {
+                if(senderDataModels == null ){
+                    Log.e("TTSTaskModificationListFragment", "Data not loaded yet");
+                    return;
+                }
+                TaskDataModel dataModel= senderDataModels.get(position);
+                appExecutors.getNetworkIO().execute(() -> getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
                     Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
-
-
                     i.putExtra("senderTaskApprovalItemDetails",dataModel);
                     i.putExtra("senderTaskApprovalMeasurableList", measurables);
                     startActivity(i);
                 }).exceptionally(e -> {
                     Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
                     return  null;
-                });
-
+                }));
             });
-
         });
 
-        receiverApprovalCompletionTaskList.setOnItemClickListener((parent, view1, position, id) -> {
+        receiverApprovalCompletionTaskList.setOnItemClickListener((parent, view1, position, id) -> Debounce.debounceEffect(() -> {
             if(receiverDataModels == null){
                 Log.e("TTSTaskModificationListFragment", "Data not loaded yet");
                 return;
             }
             TaskDataModel dataModel= receiverDataModels.get(position);
-
-
-            appExecutors.getNetworkIO().execute(() -> {
-
-
-                getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
-                    Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
-
-
-                    i.putExtra("receiverTaskApprovalItemDetails",dataModel);
-                    i.putExtra("receiverTaskApprovalMeasurableList", measurables);
-                    startActivity(i);
-                }).exceptionally(e -> {
-                    Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
-                    return  null;
-                });
-
-            });
-
-        });
+            appExecutors.getNetworkIO().execute(() -> getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
+                Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
+                i.putExtra("receiverTaskApprovalItemDetails",dataModel);
+                i.putExtra("receiverTaskApprovalMeasurableList", measurables);
+                startActivity(i);
+            }).exceptionally(e -> {
+                Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
+                return  null;
+            }));
+        }));
 
 
         return view;

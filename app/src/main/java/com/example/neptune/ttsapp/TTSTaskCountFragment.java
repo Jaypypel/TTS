@@ -24,6 +24,7 @@ import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.example.neptune.ttsapp.Util.Debounce;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -170,21 +171,20 @@ public class TTSTaskCountFragment extends Fragment {
         }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
-        listView.setOnItemClickListener((parent, v, position, id) -> {
+        listView.setOnItemClickListener((parent, v, position, id) -> Debounce
+                .debounceEffect(() -> {
             TaskDataModel dataModel= dataModels.get(position);
-            getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
-                appExecutors.getMainThread().execute(() -> {
-                    Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
-                    i.putExtra("TaskProcessingItemDetails",dataModel);
-                    i.putExtra("TaskProcessingMeasurableDetails",measurables);
-                    startActivity(i);
-                });
-            }).exceptionally(e -> {
+            getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> appExecutors
+                    .getMainThread().execute(() -> {
+                Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
+                i.putExtra("TaskProcessingItemDetails",dataModel);
+                i.putExtra("TaskProcessingMeasurableDetails",measurables);
+                startActivity(i);
+            })).exceptionally(e -> {
                 Toast.makeText(getActivity().getApplicationContext(),"Failed to get the  accepted Tasks", Toast.LENGTH_LONG).show();
                 return  null;
             });
-        });
-
+        }));
         return view;
     }
 

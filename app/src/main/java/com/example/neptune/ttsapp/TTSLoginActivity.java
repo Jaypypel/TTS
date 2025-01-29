@@ -80,22 +80,12 @@ public class TTSLoginActivity extends AppCompatActivity {
         progressBarInLogin.setVisibility(View.INVISIBLE);
 
 
-            btnLogin.setOnClickListener(view -> {
-//                if( userLogin()){
-//                Toast.makeText(TTSLoginActivity.this, "Your request is in process ",Toast.LENGTH_LONG).show();
-//                btnLogin.setEnabled(false);
-//            }else{
-//                Toast.makeText(TTSLoginActivity.this, "Your request is completed ",Toast.LENGTH_LONG).show();
-//            }
-                userLogin();
-            });
+            btnLogin.setOnClickListener(view -> userLogin());
 
         // Code for goto Registration page
         btnRegister.setOnClickListener(view -> {
-        //    btnRegister.setBackgroundColor(Color.LTGRAY);
             Intent i = new Intent(getApplicationContext(), TTSRegistrationActivity.class);
             startActivity(i);
-//                sendNotification();
         });
 
 
@@ -116,10 +106,8 @@ public class TTSLoginActivity extends AppCompatActivity {
         togglePassword.setOnClickListener(v -> {
             if(togglePassword.isChecked())
             {
-                //Button is ON
-                //Show Password
+
                 password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-//                    password.setBackground(getApplicationContext().getResources().getDrawable(R.drawable.icon_password_eye));
                 // Code for set focus to right of text in EditText
                 int pos = password.getText().length();
                 password.setSelection(pos);
@@ -170,17 +158,6 @@ public class TTSLoginActivity extends AppCompatActivity {
                 return false;
             }
                 appExecutors.getNetworkIO().execute(() -> {
-
-
-//
-//           makeUserLogin(isValidUserId(),isValidPassword()).thenAccept(isCredentialsValid -> {
-//
-//                      }).exceptionally(e -> {
-//
-//                      }).whenComplete((result,throwable) -> {
-//                   isRequestInProgress = false;
-//               });
-
                     CompletableFuture<Boolean> isRequestDone = makeUserLogin(isValidUserId(),isValidPassword());
                   CompletableFuture<Void> future =  new CompletableFuture<>();
                     if(!future.isDone()) {
@@ -235,44 +212,7 @@ public class TTSLoginActivity extends AppCompatActivity {
 
 
                 });
-
-//                 appExecutors.getNetworkIO().execute(() -> makeUserLogin(isValidUserId(),isValidPassword()).thenAccept(isCredentialsValid -> {
-//                    if (isCredentialsValid){
-//                         appExecutors.getMainThread().execute(() -> {
-//                             String userId = userName
-//                                     .getText()
-//                                     .toString()
-//                                     .trim()
-//                                     .replaceAll("\\s+", "");
-//                             sessionManager = new SessionManager(getApplicationContext());
-//                             sessionManager.setUserID(userId);
-//                             Toast.makeText(TTSLoginActivity.this, "You're logged in now", Toast.LENGTH_SHORT).show();
-//                             Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);
-//                             startActivity(i);
-//                             finish();
-//                             btnLogin.setBackgroundResource(android.R.drawable.btn_default);
-//                         });
-//                     }else {
-//                             appExecutors
-//                                     .getMainThread()
-//                                     .execute(() -> {
-//                                 progressBarInLogin.setVisibility(View.INVISIBLE);
-//                                 Toast.makeText(TTSLoginActivity.this, "You entered incorrect details ", Toast.LENGTH_SHORT).show();
-//                                 btnLogin.setBackgroundResource(android.R.drawable.btn_default);
-//                             });}
-//
-//                 }).exceptionally(e -> {
-//                                appExecutors.getMainThread().execute(() -> {
-//                                   progressBarInLogin.setVisibility(View.INVISIBLE);
-//                                   Toast.makeText(TTSLoginActivity.this, "Error while making you logged in "+e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
-//                                   btnLogin.setBackgroundResource(android.R.drawable.btn_default);
-//
-//                               });
-//
-//                     return null;
-//                 }));
-
-        } else {
+     } else {
             Toast.makeText(TTSLoginActivity.this, "No Internet Connection", Toast.LENGTH_LONG).show();
             progressBarInLogin.setVisibility(View.INVISIBLE);
             isRequestInProgress = false;
@@ -286,7 +226,6 @@ public class TTSLoginActivity extends AppCompatActivity {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(android.R.drawable.ic_dialog_alert);
-//        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.journaldev.com/"));
         Intent intent = new Intent(this, TTSRegistrationActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);

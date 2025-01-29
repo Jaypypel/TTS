@@ -8,24 +8,59 @@
 <!--</resources>-->
 <resources>
   <!-- Primary Colors -->
-  <color name="primaryColor">#6200EE</color>
-  <color name="primaryVariant">#3700B3</color>
-  <color name="onPrimary">#FFFFFF</color>
+<!--  <color name="primaryColor">#6200EE</color>-->
+<!--  <color name="primaryVariant">#3700B3</color>-->
+<!--  <color name="onPrimary">#FFFFFF</color>-->
 
-  <!-- Secondary Colors -->
-  <color name="secondaryColor">#03DAC6</color>
-  <color name="secondaryVariant">#018786</color>
-  <color name="onSecondary">#000000</color>
+<!--  &lt;!&ndash; Secondary Colors &ndash;&gt;-->
+<!--  <color name="secondaryColor">#03DAC6</color>-->
+<!--  <color name="secondaryVariant">#018786</color>-->
+<!--  <color name="onSecondary">#000000</color>-->
 
-  <!-- Background Colors -->
-  <color name="background">#FFFFFF</color>
-  <color name="onBackground">#000000</color>
+<!--  &lt;!&ndash; Background Colors &ndash;&gt;-->
+<!--  <color name="background">#FFFFFF</color>-->
+<!--  <color name="onBackground">#000000</color>-->
 
-  <!-- Surface Colors -->
-  <color name="surface">#FFFFFF</color>
-  <color name="onSurface">#000000</color>
+<!--  &lt;!&ndash; Surface Colors &ndash;&gt;-->
+<!--  <color name="surface">#FFFFFF</color>-->
+<!--  <color name="onSurface">#000000</color>-->
 
-  <!-- Error Colors -->
-  <color name="error">#B00020</color>
-  <color name="onError">#FFFFFF</color>
+<!--  &lt;!&ndash; Error Colors &ndash;&gt;-->
+<!--  <color name="error">#B00020</color>-->
+<!--  <color name="onError">#FFFFFF</color>-->
+  <!-- Primary Green Color (Used for the app bar, buttons, etc.) -->
+  <color name="primaryGreen">#388E3C</color> <!-- Medium Green -->
+
+  <!-- Primary Variant Green (A darker shade for accents) -->
+  <color name="primaryGreenVariant">#1B5E20</color> <!-- Darker Green -->
+
+  <!-- Text color on Primary (Light text on Green) -->
+  <color name="onPrimaryGreen">#FFFFFF</color> <!-- White text on green -->
+
+  <!-- Secondary Brown Color (Used for secondary buttons, highlights) -->
+  <color name="secondaryBrown">#6D4C41</color> <!-- Rich Brown -->
+
+  <!-- Text color on Secondary (Light text on Brown) -->
+  <color name="onSecondaryBrown">#FFFFFF</color> <!-- White text on brown -->
+
+  <!-- Surface color (Background of cards, modal backgrounds, etc.) -->
+  <color name="surfaceColor">#FFFFFF</color> <!-- White surface -->
+
+  <!-- Text color on Surface (Dark text on surface elements) -->
+  <color name="onSurfaceText">#000000</color> <!-- Black text on surface -->
+
+  <!-- Background Color (App's main background) -->
+  <color name="backgroundColor">#F5F5F5</color> <!-- Light background -->
+
+  <!-- Text color on Background -->
+  <color name="onBackgroundText">#000000</color> <!-- Black text on background -->
+
+  <!-- Error Color -->
+  <color name="errorColor">#D32F2F</color> <!-- Red for errors -->
+
+  <!-- Text color on Error -->
+  <color name="onErrorText">#FFFFFF</color> <!-- White text on error -->
+
+  <!-- Divider Color -->
+  <color name="dividerColor">#BDBDBD</color> <!-- Light gray divider -->
 </resources>

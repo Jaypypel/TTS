@@ -103,7 +103,7 @@ public class TTSActivityCRUDFragment extends Fragment {
             getUsernames().thenAccept(usernames -> {
                ArrayList<String>  users = usernames;
                 users.add(0,"Select user");
-                ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
+                ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item,users);
                 userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 userSelect.setAdapter(userSelectAdapter);
             }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update usernames", Toast.LENGTH_LONG).show();

@@ -144,10 +144,7 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
                     {
 
                         updateTaskManagementStatus(allocatedTaskListItemDetails.getId(),accepted).thenAccept(isCompleted -> {
-                            Log.e("isCompleted after future resolves"," "+isCompleted);
                             if(isCompleted){
-                                Log.e("Complted"," "+isCompleted);
-
                                 appExecutor.getMainThread().execute(() -> {
                                     Toast.makeText(TTSTaskAllocatedListItemDetailsActivity.this, "Task Accepted", Toast.LENGTH_LONG).show();
                                     finish();
@@ -160,12 +157,6 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
                             Toast.makeText(TTSTaskAllocatedListItemDetailsActivity.this, "Failed to update the task", Toast.LENGTH_LONG).show();
                             return null;
                         });
-                        Log.d("Accept","YES");
-//                    result = updateAcceptTimeStatus(allocatedTaskListItemDetails.getId());
-//                    if (result) {
-//                        Toast.makeText(TTSTaskAllocatedListItemDetailsActivity.this, "Task Accepted", Toast.LENGTH_LONG).show();
-//                        finish();
-//                    }
                     }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
                 }
 

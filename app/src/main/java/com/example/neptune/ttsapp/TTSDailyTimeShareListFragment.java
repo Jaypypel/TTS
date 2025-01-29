@@ -84,7 +84,7 @@ public class TTSDailyTimeShareListFragment extends Fragment {
 
         listViewDailyTimeShares=(ListView)view.findViewById(R.id.listDailyTimeShare);
 
-        sessionManager = new SessionManager(getActivity().getApplicationContext());
+        sessionManager = new SessionManager(requireContext());
         userId = sessionManager.getToken();
         user=(TextView)view.findViewById(R.id.textViewDailyTimeShareListUser);
         user.setText(userId);
@@ -131,17 +131,6 @@ public class TTSDailyTimeShareListFragment extends Fragment {
            });
        });
 
-       // Get Data From Database for Accepted Task And set to the ListView
-//        if (InternetConnectivity.isConnected()) {
-//            dailyTimeShareDataList = getDailyTimeShareList(userId,getTodayDate());
-//            adapter= new DailyTimeShareListCustomAdapter(dailyTimeShareDataList,getActivity().getApplicationContext());
-//            listViewDailyTimeShares.setAdapter(adapter);
-//        }else { Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
-//
-//        appExecutor.getNetworkIO().execute(() -> {
-
-
-
 
         if (InternetConnectivity.isConnected()) {
             listViewDailyTimeShares.setOnItemClickListener((parent, view1, position, id) -> {
@@ -160,14 +149,7 @@ public class TTSDailyTimeShareListFragment extends Fragment {
                         return null;
                     });
                 });
-//                ArrayList<MeasurableListDataModel> measurableList = getDTSMeasurableList(dataModel.getTimeShareId());
-//
-//                Intent i = new Intent(getActivity(), TTSTaskModificationActivity.class);
-//
-//                i.putExtra("DTSListItemDetails", dataModel);
-//                i.putExtra("DTSMeasurableList", measurableList);
-//
-//                startActivity(i);
+
             });
         }
 
@@ -202,35 +184,7 @@ public class TTSDailyTimeShareListFragment extends Fragment {
                                 ArrayList<DailyTimeShareDataModel> dailyTimeShareDataModels = gson.fromJson(content,dailyTimeShareType);
                                 future.complete(dailyTimeShareDataModels);
                             }
-
-//                            Log.e("dtsList"," "+bodyContent);
-//                            for (JsonElement item : bodyContent) {
-//                                JsonObject dts = item.getAsJsonObject();
-//                                Long id = dts.get("id").getAsLong();
-//                                String dateOfTime = dts.get("dateOfTimeShare").getAsString();
-//                                String projectCode = dts.get("projectCode").getAsString();
-//                                String projectName = dts.get("projectName").getAsString();
-//                                String activityName = dts.get("activityName").getAsString();
-//                                String taskName = dts.get("taskName").getAsString();
-//                                String taskDescription = dts.get("description").getAsString();
-//                                String startTime = dts.get("startTime").getAsString();
-//                                String endTime = dts.get("endTime").getAsString();
-//                                String timeDifference = dts.get("timeDifference").getAsString();
-//                                dailyTimeShareData = new DailyTimeShareDataModel();
-//                                dailyTimeShareData.setTimeShareId(id);
-//                                dailyTimeShareData.setTimeShareDate(dateOfTime);
-//                                dailyTimeShareData.setProjectNo(projectCode);
-//                                dailyTimeShareData.setProjectName(projectName);
-//                                dailyTimeShareData.setActivityName(activityName);
-//                                dailyTimeShareData.setTaskName(taskName);
-//                                dailyTimeShareData.setTaskDescription(taskDescription);
-//                                dailyTimeShareData.setStartTime(startTime);
-//                                dailyTimeShareData.setEndTime(endTime);
-//                                dailyTimeShareData.setConsumedTime(timeDifference);
-//                                dailyTimeShareDataModels.add(dailyTimeShareData);
-//                            }
-//                            future.complete(dailyTimeShareDataModels);
-                        }
+                    }
                         if (apiResponse instanceof APIErrorResponse) {
                             String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
                             future.completeExceptionally(new Throwable(erMsg));
@@ -284,16 +238,6 @@ public class TTSDailyTimeShareListFragment extends Fragment {
                                 ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurableType);
                                 future.complete(measurables);
                             }
-//                            for (JsonElement item : bodyContent) {
-//                                JsonObject dts = item.getAsJsonObject();
-//                                String id = dts.get("id").getAsString();
-//                                String name = dts.get("name").getAsString();
-//                                measurableListDataModel  = new MeasurableListDataModel();
-//                                measurableListDataModel.setId(id);
-//                                measurableListDataModel.setMeasurableName(name );
-//                                measurableListDataModels.add(measurableListDataModel);
-//                            }
-//                            future.complete(measurableListDataModels);
                         }
                         if (apiResponse instanceof APIErrorResponse) {
                             String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();

@@ -24,6 +24,7 @@ import com.example.neptune.ttsapp.Network.MeasurableServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.example.neptune.ttsapp.Util.Debounce;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -113,38 +114,22 @@ public class TTSTaskAcceptedListFragment extends Fragment {
         }
 
 //        //Get Data From Database for Accepted Task And set to the ListView
-//        if (InternetConnectivity.isConnected()) {
-//        dataModels = getAcceptedTaskList(getToken(),"ACCEPTED");
-//        adapter= new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
-//        listView.setAdapter(adapter);
-//        }else {
-//            Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
-//        }
 
 
-        listView.setOnItemClickListener((parent, view1, position, id) -> {
-
-            TaskDataModel dataModel= dataModels.get(position);
-            getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
+        listView.setOnItemClickListener((parent, v, position, id) -> Debounce.debounceEffect(() -> {
+                TaskDataModel dataModel= dataModels.get(position);
+                getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
                 appExecutors.getMainThread().execute(() -> {
-                    Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
-                    i.putExtra("acceptedTasks",dataModel);
-                    i.putExtra("acceptedTaskMeasurables",measurables);
-                    startActivity(i);
-                });
-            }).exceptionally(e -> {
-                Log.e("Error", "Failed to get Tasks " );
-                Toast.makeText(getActivity().getApplicationContext(),"Failed to get the  accepted Tasks", Toast.LENGTH_LONG).show();
-                return  null;
+                Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
+                i.putExtra("acceptedTasks",dataModel);
+                i.putExtra("acceptedTaskMeasurables",measurables);
+                startActivity(i);
             });
-
-//            Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
-//
-//            i.putExtra("TaskAcceptedItemDetails",dataModel);
-//
-//            startActivity(i);
-
+        }).exceptionally(e -> {
+            Toast.makeText(getActivity().getApplicationContext(),"Failed to get the  accepted Tasks", Toast.LENGTH_LONG).show();
+            return  null;
         });
+        }));
 
 //        listView.setOnItemLongClickListener((parent, view12, position, id) -> {
 //            dataModel= dataModels.get(position);
@@ -231,14 +216,7 @@ public class TTSTaskAcceptedListFragment extends Fragment {
                             ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurableType);
                             future.complete(measurables);
                         }
-//                        for (JsonElement e : bodyContent){
-//                            JsonObject msrObj = e.getAsJsonObject();
-//                            measurable = new MeasurableListDataModel();
-//                            measurable.setId(msrObj.get("id").getAsString());
-//                            measurable.setMeasurableName(msrObj.get("name").getAsString());
-//                            measurables.add(measurable);
-//                        }
-//                        future.complete(measurables);
+
                     }
 
                     if (apiResponse instanceof APIErrorResponse) {
@@ -279,12 +257,10 @@ public class TTSTaskAcceptedListFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                ArrayList<TaskDataModel> tasks = new ArrayList<>();
-//                TaskDataModel task;
+
                 try{
                     APIResponse apiResponse = APIResponse.create(response);
                     if(apiResponse instanceof APISuccessResponse){
-                       // JsonArray bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonArray();
 
                         JsonElement bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse)
                                 .getBody().getBody();
@@ -295,28 +271,7 @@ public class TTSTaskAcceptedListFragment extends Fragment {
                             ArrayList<TaskDataModel> tasks = gson.fromJson(content,taskType);
                             future.complete(tasks);
                         }
-//                        for (JsonElement item: bodyContent
-//                        ) {
-//                            JsonObject taskObj = item.getAsJsonObject();
-//                            task = new TaskDataModel();
-//                            task.setId(taskObj.get("id").getAsLong());
-//                            JsonObject usr = taskObj.get("taskOwnerUserID").getAsJsonObject();
-//                            task.setTaskOwnerUserID(usr.get("username").getAsString());
-//                            task.setActivityName(taskObj.get("activityName").getAsString());
-//                            task.setTaskName(taskObj.get("taskName").getAsString());
-//                            task.setProjectCode(taskObj.get("projectCode").getAsString());
-//                            task.setProjectName(taskObj.get("projectName").getAsString());
-//                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
-//                            //        task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
-//                            task.setDescription(taskObj.get("description").getAsString());
-//                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
-//                            task.setTaskAssignedOn(taskObj.get("taskAssignedOn").getAsString());
-//                            task.setTaskSeenOn(taskObj.get("taskSeenOn").getAsString());
-//                            task.setTaskAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
-//                            task.setStatus(taskObj.get("status").getAsString());
-//                            tasks.add(task);
-//
-//                        }future.complete(tasks);
+
                     }
 
 
@@ -351,54 +306,5 @@ public class TTSTaskAcceptedListFragment extends Fragment {
         return future;
     }
 
-    // Getting Accepted Task List
-//    public ArrayList <TaskDataModel> getAcceptedTaskList(String receivedUserID, String status){
-//
-//        ArrayList<TaskDataModel> taskList = new ArrayList();
-//        TaskDataModel listDataModel;
-//        Connection con;
-//
-//        try {
-//            con = DatabaseHelper.getDBConnection();
-//
-//            PreparedStatement ps = con.prepareStatement("select * from TASK_MANAGEMENT where FK_AUTHENTICATION_RECEIVED_USER_ID=? and STATUS=?");
-//            ps.setString(1, receivedUserID);
-//            ps.setString(2,status);
-//
-//
-//            ResultSet rs = ps.executeQuery();
-//
-//            while (rs.next()) {
-//
-//                listDataModel = new TaskDataModel();
-//
-//
-//                listDataModel.setId(rs.getLong("ID"));
-//                listDataModel.setTaskDeligateOwnerUserID(rs.getString("FK_AUTHENTICATION_OWNER_USER_ID"));
-//                listDataModel.setActivityName(rs.getString("ACTIVITY_NAME"));
-//                listDataModel.setTaskName(rs.getString("TASK_NAME"));
-//                listDataModel.setProjectNo(rs.getString("PROJECT_ID"));
-//                listDataModel.setProjectName(rs.getString("PROJECT_NAME"));
-//                listDataModel.setExpectedDate(rs.getString("EXPECTED_DATE"));
-//                listDataModel.setExpectedTotalTime(rs.getString("EXPECTED_TOTAL_TIME"));
-//                listDataModel.setDescription(rs.getString("DESCRIPTION"));
-//                listDataModel.setActualTotalTime(rs.getString("ACTUAL_TOTAL_TIME"));
-//                listDataModel.setDeligationDateTime(rs.getTimestamp("DELEGATION_ON").toString());
-//                listDataModel.setSeenOn(rs.getString("SEEN_ON"));
-//                listDataModel.setAcceptedOn(rs.getString("ACCEPTED_ON"));
-//                listDataModel.setStatus(rs.getString("STATUS"));
-//
-//
-//                taskList.add(listDataModel);
-//            }
-//
-//            rs.close();
-//            ps.close();
-//            con.close();
-//        } catch (Exception e) { e.printStackTrace(); }
-//
-//        return taskList;
-//
-//    }
 
 }

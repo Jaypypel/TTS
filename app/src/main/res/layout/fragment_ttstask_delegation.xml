@@ -410,7 +410,7 @@
                 android:layout_width="12dp"
                 android:layout_height="20dp"
                 android:layout_column="4"
-                android:paddingLeft="5dp"
+                android:paddingStart="5dp"
                 android:text=":"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
@@ -424,7 +424,6 @@
                 android:layout_weight="1"
                 app:hintEnabled="true"
                 app:boxBackgroundMode="outline"
-                android:paddingLeft="7dp"
                 android:hint="MM">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -651,8 +650,6 @@
                 android:layout_column="1"
                 android:layout_marginLeft="20dp"
                 android:text="Cancel"
-                android:focusableInTouchMode="true"
-                android:clickable="true"
 
                 />
 
@@ -663,8 +660,7 @@
                 android:layout_column="2"
                 android:layout_marginLeft="100dp"
                 android:text="Submit"
-                android:focusableInTouchMode="true"
-                android:clickable="true"
+
                 />
 
         </TableRow>

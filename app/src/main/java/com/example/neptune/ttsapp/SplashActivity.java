@@ -8,14 +8,21 @@ import android.os.Looper;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int SPLASH_TIME = 2000;
-
+    private static final int SPLASH_TIME = 1000;
+    LinearProgressIndicator progressIndicator;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        progressIndicator = findViewById(R.id.progressBarSplash);
+        progressIndicator.show();
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             SessionManager sessionManager = new SessionManager(this);
             if (sessionManager.isLoggedIn()){

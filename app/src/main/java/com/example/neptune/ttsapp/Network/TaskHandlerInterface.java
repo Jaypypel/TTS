@@ -49,7 +49,7 @@ public interface TaskHandlerInterface {
                                                   @Path("status") String status);
 
 
-    @PUT("tasksm/task/{taskID}/seentime/update/")
+    @PUT("tasksm/task/{taskId}/seentime/update/")
     Call<ResponseBody> updateSeenTimeTaskManagement(@Path("taskId") Long taskId);
 
     @GET("tasksm/time/assigned/{assignedTaskId}")

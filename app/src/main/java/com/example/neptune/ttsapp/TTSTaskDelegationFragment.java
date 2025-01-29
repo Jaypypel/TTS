@@ -221,17 +221,17 @@ public class TTSTaskDelegationFragment extends Fragment {
 
         taskDelegate.setOnClickListener(v -> {
             try {
-                // Log when the button is clicked
-                Log.d("TaskDelegate", "Button clicked");
 
+                taskDelegate.setEnabled(false);
                 // Check internet connectivity
                 if (!InternetConnectivity.isConnected()) {
-                    Log.e("TaskDelegate", "No internet connection");
                     Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_SHORT).show();
+                    taskDelegate.setEnabled(true);
                     return; // Exit early if no internet
                 }
                 if(isProjectCodeValid().isEmpty()){
                     taskDeliProjCode.setError("Project code need to be present");
+                    taskDelegate.setEnabled(true);
                     return;
                 }
 
@@ -244,12 +244,14 @@ public class TTSTaskDelegationFragment extends Fragment {
                 // Validate Task Name
                 if (isTaskNameValid().isEmpty()) {
                     taskDeliTaskName.setError("Task Name Cannot Be Empty");
+                    taskDelegate.setEnabled(true);
                     return;
                 }
 
                 // Validate Activity Name
                 if (isActivityNameValid().isEmpty()) {
                     taskDeliActivityName.setError("Activity Name Cannot Be Empty");
+                    taskDelegate.setEnabled(true);
                     return;
                 }
 
@@ -262,12 +264,14 @@ public class TTSTaskDelegationFragment extends Fragment {
                 // Validate Expected Date
                 if (isExpDateValid().isEmpty()) {
                     taskDeliExpDate.setError("Expected Date Cannot Be Empty");
+                    taskDelegate.setEnabled(true);
                     return;
                 }
 
                 // Validate Expected Time
                 if (isExpTimeValid().isEmpty()) {
                     taskDeliExpTime.setError("Expected Time Cannot Be Empty");
+                    taskDelegate.setEnabled(true);
                     return;
                 }
 
@@ -277,24 +281,24 @@ public class TTSTaskDelegationFragment extends Fragment {
                     int totalTimeInt = Integer.parseInt(totalTime);
                     if (totalTimeInt > 60) {
                         Toast.makeText(getActivity(), "Invalid Minute", Toast.LENGTH_LONG).show();
+                        taskDelegate.setEnabled(true);
                         return; // Exit if the time is invalid
                     }
                 }
 
-                Log.e("Debugginh","listVieww : "+listView);
+
                 if (measurableListDataModels.isEmpty() ) {
-                    Log.e("Debugging", "measurableListDataModels : " + measurableListDataModels);
+
                     Toast.makeText(getActivity().getApplicationContext(), "Measurable list is empty", Toast.LENGTH_LONG).show();
                     taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
+                    taskDelegate.setEnabled(true);
                     return;
                 }
-                // Log that inputs are valid and proceeding with task creation
-                Log.d("TaskDelegate", "Valid inputs, proceeding with task creation");
 
                 // Set background color to indicate the task is being processed
                 taskDelegate.setBackgroundColor(Color.GRAY);
                 String delegation = delegationTime();
-                Log.e("delegation",""+delegation);
+
                 // Create a new TaskManagement object anzzd set its values
                 TaskManagement taskManagement = new TaskManagement();
                 taskManagement.setActivityName(isActivityNameValid());
@@ -317,19 +321,19 @@ public class TTSTaskDelegationFragment extends Fragment {
 
 
                                         appExecutor.getNetworkIO().execute(() -> assignTaskToUser(taskManagement).thenCompose(result -> {
-                                            Log.e("result",""+result);
+
                                             Long id = Long.valueOf(result.get(1));
-                                            Log.e("id",""+id);
+
 
                                             return addDailyTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
                                                 if (finalResult) {
-                                                    Log.e("finalResult",""+finalResult);
 
                                                     appExecutor.getMainThread().execute(() -> {
                                                         Toast.makeText(getActivity(), "Thank You..! Task Is Assigned", Toast.LENGTH_LONG).show();
                                                         clearAll();
                                                         clearMeasurableDetails();
                                                         taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
+                                                        taskDelegate.setEnabled(true);
                                                     });
                                                 }
                                             });
@@ -337,14 +341,17 @@ public class TTSTaskDelegationFragment extends Fragment {
                                             appExecutor.getMainThread().execute(() -> {
                                                 taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
                                                 Toast.makeText(getActivity(), "Task Delegation Failed", Toast.LENGTH_LONG).show();
+                                                taskDelegate.setEnabled(true);
                                             });
                                             return null;
+
 
                                         }).join());
 
             } catch (Exception e) {
                 Log.e("TaskDelegate", "Error in button click handler", e);
                 Toast.makeText(getActivity(), "An error occurred while assigning the task", Toast.LENGTH_LONG).show();
+                taskDelegate.setEnabled(true);
             }
         });
 
@@ -391,11 +398,11 @@ public class TTSTaskDelegationFragment extends Fragment {
 
                 getMeasurableListAndUpdateUI().thenAccept(measurableListDataModels1 -> {
                    appExecutor.getMainThread().execute(() -> {
-                       if(isAdded()){
-                           ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, measurableListDataModels1);
+
+                           ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
                            adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                            spinnerMeasurable.setAdapter(adapterMeasurable);
-                       }
+
 
                     });
                 }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());

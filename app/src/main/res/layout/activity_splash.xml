@@ -5,15 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressBarSplash"
+        style="@style/Widget.MaterialComponents.LinearProgressIndicator"
         android:layout_width="362dp"
         android:layout_height="14dp"
+        android:indeterminate="true"
+        app:indicatorColor="@color/primaryGreen"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="0.5"
+        app:trackThickness="4dp" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="667dp"
+        android:layout_height="306dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.381"
+        app:srcCompat="@mipmap/ic_launcher_foreground" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
