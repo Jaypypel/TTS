@@ -325,7 +325,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_weight="2"
-                android:hint="Enter Date"
+                android:hint="Expect Date"
                 app:boxBackgroundMode="outline"
                 app:hintEnabled="true">
 
@@ -356,7 +356,7 @@
                 android:layout_weight="2"
                 app:hintEnabled="true"
                 app:boxBackgroundMode="outline"
-                android:hint="Start Time">
+                android:hint="Expect Time">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextTaskDeliExpTime"

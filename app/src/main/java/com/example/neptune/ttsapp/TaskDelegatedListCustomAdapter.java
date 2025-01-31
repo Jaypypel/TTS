@@ -16,6 +16,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 
 public class TaskDelegatedListCustomAdapter extends ArrayAdapter<TaskDataModel> implements View.OnClickListener{
@@ -133,9 +134,9 @@ public class TaskDelegatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
     private String extractDate(String timestamp)
     {
         String currentDate= "";
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
-        ZonedDateTime ist = ZonedDateTime.of(LocalDateTime.parse(timestamp,dateTimeFormatter), ZoneId.of("Asia/Kolkata"));
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a", Locale.ENGLISH);
+        ZonedDateTime ist = ZonedDateTime.of(LocalDateTime.parse(timestamp.toUpperCase(Locale.ENGLISH),dateTimeFormatter), ZoneId.systemDefault());
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
         currentDate = ist.format(dateFormatter);
 
 

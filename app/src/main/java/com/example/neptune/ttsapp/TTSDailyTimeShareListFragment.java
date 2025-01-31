@@ -1,11 +1,13 @@
 package com.example.neptune.ttsapp;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -74,7 +76,13 @@ public class TTSDailyTimeShareListFragment extends Fragment {
     ArrayList<DailyTimeShareDataModel> dailyTimeShareDataList;
 
     private DailyTimeShareListCustomAdapter adapter;
+    private Context mContext;
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mContext = context.getApplicationContext();  // Use application context to avoid leaks
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -118,15 +126,15 @@ public class TTSDailyTimeShareListFragment extends Fragment {
                if (InternetConnectivity.isConnected()) {
                    appExecutor.getMainThread().execute(() -> {
                        dailyTimeShareDataList = result;
-                       adapter = new DailyTimeShareListCustomAdapter(dailyTimeShareDataList, getActivity().getApplicationContext());
+                       adapter = new DailyTimeShareListCustomAdapter(dailyTimeShareDataList, mContext);
                        listViewDailyTimeShares.setAdapter(adapter);
                    });
                } else {
-                   Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                   Toast.makeText(mContext, "No Internet Connection", Toast.LENGTH_LONG).show();
                }
            }).exceptionally(e -> {
                Log.e("Error", "Failed to get DTSList due to" + e.getMessage());
-               Toast.makeText(getActivity().getApplicationContext(), "Failed to get DTSList ", Toast.LENGTH_LONG).show();
+               Toast.makeText(mContext, "Failed to get DTSList ", Toast.LENGTH_LONG).show();
                return null;
            });
        });
@@ -145,7 +153,7 @@ public class TTSDailyTimeShareListFragment extends Fragment {
                         });
                     }).exceptionally(e -> {
                         Log.e("Error", "c");
-                        Toast.makeText(getActivity().getApplicationContext(),"Failed to get DTSMeasurableList",Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext,"Failed to get DTSMeasurableList",Toast.LENGTH_LONG).show();
                         return null;
                     });
                 });

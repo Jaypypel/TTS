@@ -67,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -310,7 +311,8 @@ public class TTSTaskDelegationFragment extends Fragment {
                 taskManagement.setTaskOwnerUserID(deligateOwnerUserId());
                 taskManagement.setExpectedDate(isExpDateValid());
                 taskManagement.setExpectedTime(isExpTimeValid());
-                taskManagement.setActualTotalTime(isTotalTimeValid());
+                taskManagement.setExpectedTotalTime(isTotalTimeValid());
+                taskManagement.setActualTotalTime("Not_Available");
                 taskManagement.setTaskAssignedOn(delegationTime());
                 taskManagement.setStatus(pending.name());
                 taskManagement.setTaskAcceptedOn("not_accepted");
@@ -465,7 +467,7 @@ public class TTSTaskDelegationFragment extends Fragment {
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
 
-                DateTimeFormatter df =  DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                DateTimeFormatter df =  DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
                 String formattedDate = selectedDate.format(df);
                 Log.e("fD",formattedDate);
 

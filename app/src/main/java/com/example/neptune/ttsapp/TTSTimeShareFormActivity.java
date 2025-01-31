@@ -424,8 +424,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
         finish();
     }
 
-    private void clearAll()
-    {
+    private void clearAll(){
         date.setText("");
         startTime.setText("");
         endTime.setText("");

@@ -123,8 +123,7 @@ public class TTSTaskCountFragment extends Fragment {
                    CompletableFuture.allOf(
                             pendingTasksFuture, acceptedTasksFuture, approvedTasksFuture, completedTasksFuture
                     ).thenRun(() -> appExecutors.getMainThread().execute(() -> {
-                       Toast.makeText(getContext(), "Running main thread to display tasks count", Toast.LENGTH_LONG).show();
-                        tvPendingTask.setText("Pending Task      :  " + pendingTasksFuture.getNow("Loading..."));
+                         tvPendingTask.setText("Pending Task      :  " + pendingTasksFuture.getNow("Loading..."));
                         tvAcceptedTask.setText("Accepted Task     :  " + acceptedTasksFuture.getNow("Loading..."));
                         tvApprovalTask.setText("Approved Task     :  " + approvedTasksFuture.getNow("Loading..."));
                         tvCompletedTask.setText("Completed Task    :  " + completedTasksFuture.getNow("Loading..."));
@@ -321,11 +320,15 @@ public class TTSTaskCountFragment extends Fragment {
                     APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
                     if(apiResponse instanceof APISuccessResponse){
 
-                        String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
+                        String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse)
+                                .getBody()
+                                .getBody()
+                                .getAsString();
                         count.complete(bodyContent);
                     }
                     if (apiResponse instanceof APIErrorResponse) {
-                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse)
+                                .getErrorMessage();
                         count.completeExceptionally(new Throwable(erMsg));
 
                     }
