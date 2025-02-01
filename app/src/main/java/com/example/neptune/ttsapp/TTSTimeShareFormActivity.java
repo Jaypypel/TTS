@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -515,7 +516,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
     {
         String start= startTime.getText().toString().trim().replaceAll("\\s+","");
         String end= endTime.getText().toString().trim().replaceAll("\\s+","");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma", Locale.ENGLISH);
         LocalTime startTime = LocalTime.parse(start,formatter);
         LocalTime endTime = LocalTime.parse(end,formatter);
         long difference = ChronoUnit.MINUTES.between(startTime, endTime);

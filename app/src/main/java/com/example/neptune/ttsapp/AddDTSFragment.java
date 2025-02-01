@@ -44,6 +44,7 @@ import com.example.neptune.ttsapp.Network.ProjectServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskServiceInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.example.neptune.ttsapp.databinding.FragmentAddDtsBinding;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.navigation.NavigationView;
@@ -67,6 +68,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -119,6 +121,7 @@ public class AddDTSFragment extends Fragment{
     private MeasurableListCustomAdapter measurableListCustomAdapter;
 
 
+   
 
     @Nullable
     @Override
@@ -220,13 +223,6 @@ public class AddDTSFragment extends Fragment{
 
                 String tmeShreMsrblUnit = timeShareMeasurableUnit.getText().toString();
 
-                String[]   parts = tmeShrMsrble.split("-");
-
-
-                String numberPart = parts[0].split("\\.")[0]; // Cast to int to remove decimal
-
-                // Extract the word part
-                String wordPart = parts[1];
 
                 if (tmeShreMsrbleQty.isEmpty()){
                     timeShareMeasurableQty.setError("Qty can't be blank");
@@ -238,25 +234,36 @@ public class AddDTSFragment extends Fragment{
                     return;
                 }
 
+                appExecutor.getDiskIO().execute(() -> {
+                    String[]   parts = tmeShrMsrble.split("-");
+                    String numberPart = parts[0].split("\\.")[0]; // Cast to int to remove decimal
+                    // Extract the word part
+                    String wordPart = parts[1];
+
+                    MeasurableListDataModel m = new MeasurableListDataModel();
+                    m.setId(numberPart);
+                    m.setMeasurableName(wordPart);
+                    m.setMeasurableQty(tmeShreMsrbleQty);
+                    m.setMeasurableUnit(tmeShreMsrblUnit);
+                    if(!measurableListDataModels.contains(m)){
+                        measurableListDataModels.add(m);
+                    }else {
+                       appExecutor.getMainThread().execute(() -> {
+                           Snackbar snackbar = Snackbar.make(v, "Warning! measurable entry is already present", Snackbar.LENGTH_LONG);
+                           View snackbarView = snackbar.getView();
+                           FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
+                           params.gravity = Gravity.CENTER;
+                           snackbarView.setLayoutParams(params);
+                           snackbar.show();
+                       });
+                    }
+                });
 
 
-                MeasurableListDataModel m = new MeasurableListDataModel();
-                m.setId(numberPart);
-                m.setMeasurableName(wordPart);
-                m.setMeasurableQty(tmeShreMsrbleQty);
-                m.setMeasurableUnit(tmeShreMsrblUnit);
 
 
-                if(!measurableListDataModels.contains(m)){
-                    measurableListDataModels.add(m);
-                }else {
-                    Snackbar snackbar = Snackbar.make(v, "Warning! measurable entry is already present", Snackbar.LENGTH_LONG);
-                    View snackbarView = snackbar.getView();
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
-                    params.gravity = Gravity.CENTER;
-                    snackbarView.setLayoutParams(params);
-                    snackbar.show();
-                }
+
+
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getActivity());
                 listView.setAdapter(measurableListCustomAdapter);
                 clear();
@@ -272,90 +279,137 @@ public class AddDTSFragment extends Fragment{
                 if (InternetConnectivity.isConnected())
                 {
 
-                    if(isProjectCodeValid().isEmpty()){
-                        timeShareProjCode.setError("Project code need to be entered");
 
-                        timeShareSubmit.setEnabled(true);
-                        return;
-                    }
-                    if (isDateValid().isEmpty()) {
-                        timeShareDate.setError("Date Cannot Be Empty");
-                        timeShareSubmit.setEnabled(true);
-                        return;
-                    }
-                    if (isStartTimeValid().equals(isEndTimeValid())){
-                        Snackbar snackbar = Snackbar.make(v, "Warning! Start and End Time are the same", Snackbar.LENGTH_LONG);
-                        View snackbarView = snackbar.getView();
-                        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
-                        params.gravity = Gravity.CENTER;
-                        snackbarView.setLayoutParams(params);
-                        snackbar.show();
+                    appExecutor.getNetworkIO().execute(() -> {
+                        if(isProjectCodeValid().isEmpty()){
+                            appExecutor.getMainThread().execute(() -> {
+                                timeShareProjCode.setError("Project code need to be entered");
+                                timeShareSubmit.setEnabled(true);
+                            });
+                            return;
+                        }
+                        if (isDateValid().isEmpty()) {
+                            appExecutor.getMainThread().execute(() -> {
+                                timeShareDate.setError("Date Cannot Be Empty");
+                                timeShareSubmit.setEnabled(true);
 
-                        timeShareSubmit.setEnabled(true);
-                        return;
+                            });
+                            return;
+                        }
+                        if (isStartTimeValid().equals(isEndTimeValid())){
+                            appExecutor.getMainThread().execute(() -> {
+                                Snackbar snackbar = Snackbar.make(v, "Warning! Start and End Time are the same", Snackbar.LENGTH_LONG);
+                                View snackbarView = snackbar.getView();
+                                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
+                                params.gravity = Gravity.CENTER;
+                                snackbarView.setLayoutParams(params);
+                                snackbar.show();
+                                timeShareSubmit.setEnabled(true);
+                            });
+                            return;
 
-                    }
+                        }
 //                    if (Integer.valueOf(isStartTimeValid().split(":")[0]) < Integer.valueOf(isEndTimeValid().split(":")[0])){
 //                        Snackbar.make(v, "Warning! Start time should be greater than End Time", Snackbar.LENGTH_LONG)
 //                                .show();
 //                        return;
 //                    }
-                    if (!(sessionManager.getToken().equals("Prerna") || sessionManager.getToken().equals("YoKo")) && !isDateValid().equals(getTodayDate()))
-                    { Toast.makeText(getActivity(), "Date Has Been Expired Contact to Admin", Toast.LENGTH_LONG).show();
-
-                        timeShareSubmit.setEnabled(true);
-                        return;
-                    }
-                    if (isStartTimeValid().isEmpty()) { timeShareStartTime.setError("Start Time Cannot Be Empty");
-
-                        timeShareSubmit.setEnabled(true);
-                        return;
-                    }
-                    if (isEndTimeValid().isEmpty()) { timeShareEndTime.setError("End Time Cannot Be Empty");   timeShareSubmit.setEnabled(true);return; }
-                    if (isTaskNameValid().isEmpty()) { timeShareTaskName.setError("Task Name Cannot Be Empty");  timeShareSubmit.setEnabled(true);return;}
-                    if (isProjectNameValid().isEmpty()) { timeShareProjName.setError("Project Name Cannot Be Empty");  timeShareSubmit.setEnabled(true);return; }
-                    if (isActivityNameValid().isEmpty()) { timeShareActivityName.setError("Activity Name Cannot Be Empty");  timeShareSubmit.setEnabled(true);return; }
-                    if (getConsumedTime().contains("-")) { Toast.makeText(getActivity(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show();   timeShareSubmit.setEnabled(false); return; }
-
-
-                    if (measurableListDataModels != null && measurableListDataModels.isEmpty() || listView == null) {
-
-                        Toast.makeText(getActivity(), "Measurable list is empty", Toast.LENGTH_LONG).show();
-                        timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                        timeShareSubmit.setEnabled(true);
-                        return;
-                    }
-                    timeShareSubmit.setBackgroundColor(Color.GRAY);
-
-                    String projectcode = !isProjectNameValid().isEmpty()? isProjectCodeValid(): "No code received";
-                    User user = new User(sessionManager.getToken());
-
-                    DailyTimeShare dailyTimeShare = new DailyTimeShare(isDateValid(),projectcode
-                            ,isProjectNameValid(),isActivityNameValid(),
-                            isTaskNameValid(),isStartTimeValid(),isEndTimeValid(),getConsumedTime(),
-                            isDescriptionValid(),delegationTime(),user );
-                    appExecutor.getNetworkIO().execute(() -> addDailyTimeShare(dailyTimeShare).thenCompose(result -> {
-                        Long id = Long.valueOf(result.get(1));
-                        return addDailyTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
-                            if (finalResult) {
-                                appExecutor.getMainThread().execute(() -> {
-                                    Toast.makeText(requireContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
-                                    clearAll();
-                                    clear();
-                                    timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                                    timeShareSubmit.setEnabled(true);
-                                });
-                            }
-                        });
-                    }).exceptionally(e -> {
-                        appExecutor.getMainThread().execute(() -> {
-                            timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                            Toast.makeText(getActivity(), "Insertion Failed", Toast.LENGTH_LONG).show();
+                        if (!(sessionManager.getToken().equals("Prerna") || sessionManager.getToken().equals("YoKo")) && !isDateValid().equals(getTodayDate()))
+                        { appExecutor.getMainThread().execute(() -> {
+                            Toast.makeText(getActivity(), "Date Has Been Expired Contact to Admin", Toast.LENGTH_LONG).show();
                             timeShareSubmit.setEnabled(true);
-                        });
-                        return null;
 
-                    }).join());
+                        });
+                            return;
+                        }
+                        if (isStartTimeValid().isEmpty()) { timeShareStartTime.setError("Start Time Cannot Be Empty");
+                            appExecutor.getMainThread().execute(() -> {
+                                timeShareSubmit.setEnabled(true);
+                            });
+                            return;
+                        }
+                        if (isEndTimeValid().isEmpty()) {
+                            appExecutor.getMainThread().execute(() -> {
+                                timeShareEndTime.setError("End Time Cannot Be Empty");
+                                timeShareSubmit.setEnabled(true);
+                            });
+                            return;
+                        }
+                        if (isTaskNameValid().isEmpty()) {
+                            appExecutor.getMainThread().execute(() -> {
+                                timeShareTaskName.setError("Task Name Cannot Be Empty");
+                                timeShareSubmit.setEnabled(true);
+                            });
+                            return;
+                        }
+                        if (isProjectNameValid().isEmpty()) {
+                            appExecutor.getMainThread().execute(() -> {
+                                timeShareProjName.setError("Project Name Cannot Be Empty");
+                                timeShareSubmit.setEnabled(true);
+                            });
+                            return;
+                        }
+                        if (isActivityNameValid().isEmpty()) {
+                            appExecutor.getMainThread().execute(() -> {
+                                timeShareActivityName.setError("Activity Name Cannot Be Empty");
+                                timeShareSubmit.setEnabled(true);
+
+                            });
+                            return;
+                        }
+                        if (getConsumedTime().contains("-")) {
+                            appExecutor.getMainThread().execute(() -> {
+                                Toast.makeText(getActivity(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show();
+                                timeShareSubmit.setEnabled(false);
+
+
+                            });
+                            return;
+                        }
+
+
+                        if (measurableListDataModels != null && measurableListDataModels.isEmpty() || listView == null) {
+
+                            appExecutor.getMainThread().execute(() -> {
+                                Toast.makeText(getActivity(), "Measurable list is empty", Toast.LENGTH_LONG).show();
+                                timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                                timeShareSubmit.setEnabled(true);
+                            });
+                            return;
+                        }
+                        timeShareSubmit.setBackgroundColor(Color.GRAY);
+
+                        String projectcode = !isProjectNameValid().isEmpty()? isProjectCodeValid(): "No code received";
+                        User user = new User(sessionManager.getToken());
+
+                        DailyTimeShare dailyTimeShare = new DailyTimeShare(isDateValid(),projectcode
+                                ,isProjectNameValid(),isActivityNameValid(),
+                                isTaskNameValid(),isStartTimeValid(),isEndTimeValid(),getConsumedTime(),
+                                isDescriptionValid(),delegationTime(),user );
+
+                        addDailyTimeShare(dailyTimeShare).thenCompose(result -> {
+                            Long id = Long.valueOf(result.get(1));
+                            return addDailyTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
+                                if (finalResult) {
+                                    appExecutor.getMainThread().execute(() -> {
+                                        Toast.makeText(requireContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
+                                        clearAll();
+                                        clear();
+                                        timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                                        timeShareSubmit.setEnabled(true);
+                                    });
+                                }
+                            });
+                        }).exceptionally(e -> {
+                            appExecutor.getMainThread().execute(() -> {
+                                timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                                Toast.makeText(getActivity(), "Insertion Failed", Toast.LENGTH_LONG).show();
+                                timeShareSubmit.setEnabled(true);
+                            });
+                            return null;
+
+                        }).join();
+                    });
 
 
                 } else {
@@ -372,14 +426,14 @@ public class AddDTSFragment extends Fragment{
                 String projectName = timeShareProjName.getText().toString().trim();
                 if (!projectName.isEmpty()) {
                     // Fetch the project code
-                    getProjectCodeAndUpdateUi(projectName)
-                            .thenAccept(projectCode -> appExecutor
-                                    .getMainThread()
-                                    .execute(() -> timeShareProjCode.setText(projectCode))
-                    ).exceptionally(e -> {
-                        appExecutor.getMainThread().execute(() -> Toast.makeText(getActivity(), "Failed to fetch project code due to ", Toast.LENGTH_LONG).show());
-                        return null;
-                    });
+                   appExecutor.getNetworkIO().execute(() -> getProjectCodeAndUpdateUi(projectName)
+                           .thenAccept(projectCode -> appExecutor
+                                   .getMainThread()
+                                   .execute(() -> timeShareProjCode.setText(projectCode))
+                           ).exceptionally(e -> {
+                               appExecutor.getMainThread().execute(() -> Toast.makeText(getActivity(), "Failed to fetch project code due to ", Toast.LENGTH_LONG).show());
+                               return null;
+                           }));
                 } else {
                     // Handle case when project name is empty
                     timeShareProjName.setError("Project Name Cannot Be Empty");
@@ -460,19 +514,15 @@ public class AddDTSFragment extends Fragment{
             if(!timePicker.isAdded()){
                 timePicker.show(getChildFragmentManager(),"Time_Picker");
             }
-            timePicker.addOnPositiveButtonClickListener(selection -> {
-                appExecutor.getNetworkIO().execute(() -> {
-                    int hour = timePicker.getHour();
-                    int minute = timePicker.getMinute();
-                    String amPm = (hour < 12) ? "AM" : "PM";
-                    int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
-                    String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
-                    appExecutor.getMainThread().execute(() -> timeShareEndTime
-                            .setText(formattedTime));
-                });
-
-
-            });
+            timePicker.addOnPositiveButtonClickListener(selection -> appExecutor.getNetworkIO().execute(() -> {
+                int hour = timePicker.getHour();
+                int minute = timePicker.getMinute();
+                String amPm = (hour < 12) ? "AM" : "PM";
+                int formattedHour = (hour == 0 || hour == 12) ? 12 : hour % 12;
+                String formattedTime = String.format("%02d:%02d %s", formattedHour, minute, amPm);
+                appExecutor.getMainThread().execute(() -> timeShareEndTime
+                        .setText(formattedTime));
+            }));
 
         });
 
@@ -482,13 +532,11 @@ public class AddDTSFragment extends Fragment{
             {
                 try
                 {
-                    if (getConsumedTime() != null)
-                    {
-                        if (getConsumedTime().contains("-"))
-                        {
-                            Toast.makeText(getActivity(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show();
-                        }
-                    }
+                    appExecutor.getMainThread().execute(() -> {
+                        if (getConsumedTime().contains("-")) {
+                            appExecutor.getMainThread().execute(() -> Toast.makeText(getActivity(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show());
+                            }
+                    });
                 } catch (Exception e) { e.printStackTrace(); }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -780,7 +828,7 @@ public class AddDTSFragment extends Fragment{
     private String getConsumedTime() {
         String start= timeShareStartTime!=null ? timeShareStartTime.getText().toString().trim().replaceAll("\\s+","") : "N.I";
         String end=timeShareEndTime !=null ? timeShareEndTime.getText().toString().trim().replaceAll("\\s+","") : "N.I" ;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma", Locale.ENGLISH);
         LocalTime startTime = LocalTime.parse(start,formatter);
         LocalTime endTime = LocalTime.parse(end,formatter);
         long difference = ChronoUnit.MINUTES.between(startTime, endTime);
