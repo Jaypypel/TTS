@@ -70,6 +70,7 @@ public class TTSDailyTimeShareListFragment extends Fragment {
     private ListView listViewDailyTimeShares;
 
     private TextView user,date,time;
+    private TextView dailyTimeShares;
 
     private String userId;
 
@@ -99,6 +100,7 @@ public class TTSDailyTimeShareListFragment extends Fragment {
 
         date =(TextView)view.findViewById(R.id.textViewDailyTimeShareListDate);
         time =(TextView)view.findViewById(R.id.textViewDailyTimeShareListTime);
+        dailyTimeShares = view.findViewById(R.id.dailyTimeShares);
 
         final Handler someHandler = new Handler(Looper.getMainLooper());
         someHandler.postDelayed(new Runnable()
@@ -122,12 +124,15 @@ public class TTSDailyTimeShareListFragment extends Fragment {
 
        appExecutor.getNetworkIO().execute(() -> {
            getDailyTimeShareList(userId, getTodayDate()).thenAccept(result -> {
-               Log.e("result"," "+result);
+               dailyTimeShares.setVisibility(View.INVISIBLE);
                if (InternetConnectivity.isConnected()) {
                    appExecutor.getMainThread().execute(() -> {
                        dailyTimeShareDataList = result;
                        adapter = new DailyTimeShareListCustomAdapter(dailyTimeShareDataList, mContext);
                        listViewDailyTimeShares.setAdapter(adapter);
+                       if(dailyTimeShareDataList == null ||dailyTimeShareDataList.isEmpty()){
+                           dailyTimeShares.setVisibility(View.VISIBLE);
+                       }
                    });
                } else {
                    Toast.makeText(mContext, "No Internet Connection", Toast.LENGTH_LONG).show();
@@ -230,8 +235,6 @@ public class TTSDailyTimeShareListFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ArrayList<MeasurableListDataModel> measurableListDataModels = new ArrayList<>();
-                MeasurableListDataModel measurableListDataModel;
                 try {
                     APIResponse apiResponse = APIResponse.create(response);
                     if(apiResponse != null){

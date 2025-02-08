@@ -217,7 +217,7 @@ public class AddDTSFragment extends Fragment{
         timeShareAddMeasurable.setOnClickListener(v -> {
 
             try {
-                timeShareMeasurable.getSelectedItem().toString();
+
                 String tmeShrMsrble = timeShareMeasurable.getSelectedItem().toString();
                 String tmeShreMsrbleQty = timeShareMeasurableQty.getText().toString();
 
@@ -258,12 +258,6 @@ public class AddDTSFragment extends Fragment{
                        });
                     }
                 });
-
-
-
-
-
-
                 measurableListCustomAdapter = new MeasurableListCustomAdapter(measurableListDataModels, getActivity());
                 listView.setAdapter(measurableListCustomAdapter);
                 clear();
@@ -278,8 +272,6 @@ public class AddDTSFragment extends Fragment{
                 timeShareSubmit.setEnabled(false);
                 if (InternetConnectivity.isConnected())
                 {
-
-
                     appExecutor.getNetworkIO().execute(() -> {
                         if(isProjectCodeValid().isEmpty()){
                             appExecutor.getMainThread().execute(() -> {
@@ -410,8 +402,6 @@ public class AddDTSFragment extends Fragment{
 
                         }).join();
                     });
-
-
                 } else {
                     Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
                     timeShareSubmit.setVisibility(View.VISIBLE);
@@ -532,11 +522,13 @@ public class AddDTSFragment extends Fragment{
             {
                 try
                 {
-                    appExecutor.getMainThread().execute(() -> {
-                        if (getConsumedTime().contains("-")) {
-                            appExecutor.getMainThread().execute(() -> Toast.makeText(getActivity(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show());
-                            }
-                    });
+
+                       if(getConsumedTime()!=null){
+                           if (getConsumedTime().contains("-")) {
+                               appExecutor.getMainThread().execute(() -> Toast.makeText(getActivity(), "Please Enter Valid End Time", Toast.LENGTH_LONG).show());
+                           }
+                       }
+
                 } catch (Exception e) { e.printStackTrace(); }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }

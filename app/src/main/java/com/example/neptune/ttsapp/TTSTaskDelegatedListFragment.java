@@ -72,6 +72,8 @@ public class TTSTaskDelegatedListFragment extends Fragment {
     private TextView user,date,time;
     private String userId;
 
+    private TextView assignedTasksState;
+
     private static TaskDelegatedListCustomAdapter adapter;
     private SessionManager sessionManager;
 
@@ -91,7 +93,7 @@ public class TTSTaskDelegatedListFragment extends Fragment {
 
         date=view.findViewById(R.id.textViewDelegatedListDate);
         time=view.findViewById(R.id.textViewDelegatedListTime);
-
+        assignedTasksState = view.findViewById(R.id.assignedTasksState);
            appExecutors.getMainThread().execute(() -> {
             date.setText(DateConverter.currentDate());
             time.setText(DateConverter.currentTime());
@@ -99,13 +101,18 @@ public class TTSTaskDelegatedListFragment extends Fragment {
 
         if (InternetConnectivity.isConnected()){
             appExecutors.getNetworkIO().execute(() -> {
+
                 getAssignedTask(getToken()).thenAccept(result -> {
-                    Log.e("datamodels","dataModels");
+                    assignedTasksState.setVisibility(View.INVISIBLE);
                     dataModels = result;
                     adapter = new TaskDelegatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
                     listView.setAdapter(adapter);
+                    if(dataModels == null || dataModels.isEmpty()){
+                        assignedTasksState.setVisibility(View.VISIBLE);
+                    }
                 }).exceptionally( e -> {
-                    Log.e("Error", "Failed to get Tasks ");
+                    assignedTasksState.setVisibility(View.VISIBLE);
+                    assignedTasksState.setText("failed to get Delegated tasks due to error " +e.getMessage());
                     return null;
                 });
             });

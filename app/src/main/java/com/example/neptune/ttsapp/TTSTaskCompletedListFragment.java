@@ -84,6 +84,8 @@ public class TTSTaskCompletedListFragment extends Fragment {
 
     private static TaskAllocatedListCustomAdapter adapter;
 
+    private TextView completedTasksState;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -101,6 +103,7 @@ public class TTSTaskCompletedListFragment extends Fragment {
 
         date=(TextView)view.findViewById(R.id.textViewCompletedListDate);
         time=(TextView)view.findViewById(R.id.textViewCompletedListTime);
+        completedTasksState = view.findViewById(R.id.completedTasksState);
 
            appExecutors.getMainThread().execute(() -> {
             date.setText(DateConverter.currentDate());
@@ -110,12 +113,18 @@ public class TTSTaskCompletedListFragment extends Fragment {
 
         if (InternetConnectivity.isConnected()){
             appExecutors.getNetworkIO().execute(() -> {
+
                 getCompletedTasks(getToken(),"completed").thenAccept(tasks -> {
+                    completedTasksState.setVisibility(View.INVISIBLE);
                     dataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
                     listView.setAdapter(adapter);
+                    if(dataModels == null || dataModels.isEmpty()){
+                        completedTasksState.setVisibility(View.VISIBLE);
+                    }
                 }).exceptionally( e -> {
-                    Log.e("Error", "Failed to get Tasks ");
+                    completedTasksState.setVisibility(View.VISIBLE);
+                    completedTasksState.setText("failed to get Completed tasks due to error " +e.getMessage());
                     return null;
                 });
             });

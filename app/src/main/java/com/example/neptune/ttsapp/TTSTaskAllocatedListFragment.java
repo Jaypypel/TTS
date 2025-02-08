@@ -78,6 +78,8 @@ public class TTSTaskAllocatedListFragment extends Fragment {
 
     private static TaskAllocatedListCustomAdapter adapter;
 
+    private TextView allocatedTaskState;
+
     private String userId;
     private long lastTimeClick = 0;
 //    SwipeRefreshLayout mSwipeRefreshLayout;
@@ -97,6 +99,8 @@ public class TTSTaskAllocatedListFragment extends Fragment {
 
         date=view.findViewById(R.id.textViewAllocatedListDate);
         time=view.findViewById(R.id.textViewAllocatedListTime);
+        allocatedTaskState = view.findViewById(R.id.receivedTasksState);
+
 
            appExecutors.getMainThread().execute(() -> {
             date.setText(DateConverter.currentDate());
@@ -104,12 +108,20 @@ public class TTSTaskAllocatedListFragment extends Fragment {
         });
         if (InternetConnectivity.isConnected()){
         appExecutors.getNetworkIO().execute(() -> {
+
            getAssignedTask(getToken(),"Pending").thenAccept(result -> {
-               tasks = result;
-               adapter = new TaskAllocatedListCustomAdapter(tasks,requireContext());
-               listView.setAdapter(adapter);
+               allocatedTaskState.setVisibility(View.INVISIBLE);
+               appExecutors.getMainThread().execute(() -> {
+                   tasks = result;
+                   adapter = new TaskAllocatedListCustomAdapter(tasks,requireContext());
+                   listView.setAdapter(adapter);
+                   if(tasks == null || tasks.isEmpty()){
+                       allocatedTaskState.setVisibility(View.VISIBLE);
+                   }
+               });
            }).exceptionally( e -> {
-               Log.e("Error", "Failed to get Tasks ");
+               allocatedTaskState.setVisibility(View.VISIBLE);
+               allocatedTaskState.setText("failed to get received tasks due to error " +e.getMessage());
                return null;
            });
         });

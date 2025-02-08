@@ -109,5 +109,16 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="150dp"
         />
-
+    <TextView
+        android:id="@+id/committedTasksState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No committed tasks available!"
+        android:layout_marginStart="125dp"
+        android:layout_marginTop="250dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textColor="?attr/colorOnBackground"
+        android:textStyle="bold"
+        />
 </RelativeLayout>

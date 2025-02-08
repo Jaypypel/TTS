@@ -73,6 +73,8 @@ public class TTSTaskAcceptedListFragment extends Fragment {
     private TextView user,date,time;
     private String userId;
 
+    private TextView acceptedTasksState;
+
     private static TaskAllocatedListCustomAdapter adapter;
 
     boolean result=false;
@@ -92,7 +94,7 @@ public class TTSTaskAcceptedListFragment extends Fragment {
 
         date=view.findViewById(R.id.textViewAcceptedListDate);
         time=view.findViewById(R.id.textViewAcceptedListTime);
-
+        acceptedTasksState = view.findViewById(R.id.acceptedTasksState);
            appExecutors.getMainThread().execute(() -> {
             date.setText(DateConverter.currentDate());
             time.setText(DateConverter.currentTime());
@@ -100,12 +102,18 @@ public class TTSTaskAcceptedListFragment extends Fragment {
 
         if (InternetConnectivity.isConnected()){
             appExecutors.getNetworkIO().execute(() -> {
+
                 getAcceptedTask(getToken(),"accepted").thenAccept(result -> {
+                    acceptedTasksState.setVisibility(View.INVISIBLE);
                     dataModels = result;
                     adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
                     listView.setAdapter(adapter);
+                    if(dataModels == null || dataModels.isEmpty()){
+                        acceptedTasksState.setVisibility(View.VISIBLE);
+                    }
                 }).exceptionally( e -> {
-                    Log.e("Error", "Failed to get Tasks ");
+                    acceptedTasksState.setVisibility(View.VISIBLE);
+                    acceptedTasksState.setText("failed to get Accepted tasks due to error " +e.getMessage());
                     return null;
                 });
             });

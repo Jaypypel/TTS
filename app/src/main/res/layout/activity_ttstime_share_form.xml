@@ -264,7 +264,7 @@
             android:id="@+id/editTextTimeShareMeasurableUnit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="number"
+            android:inputType="text"
             android:gravity="center_vertical"/>
         </com.google.android.material.textfield.TextInputLayout>
         <TableRow

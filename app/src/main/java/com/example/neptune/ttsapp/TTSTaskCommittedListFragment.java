@@ -67,6 +67,8 @@ public class TTSTaskCommittedListFragment extends Fragment {
     private TextView user,date,time;
     private String userId;
 
+    private TextView committedTasksState;
+
     private static TaskAllocatedListCustomAdapter adapter;
 
     @Override
@@ -83,6 +85,7 @@ public class TTSTaskCommittedListFragment extends Fragment {
 
         date=view.findViewById(R.id.textViewProcessingListDate);
         time=view.findViewById(R.id.textViewProcessingListTime);
+        committedTasksState = view.findViewById(R.id.committedTasksState);
 
            appExecutors.getMainThread().execute(() -> {
             date.setText(DateConverter.currentDate());
@@ -96,11 +99,17 @@ public class TTSTaskCommittedListFragment extends Fragment {
 
             appExecutors.getNetworkIO().execute(() -> {
                 getProcessingTasks(getToken(),"In_Process").thenAccept(tasks -> {
+                    committedTasksState.setVisibility(View.INVISIBLE);
                     dataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
                     listView.setAdapter(adapter);
+                    if(dataModels == null || dataModels.isEmpty()){
+                        committedTasksState.setVisibility(View.VISIBLE);
+                    }
                 }).exceptionally(e-> {
                     Toast.makeText(getActivity().getApplicationContext(),"Failed to fetch tasks",Toast.LENGTH_LONG).show();
+                    committedTasksState.setVisibility(View.VISIBLE);
+                    committedTasksState.setText("failed to get Committed tasks due to error " +e.getMessage());
                     return null;
                 });
             });
