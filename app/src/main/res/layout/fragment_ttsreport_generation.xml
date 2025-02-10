@@ -90,6 +90,6 @@
         android:layout_marginStart="63dp"
         android:layout_marginLeft="63dp"
         android:layout_marginTop="284dp"
-        android:text="Report Generate" />
+        android:text="Generate Report" />
 
 </RelativeLayout>

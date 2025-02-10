@@ -5,7 +5,55 @@
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TTSTaskCRUDFragment">
+    tools:context=".TTSTaskCRUDFragment"
+    >
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="2"
+        >
+
+        <TextView
+            android:id="@+id/textViewTaskCRUDUser"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:gravity="center_vertical"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"  />
+
+        <TextView
+            android:id="@+id/textViewTaskCRUDDate"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:gravity="right"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewTaskCRUDTime"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_row="1"
+            android:gravity="right"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+
+    </GridLayout>
 
     <Spinner
         android:id="@+id/spinnerTaskCRUDActivitySelect"
@@ -31,44 +79,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textViewTaskCRUDUser"
-        android:layout_width="83dp"
-        android:layout_height="wrap_content"
-
-        android:layout_marginTop="12dp"
-        android:textColor="@android:color/black"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textViewTaskCRUDDate"
-        android:layout_width="150dp"
-        android:layout_height="18dp"
-
-        android:layout_marginStart="131dp"
-        android:layout_marginTop="12dp"
-        android:textColor="@android:color/black"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 
-    <TextView
-        android:id="@+id/textViewTaskCRUDTime"
-        android:layout_width="150dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="131dp"
-        android:layout_marginTop="31dp"
-        android:textColor="@android:color/black"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
+
+
 
     <Spinner
         android:id="@+id/spinnerTaskCRUDUserSelect"

@@ -70,9 +70,11 @@ public class TTSAdminActivity extends AppCompatActivity {
             appBarConfiguration = new AppBarConfiguration.
                     Builder(
                         R.id.nav_home,
-                        R.id.nav_activity,
                         R.id.nav_project,
-                        R.id.nav_task,
+                         R.id.nav_task,
+                        R.id.nav_activity,
+
+
                         R.id.nav_measurable,
                         R.id.nav_other_activity,
                         R.id.nav_report_generation

@@ -7,18 +7,18 @@
 
     <fragment
         android:id="@+id/nav_activity"
-        android:name="com.example.neptune.ttsapp.TTSProjectCRUDFragment"
+        android:name="com.example.neptune.ttsapp.TTSActivityCRUDFragment"
         android:label="Add Activity"
+        tools:layout="@layout/fragment_ttsactivity_crud"/>
+    <fragment
+        android:id="@+id/nav_project"
+        android:name="com.example.neptune.ttsapp.TTSProjectCRUDFragment"
+        android:label="Add Project"
         tools:layout="@layout/fragment_ttsproject_crud" />
     <fragment
         android:id="@+id/nav_task"
-        android:name="com.example.neptune.ttsapp.TTSProjectCRUDFragment"
-        android:label="Add Task"
-        tools:layout="@layout/fragment_ttstask_crud" />
-    <fragment
-        android:id="@+id/nav_project"
         android:name="com.example.neptune.ttsapp.TTSTaskCRUDFragment"
-        android:label="Add Project"
+        android:label="Add Task"
         tools:layout="@layout/fragment_ttstask_crud" />
     <fragment
         android:id="@+id/nav_measurable"
