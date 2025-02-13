@@ -5,33 +5,54 @@
     android:orientation="vertical"
     tools:context=".TTSActivityCRUDFragment">
 
-
-    <TextView
-        android:id="@+id/textViewActCRUDUser"
-        android:layout_width="83dp"
+    <GridLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="12dp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"/>
+        android:rowCount="2"
+        android:columnCount="2"
+        >
 
-    <TextView
-        android:id="@+id/textViewActCRUDDate"
-        android:layout_width="150dp"
-        android:layout_height="18dp"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="12dp"
-        android:textColor="@android:color/black"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/textViewActCRUDUser"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:gravity="center_vertical"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"  />
 
-    <TextView
-        android:id="@+id/textViewActCRUDTime"
-        android:layout_width="150dp"
-        android:layout_height="18dp"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="31dp"
-        android:textColor="@android:color/black"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/textViewActCRUDDate"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:gravity="right"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewActCRUDTime"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_row="1"
+            android:gravity="right"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+
+    </GridLayout>
+
 
     <Spinner
         android:id="@+id/spinnerActCRUDUserSelect"

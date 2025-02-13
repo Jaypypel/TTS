@@ -143,16 +143,22 @@ public class TTSTaskCRUDFragment extends Fragment {
 
 
 
-                    appExecutors.getNetworkIO().execute(() -> getActivities(getUser()).thenAccept(activities ->{
-                        activityDataModels = activities;
-                        ArrayAdapter<ActivityDataModel> activitySelectAdapter = new ArrayAdapter<ActivityDataModel>
-                                (requireContext(), android.R.layout.simple_spinner_item,activityDataModels);
-                        activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        activitySelect.setAdapter(activitySelectAdapter);
-                    }).exceptionally(e -> {
-                        Toast.makeText(requireContext(),"Failed to get activities",Toast.LENGTH_LONG).show();
-                        return null;
-                    }));
+                   if(!getUser().equals("Select user")){
+                       appExecutors.getNetworkIO().execute(() -> getActivities(getUser()).thenAccept(activities ->{
+                           activityDataModels = activities;
+                           if(activities.isEmpty()){
+                               Toast.makeText(getContext(),"Add activities to user because no user's activity found",Toast.LENGTH_LONG).show();
+                               return;
+                           }
+                           ArrayAdapter<ActivityDataModel> activitySelectAdapter = new ArrayAdapter<>
+                                   (requireContext(), android.R.layout.simple_spinner_item,activityDataModels);
+                           activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                           activitySelect.setAdapter(activitySelectAdapter);
+                       }).exceptionally(e -> {
+                           Toast.makeText(requireContext(),"Failed to get activities",Toast.LENGTH_LONG).show();
+                           return null;
+                       }));
+                   }
 
                 }
                 @Override
@@ -169,6 +175,11 @@ public class TTSTaskCRUDFragment extends Fragment {
                 if (InternetConnectivity.isConnected()) {
                     if (isTaskName().isEmpty()) {
                         taskName.setError("Task Name Be Empty");
+                        addTask.setEnabled(true);
+                        return;
+                    }
+                    if(activitySelect.getSelectedItem().toString().trim().isEmpty()){
+                        Toast.makeText(getContext(),"activity name is not absent, add activity to user",Toast.LENGTH_LONG).show();
                         addTask.setEnabled(true);
                         return;
                     }

@@ -369,7 +369,7 @@ public class AddDTSFragment extends Fragment{
                             });
                             return;
                         }
-                        timeShareSubmit.setBackgroundColor(Color.GRAY);
+                        appExecutor.getMainThread().execute(() -> timeShareSubmit.setBackgroundColor(Color.GRAY));
 
                         String projectcode = !isProjectNameValid().isEmpty()? isProjectCodeValid(): "No code received";
                         User user = new User(sessionManager.getToken());

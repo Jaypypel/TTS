@@ -156,9 +156,13 @@ public class TTSProjectCRUDFragment extends Fragment {
             userSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                    if(!getUser().equals("Select user")){
                     appExecutors.getNetworkIO().execute(() -> getActivities(getUser()).thenAccept(activities ->{
                         activityDataModels = activities;
+                        if(activityDataModels.isEmpty()){
+                            Toast.makeText(getContext(),"Add activities to user because no user's activity found",Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         ArrayAdapter<ActivityDataModel> activitySelectAdapter = new ArrayAdapter<>
                                 (requireActivity(), android.R.layout.simple_spinner_item, activityDataModels);
                         activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -166,7 +170,7 @@ public class TTSProjectCRUDFragment extends Fragment {
                     }).exceptionally(e -> {
                         Toast.makeText(getActivity().getApplicationContext(),"Failed to get activities",Toast.LENGTH_LONG).show();
                         return null;
-                    }));
+                    })); }
 
                 }
                 @Override
@@ -190,6 +194,12 @@ public class TTSProjectCRUDFragment extends Fragment {
                    if (isProjectName().isEmpty()){projectName.setError("Project Name Be Empty");
                        addProject.setEnabled(true);
                        return;}
+
+                   if(activitySelect.getSelectedItem().toString().trim().isEmpty()){
+                       Toast.makeText(getContext(),"activity name is not absent, add activity to user",Toast.LENGTH_LONG).show();
+                       addProject.setEnabled(true);
+                       return;
+                   }
                       addProject(getUser(), getAct(), isProjectCode(), isProjectName(), createdOn()).thenAccept(isProjectAdded -> {
                            if(isProjectAdded.equals("successful")){
                                appExecutors.getMainThread().execute(() ->
@@ -225,8 +235,7 @@ public class TTSProjectCRUDFragment extends Fragment {
         return view;
     }
 
-    private String getUser()
-    {
+    private String getUser() {
         return userSelect.getSelectedItem().toString().trim();
     }
 

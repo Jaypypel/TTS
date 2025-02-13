@@ -126,15 +126,17 @@ public class TTSMeasurableCRUDFragment extends Fragment {
                     // Set AutoCompleteTextView
                     if (InternetConnectivity.isConnected()) {
                             measurableName.setText("");
-                        appExecutors.getNetworkIO().execute(() -> {
-                            getMeasurableNames(getUser()).thenAccept(measurableNames -> {
-                                ArrayAdapter<String> taskNameAdapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,measurableNames);
-                                measurableName.setAdapter(taskNameAdapter);
-                            }).exceptionally(e -> {
-                                Toast.makeText(getActivity().getApplicationContext(), "can't update task names", Toast.LENGTH_LONG).show();
-                                return null;
-                            });
-                        });
+                       if(!getUser().equals("Select user")){
+                           appExecutors.getNetworkIO().execute(() -> {
+                               getMeasurableNames(getUser()).thenAccept(measurableNames -> {
+                                   ArrayAdapter<String> taskNameAdapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,measurableNames);
+                                   measurableName.setAdapter(taskNameAdapter);
+                               }).exceptionally(e -> {
+                                   Toast.makeText(getActivity().getApplicationContext(), "can't update task names", Toast.LENGTH_LONG).show();
+                                   return null;
+                               });
+                           });
+                       }
 //                            ArrayAdapter<String> measurableNameAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, getMeasurableList(getUser()));
 //                            measurableName.setAdapter(measurableNameAdapter);
 

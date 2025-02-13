@@ -121,13 +121,17 @@ public class TTSActivityCRUDFragment extends Fragment {
                     if (InternetConnectivity.isConnected()) {
 
                         activityName.setText("");
-                        getActivityNameByUsername(getUser()).thenAccept(activityNames -> {
-                            ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1, activityNames);
-                            activityName.setAdapter(activityNameAdapter);
-                        }).exceptionally(e -> {Toast.makeText(requireContext(), "can't update activity names", Toast.LENGTH_LONG).show();
-                                    return null;
-                                });
+                        if(!getUser().equals("Select user")) {
 
+
+                            getActivityNameByUsername(getUser()).thenAccept(activityNames -> {
+                                ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, activityNames);
+                                activityName.setAdapter(activityNameAdapter);
+                            }).exceptionally(e -> {
+                                Toast.makeText(requireContext(), "can't update activity names", Toast.LENGTH_LONG).show();
+                                return null;
+                            });
+                        }
                     } else {
                         Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
                     }

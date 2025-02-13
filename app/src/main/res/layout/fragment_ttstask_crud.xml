@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:rowCount="2"
         android:columnCount="2"
-        >
+        tools:ignore="MissingConstraints">
 
         <TextView
             android:id="@+id/textViewTaskCRUDUser"
