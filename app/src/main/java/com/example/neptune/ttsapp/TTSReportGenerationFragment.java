@@ -174,7 +174,7 @@ public class TTSReportGenerationFragment extends Fragment {
                         btnReportGenerate.setEnabled(true);
 
                     }).exceptionally(e -> {
-                        Toast.makeText(getActivity().getApplicationContext(), "Failed to get the file from the server ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(), "Failed to get the file from the server "  , Toast.LENGTH_LONG).show();
                         Log.e("Error", "getting error : "+e.getMessage() +" cause : "+e.getCause()+" error : "+e);
                         btnReportGenerate.setEnabled(true);
 

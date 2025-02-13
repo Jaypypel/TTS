@@ -25,6 +25,7 @@ import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.ActivityServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.example.neptune.ttsapp.Util.MapExceptionToMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -57,8 +58,6 @@ public class TTSOtherActivityCRUDFragment extends Fragment {
     
     @Inject
     ActivityServiceInterface activityService;
-    
-    public TTSOtherActivityCRUDFragment() { }
 
     private TextView user,date,time;
     private AutoCompleteTextView otherActivityName;
@@ -93,7 +92,7 @@ public class TTSOtherActivityCRUDFragment extends Fragment {
                 ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, names);
                 userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 otherActivityName.setAdapter(userSelectAdapter);
-            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update activityNames", Toast.LENGTH_LONG).show();
+            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update activityNames due to " + MapExceptionToMessage.getMessageFromThrownException(e) + e, Toast.LENGTH_LONG).show();
                 return null;
             });
 
@@ -128,7 +127,7 @@ public class TTSOtherActivityCRUDFragment extends Fragment {
                         });
                     }
                 }).exceptionally(e -> {
-                    Toast.makeText(getActivity().getApplicationContext(), "Failed to add other activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity().getApplicationContext(), "Failed to add other activity due to "+MapExceptionToMessage.getMessageFromThrownException(e), Toast.LENGTH_LONG).show();
                     addOtherActivity.setEnabled(true);
 
                     return null;

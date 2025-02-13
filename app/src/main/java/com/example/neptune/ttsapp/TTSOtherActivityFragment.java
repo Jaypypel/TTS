@@ -100,7 +100,7 @@ public class TTSOtherActivityFragment extends Fragment {
 
             try
             {
-                if (InternetConnectivity.isConnected()== true)
+                if (InternetConnectivity.isConnected())
                 {
                     if (isDateValid().isEmpty()) { date.setError("Date Cannot Be Empty"); }
                     else if (isStartTimeValid().isEmpty()){ startTime.setError("Start Time Cannot Be Empty"); }

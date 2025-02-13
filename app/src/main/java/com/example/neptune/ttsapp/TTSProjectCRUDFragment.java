@@ -195,8 +195,8 @@ public class TTSProjectCRUDFragment extends Fragment {
                        addProject.setEnabled(true);
                        return;}
 
-                   if(activitySelect.getSelectedItem().toString().trim().isEmpty()){
-                       Toast.makeText(getContext(),"activity name is not absent, add activity to user",Toast.LENGTH_LONG).show();
+                   if(activitySelect.getSelectedItem() == null  ){
+                       Toast.makeText(getContext(),"activity name is absent, add activity to user",Toast.LENGTH_LONG).show();
                        addProject.setEnabled(true);
                        return;
                    }

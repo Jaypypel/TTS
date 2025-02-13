@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -178,8 +179,10 @@ public class TTSTaskCRUDFragment extends Fragment {
                         addTask.setEnabled(true);
                         return;
                     }
-                    if(activitySelect.getSelectedItem().toString().trim().isEmpty()){
-                        Toast.makeText(getContext(),"activity name is not absent, add activity to user",Toast.LENGTH_LONG).show();
+                    if(activitySelect.getSelectedItem() == null){
+                       Toast t= Toast.makeText(getContext(),"activity name is not absent, add activity to user",Toast.LENGTH_LONG);
+                        t.setGravity(Gravity.CENTER,0,0);
+                        t.show();
                         addTask.setEnabled(true);
                         return;
                     }
@@ -188,7 +191,10 @@ public class TTSTaskCRUDFragment extends Fragment {
                             if(isTaskAdded.equals("successful")){
                                 appExecutors.getMainThread().execute(() ->
                                 {
-                                    Toast.makeText(getActivity().getApplicationContext(), "Task Inserted ", Toast.LENGTH_LONG).show();
+
+                                   Toast t = Toast.makeText(getActivity().getApplicationContext(), "Task Inserted ", Toast.LENGTH_LONG);
+                                    t.setGravity(Gravity.CENTER,50,50);
+                                    t.show();
                                     taskName.setText("");
                                     addTask.setEnabled(true);
                                 });
