@@ -101,22 +101,20 @@ public class TTSTaskAcceptedListFragment extends Fragment {
         });
 
         if (InternetConnectivity.isConnected()){
-            appExecutors.getNetworkIO().execute(() -> {
-
-                getAcceptedTask(getToken(),"accepted").thenAccept(result -> {
-                    acceptedTasksState.setVisibility(View.INVISIBLE);
-                    dataModels = result;
-                    adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
-                    listView.setAdapter(adapter);
-                    if(dataModels == null || dataModels.isEmpty()){
-                        acceptedTasksState.setVisibility(View.VISIBLE);
-                    }
-                }).exceptionally( e -> {
+            appExecutors.getNetworkIO().execute(() -> getAcceptedTask(getToken(),"accepted").thenAccept(result -> {
+                acceptedTasksState.setVisibility(View.INVISIBLE);
+                dataModels = result;
+                adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity());
+                listView.setAdapter(adapter);
+                if(dataModels == null || dataModels.isEmpty()){
                     acceptedTasksState.setVisibility(View.VISIBLE);
-                    acceptedTasksState.setText("failed to get Accepted tasks due to error " +e.getMessage());
-                    return null;
-                });
-            });
+                }
+            }).exceptionally( e -> {
+                acceptedTasksState.setVisibility(View.VISIBLE);
+                acceptedTasksState.setText("failed to get Accepted tasks due to error " +e.getMessage());
+                Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                return null;
+            }));
         } else {
             Toast.makeText(getActivity().getApplicationContext(),"No Internet Connection", Toast.LENGTH_LONG).show();
         }
@@ -134,32 +132,10 @@ public class TTSTaskAcceptedListFragment extends Fragment {
                 startActivity(i);
             });
         }).exceptionally(e -> {
-            Toast.makeText(getActivity().getApplicationContext(),"Failed to get the  accepted Tasks", Toast.LENGTH_LONG).show();
+                    Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
             return  null;
         });
         }));
-
-//        listView.setOnItemLongClickListener((parent, view12, position, id) -> {
-//            dataModel= dataModels.get(position);
-//            new AlertDialog.Builder(getActivity())
-//                    .setIcon(android.R.drawable.ic_dialog_alert)
-//                    .setTitle("Task Complete")
-//                    .setMessage(Html.fromHtml("<b>"+"Do You Want Complete The Task..?"+"</b>"))
-//                    .setPositiveButton("Yes", (dialog, which) -> {
-//                        result = updateCompletedStatus(dataModel.id);
-//                        if (result)
-//                        {
-//                            Toast.makeText(getActivity().getApplicationContext(), "Task Completed", Toast.LENGTH_LONG).show();
-//                        }
-//
-//                    })
-//                    .setNegativeButton("No", null)
-//                    .show();
-//
-//            return true;
-//
-//        });
-
 
          return view;
     }
@@ -172,37 +148,6 @@ public class TTSTaskAcceptedListFragment extends Fragment {
 
 
     // Update Task status as COMPLETED
-    public boolean updateCompletedStatus(Long taskId){
-        Connection con;
-        int x = 0;
-        boolean result=false;
-
-        try {
-            con = DatabaseHelper.getDBConnection();
-
-            Calendar calendar = Calendar.getInstance();
-            Timestamp completeTimestamp = new Timestamp(calendar.getTime().getTime());
-
-            PreparedStatement ps = con.prepareStatement("UPDATE TASK_MANAGEMENT SET STATUS =?,COMPLETION_ON=? WHERE ID = ?");
-
-            ps.setString(1, "COMPLETED");
-            ps.setString(2, completeTimestamp.toString());
-            ps.setLong(3,taskId);
-            x=ps.executeUpdate();
-
-            if(x==1){
-                result = true;
-            }
-
-            ps.close();
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return result;
-
-    }
     public CompletableFuture<ArrayList<MeasurableListDataModel>> getAllocatedMeasurableList(Long taskId){
         CompletableFuture<ArrayList<MeasurableListDataModel>> future = new CompletableFuture<>();
         Call<ResponseBody> call = measurableService.getAllocatedMeasurableList(taskId);

@@ -179,9 +179,9 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                         spinnerMeasurableName.setAdapter(adapterMeasurable);
 
                     });
-                }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
+                }).exceptionally(e ->{
                     appExecutor.getMainThread().execute(() ->
-                            Toast.makeText(getApplicationContext(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
+                            Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show());
                     return null;
                 }));
 
@@ -298,7 +298,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                         }).exceptionally(e -> {
                             appExecutor.getMainThread().execute(() -> {
                                // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                                Toast.makeText(getApplicationContext(), "Insertion Failed", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                                 btnSubmit.setEnabled(true);
 
                             });
@@ -460,27 +460,23 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
     private String isActivityNameValid()
     {
-        String actName = activityName.getText().toString().trim();
-        return actName;
+        return activityName.getText().toString().trim();
     }
 
 
     private String isTaskNameValid()
     {
-        String tskName = taskName.getText().toString().trim();
-        return tskName;
+        return taskName.getText().toString().trim();
     }
 
     private String isProjectCodeValid()
     {
-        String projectCode = projCode.getText().toString().trim();
-        return projectCode;
+        return projCode.getText().toString().trim();
     }
 
     private String isProjectNameValid()
     {
-        String projectName = projName.getText().toString().trim();
-        return projectName;
+        return projName.getText().toString().trim();
     }
 
     private String isStartTimeValid()
@@ -499,9 +495,8 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
     private String isDescriptionValid()
     {
-        String descrip= description.getText().toString().trim();
 
-        return descrip;
+        return description.getText().toString().trim();
     }
     //Validation End
 
@@ -522,8 +517,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
         long difference = ChronoUnit.MINUTES.between(startTime, endTime);
         int hours = (int) (difference/ 60);
         int mins = (int) (difference % 60);
-        String timeConsumed = hours + " hr : "+mins+" mins";
-        return timeConsumed;
+        return hours + " hr : "+mins+" mins";
     }
 
     //Calculate Actual Total Time

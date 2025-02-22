@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @InstallIn(SingletonComponent.class)
 public class NetworkConfig {
 
-    private static final String BASE_URL = "http://192.168.0.109:8080";
+    private static final String BASE_URL = "http://192.168.0.106:8081";
 
     @Provides
     @Singleton
@@ -37,8 +37,8 @@ public class NetworkConfig {
                 .Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(okHttpClient).
-                build();
+                .client(okHttpClient)
+                .build();
     }
 
 

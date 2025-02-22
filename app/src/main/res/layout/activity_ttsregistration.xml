@@ -26,7 +26,6 @@
                 android:layout_column="1"
                 android:layout_marginLeft="100dp"
                 android:text="Registration"
-                android:textColor="@android:color/black"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </TableRow>

@@ -4,27 +4,25 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class DateConverter {
 
     public static String getCurrentDateTime(){
         ZonedDateTime dateTimeInIst = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
-        String currenDateAndTime = dateTimeInIst.format(formatter);
-        return currenDateAndTime;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a",Locale.ENGLISH);
+        return dateTimeInIst.format(formatter);
     }
 
     public static String currentDate(){
         ZonedDateTime dateTimeInIst = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        String currentDate = dateTimeInIst.format(formatter);
-        return currentDate;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
+        return dateTimeInIst.format(formatter);
     }
 
     public static String currentTime(){
         ZonedDateTime dateTimeInIst = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
-        String currentDate = dateTimeInIst.format(formatter);
-        return currentDate;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a",Locale.ENGLISH);
+        return dateTimeInIst.format(formatter);
     }
 }

@@ -25,7 +25,7 @@
                 android:layout_width="82dp"
                 android:layout_height="20dp"
                 android:layout_column="1"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
 
             <TextView
@@ -34,7 +34,7 @@
                 android:layout_height="20dp"
                 android:layout_column="2"
                 android:layout_marginLeft="80dp"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
 
         </TableRow>
@@ -52,7 +52,7 @@
                 android:layout_height="20dp"
                 android:layout_column="1"
                 android:layout_marginLeft="10dp"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
 
         </TableRow>
@@ -78,7 +78,7 @@
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
 
         </TableRow>
@@ -103,7 +103,7 @@
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
 
         </TableRow>
@@ -128,7 +128,7 @@
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
 
         </TableRow>
@@ -153,7 +153,7 @@
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
 
         </TableRow>
@@ -178,7 +178,7 @@
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
 
         </TableRow>
@@ -203,7 +203,7 @@
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
         </TableRow>
 
@@ -299,7 +299,7 @@
                 android:clickable="false"
                 android:inputType="textMultiLine"
                 android:maxLines="6"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
 
 
@@ -359,7 +359,7 @@
                 android:clickable="false"
                 android:inputType="textMultiLine"
                 android:maxLines="6"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
 
 

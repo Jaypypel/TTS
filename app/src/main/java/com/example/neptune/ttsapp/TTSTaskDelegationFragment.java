@@ -278,7 +278,7 @@ public class TTSTaskDelegationFragment extends Fragment {
 
                 // Validate Total Time (Minutes)
                 String totalTime = taskDeliTotalTimeMM.getText().toString().trim().replaceAll("\\s+", "");
-                if (totalTime.length() > 0) {
+                if (!totalTime.isEmpty()) {
                     int totalTimeInt = Integer.parseInt(totalTime);
                     if (totalTimeInt > 60) {
                         Toast.makeText(getActivity(), "Invalid Minute", Toast.LENGTH_LONG).show();
@@ -300,7 +300,7 @@ public class TTSTaskDelegationFragment extends Fragment {
                 taskDelegate.setBackgroundColor(Color.GRAY);
                 String delegation = delegationTime();
 
-                // Create a new TaskManagement object anzzd set its values
+                // Create a new TaskManagement object and set its values
                 TaskManagement taskManagement = new TaskManagement();
                 taskManagement.setActivityName(isActivityNameValid());
                 taskManagement.setProjectCode(isProjectCodeValid());
@@ -342,7 +342,7 @@ public class TTSTaskDelegationFragment extends Fragment {
                                         }).exceptionally(e -> {
                                             appExecutor.getMainThread().execute(() -> {
                                                 taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
-                                                Toast.makeText(getActivity(), "Task Delegation Failed", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                                                 taskDelegate.setEnabled(true);
                                             });
                                             return null;
@@ -351,7 +351,6 @@ public class TTSTaskDelegationFragment extends Fragment {
                                         }).join());
 
             } catch (Exception e) {
-                Log.e("TaskDelegate", "Error in button click handler", e);
                 Toast.makeText(getActivity(), "An error occurred while assigning the task", Toast.LENGTH_LONG).show();
                 taskDelegate.setEnabled(true);
             }
@@ -637,7 +636,6 @@ public class TTSTaskDelegationFragment extends Fragment {
 
     public void setupAutoCompleteTextView(AutoCompleteTextView textView,ArrayAdapter<String> adapter){
         textView.setThreshold(1);//Start suggesting after 1 character
-        textView.setDropDownBackgroundResource(android.R.color.white);
         textView.setDropDownVerticalOffset(4);//add some spacing
 
         //Prevent dropdown from disappearing too quickly
@@ -829,20 +827,7 @@ public class TTSTaskDelegationFragment extends Fragment {
                                 ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurableType);
                                 future.complete(measurables);
                             }
-//                            if (responseElement.isJsonArray()) {
-//                                JsonArray responseBody = responseElement.getAsJsonArray();
-//                                ArrayList<MeasurableListDataModel> measurableListDataModels = new ArrayList<>();
-//                                for (JsonElement element : responseBody) {
-//                                    JsonObject obj = element.getAsJsonObject();
-//                                    double id = obj.get("id").getAsDouble();
-//                                    String measurableName = obj.get("measurableName").getAsString();
-//                                    MeasurableListDataModel m = new MeasurableListDataModel();
-//                                    m.setId(String.valueOf(id));
-//                                    m.setMeasurableName(measurableName);
-//                                    measurableListDataModels.add(m);
-//                                }
-//                                future.complete(measurableListDataModels);
-//                            }
+
                         }
                         if (apiResponse instanceof APIErrorResponse) {
                             String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();

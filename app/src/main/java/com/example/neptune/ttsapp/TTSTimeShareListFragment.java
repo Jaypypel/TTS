@@ -127,12 +127,7 @@ public class TTSTimeShareListFragment extends Fragment {
                 mMonth=mcurrentDate.get(Calendar.MONTH);
                 mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        endDate.setText(dayOfMonth + "-" + (month+1)  + "-" + year);
-                    }
-                },mYear, mMonth, mDay);
+                DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), (view2, year, month, dayOfMonth) -> endDate.setText(dayOfMonth + "-" + (month+1)  + "-" + year),mYear, mMonth, mDay);
                 mDatePicker.getDatePicker().setCalendarViewShown(false);
                 mDatePicker.setTitle("Select date");
                 mDatePicker.show();

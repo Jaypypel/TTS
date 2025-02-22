@@ -20,7 +20,7 @@
         android:layout_column="0"
         android:layout_row="0"
         android:gravity="center_vertical"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold" />
 
     <TextView
@@ -33,7 +33,7 @@
         android:layout_column="1"
         android:layout_row="0"
         android:gravity="right"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold" />
 
     <TextView
@@ -46,7 +46,7 @@
         android:layout_column="1"
         android:layout_row="1"
         android:gravity="right"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold" />
     </GridLayout>
 
@@ -76,14 +76,14 @@
                 android:gravity="center"
                 android:layout_marginEnd="1dp"
                 android:text="User"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/textViewModificationListTaskDate"
                 android:gravity="center"
                 android:text="Date"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
@@ -94,7 +94,7 @@
                 android:id="@+id/textViewModificationListTask"
                 android:gravity="center"
                 android:text="Task"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
@@ -105,7 +105,7 @@
                 android:id="@+id/textViewModificationListStatus"
                 android:gravity="center"
                 android:text="Status"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold"
                 android:layout_width="0dp"
                 android:layout_height="48dp"

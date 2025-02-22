@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.EnumStatus.Status;
 import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
@@ -62,7 +63,6 @@ public class TTSTaskCountFragment extends Fragment {
     @Inject
     AppExecutors appExecutors;
 
-    public TTSTaskCountFragment() { }
 
     private TextView tvPendingTask,tvAcceptedTask,tvCompletedTask,tvApprovalTask,user,date,time;
     private SessionManager sessionManager;
@@ -102,19 +102,19 @@ public class TTSTaskCountFragment extends Fragment {
 
                 appExecutors.getNetworkIO().execute(() -> {
                     // Execute network tasks asynchronously
-                    CompletableFuture<String> pendingTasksFuture = countPendingTaskByUser(sessionManager.getToken()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                    CompletableFuture<String> pendingTasksFuture = countTaskByUserAndStatus(sessionManager.getToken(),Status.Pending.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
                         return "";
                     });
                     Log.d("Logs","pending Count "+pendingTasksFuture.join());
-                    CompletableFuture<String> acceptedTasksFuture = countAcceptedTaskByUser(sessionManager.getToken()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                    CompletableFuture<String> acceptedTasksFuture = countTaskByUserAndStatus(sessionManager.getToken(), Status.Accepted.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
                         return "";
                     });
                     Log.d("Logs","accepted Count "+acceptedTasksFuture.join());
-                    CompletableFuture<String> approvedTasksFuture = countApprovedTaskByUser(sessionManager.getToken()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                    CompletableFuture<String> approvedTasksFuture = countTaskByUserAndStatus(sessionManager.getToken(), Status.Approved.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
                         return "";
                     });
                     Log.d("Logs","approved Count "+approvedTasksFuture.join());
-                    CompletableFuture<String> completedTasksFuture = countCompletedTaskByUser(sessionManager.getToken()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                    CompletableFuture<String> completedTasksFuture = countTaskByUserAndStatus(sessionManager.getToken(),Status.Completed.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
                         return "";
                     });
                     Log.d("Logs","completed Count "+completedTasksFuture.join());
@@ -129,9 +129,7 @@ public class TTSTaskCountFragment extends Fragment {
                         tvCompletedTask.setText("Completed Task    :  " + completedTasksFuture.getNow("Loading..."));
                     })).exceptionally(e -> {
                         appExecutors.getMainThread().execute(() -> {
-                            Toast.makeText(getContext(),
-                                    "Failed to fetch task counts due to " + e.getMessage(),
-                                    Toast.LENGTH_LONG).show();
+                            Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                             tvPendingTask.setText("Pending Task      :  " + "Error");
                             tvAcceptedTask.setText("Accepted Task     :  " + "Error");
                             tvApprovalTask.setText("Approved Task     :  " + "Error");
@@ -158,12 +156,12 @@ public class TTSTaskCountFragment extends Fragment {
                                     .execute(() -> {
                 dataModels = task;
                 if(isAdded()){
-                    adapter = new TaskAllocatedListCustomAdapter(task,getActivity().getApplicationContext());
+                    adapter = new TaskAllocatedListCustomAdapter(task,getActivity());
                     listView.setAdapter(adapter);
                 }
                      }))
                             .exceptionally(e -> {
-                Toast.makeText(getActivity().getApplicationContext(),"Failed to get Tasks ",Toast.LENGTH_LONG).show();
+                                Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                 return null;
             }));
 
@@ -180,16 +178,16 @@ public class TTSTaskCountFragment extends Fragment {
                 i.putExtra("TaskProcessingMeasurableDetails",measurables);
                 startActivity(i);
             })).exceptionally(e -> {
-                Toast.makeText(getActivity().getApplicationContext(),"Failed to get the  accepted Tasks", Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                 return  null;
             });
         }));
         return view;
     }
 
-    public CompletableFuture<String> countAcceptedTaskByUser(String username){
+    public CompletableFuture<String> countTaskByUserAndStatus(String username, String status){
         CompletableFuture<String> count = new CompletableFuture<>();
-        Call<ResponseBody> call = taskHandler.getAcceptedTaskCount(username);
+        Call<ResponseBody> call = taskHandler.getTaskCountBasedOnStatus(username,status);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
@@ -228,134 +226,6 @@ public class TTSTaskCountFragment extends Fragment {
 
         return count;
     }
-    public CompletableFuture<String> countPendingTaskByUser(String username){
-        CompletableFuture<String> count = new CompletableFuture<>();
-        Call<ResponseBody> call = taskHandler.getPendingTaskCount(username);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
-                try{
-                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
-
-                    if(apiResponse instanceof APISuccessResponse){
-                        String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
-                        count.complete(bodyContent);
-                    }  if (apiResponse instanceof APIErrorResponse) {
-                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                        count.completeExceptionally(new Throwable(erMsg));
-
-                    }
-                    if (apiResponse instanceof APIErrorResponse) {
-                        count.completeExceptionally(new Throwable("empty response"));
-                    }
-                }
-                catch (ClassCastException e){
-                    count.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                }
-                catch (IOException e) {
-                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                    count.completeExceptionally(new Throwable("Exception occured while getting no. of Pending tasks due to" + e.getMessage()));
-                }
-                catch (RuntimeException e) {
-                    count.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                count.completeExceptionally(t);
-            }
-        });
-
-        return count;
-    }
-    public CompletableFuture<String> countApprovedTaskByUser(String username){
-        CompletableFuture<String> count = new CompletableFuture<>();
-        Call<ResponseBody> call = taskHandler.getApprovedTaskCount(username);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
-
-                try{
-                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
-                    if(apiResponse instanceof APISuccessResponse){
-                        String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsString();
-                        count.complete(bodyContent);
-                    }  if (apiResponse instanceof APIErrorResponse) {
-                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                        count.completeExceptionally(new Throwable(erMsg));
-
-                    }
-                    if (apiResponse instanceof APIErrorResponse) {
-                        count.completeExceptionally(new Throwable("empty response"));
-                    }
-                }
-                catch (ClassCastException e){
-                    count.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                }
-                catch (IOException e) {
-                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                    count.completeExceptionally(new Throwable("Exception occured while getting no. of approved tasks due to" + e.getMessage()));
-                }
-                catch (RuntimeException e) {
-                    count.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                count.completeExceptionally(t);
-            }
-        });
-
-        return count;
-    }
-    public CompletableFuture<String> countCompletedTaskByUser(String username){
-        CompletableFuture<String> count = new CompletableFuture<>();
-        Call<ResponseBody> call = taskHandler.getCompletedTaskCount(username);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
-                try{
-                    APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
-                    if(apiResponse instanceof APISuccessResponse){
-
-                        String bodyContent = ((APISuccessResponse<ResponseBody>) apiResponse)
-                                .getBody()
-                                .getBody()
-                                .getAsString();
-                        count.complete(bodyContent);
-                    }
-                    if (apiResponse instanceof APIErrorResponse) {
-                        String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse)
-                                .getErrorMessage();
-                        count.completeExceptionally(new Throwable(erMsg));
-
-                    }
-                    if (apiResponse instanceof APIErrorResponse) {
-                        count.completeExceptionally(new Throwable("empty response"));
-                    }
-                }
-                catch (ClassCastException e){
-                    count.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                }
-                catch (IOException e) {
-                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                    count.completeExceptionally(new Throwable("Exception occured while getting no. of completed tasks due to" + e.getMessage()));
-                }
-                catch (RuntimeException e) {
-                    count.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                count.completeExceptionally(t);
-            }
-        });
-
-        return count;
-    }
 
     public CompletableFuture<ArrayList<TaskDataModel>> getAssignedTask(String receivedUsername){
         CompletableFuture<ArrayList<TaskDataModel>> future = new CompletableFuture<>();
@@ -376,30 +246,7 @@ public class TTSTaskCountFragment extends Fragment {
                             ArrayList<TaskDataModel> tasks = gson.fromJson(content,taskType);
                             future.complete(tasks);
                         }
-                      //  return;
-//                        Log.e("bodyContent",""+bodyContent);
-//                        for (JsonElement item: bodyContent
-//                        ) {
-//                            JsonObject taskObj = item.getAsJsonObject();
-//                            task = new TaskDataModel();
-//                            task.setId(taskObj.get("id").getAsLong());
-//                            JsonObject usr = taskObj.get("taskOwnerUserID").getAsJsonObject();
-//                            task.setTaskDeligateOwnerUserID(usr.get("username").getAsString());
-//                            task.setActivityName(taskObj.get("activityName").getAsString());
-//                            task.setTaskName(taskObj.get("taskName").getAsString());
-//                            task.setProjectNo(taskObj.get("projectCode").getAsString());
-//                            task.setProjectName(taskObj.get("projectName").getAsString());
-//                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
-////                            task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
-//                            task.setDescription(taskObj.get("description").getAsString());
-//                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
-//                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
-//                            task.setSeenOn(taskObj.get("taskSeenOn").getAsString());
-//                            task.setAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
-//                            task.setStatus(taskObj.get("status").getAsString());
-//                            tasks.add(task);
-//
-//                        }future.complete(tasks);
+
                     }
 
                     if (apiResponse instanceof APIErrorResponse) {
@@ -453,14 +300,7 @@ public class TTSTaskCountFragment extends Fragment {
                             ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurablesType);
                             future.complete(measurables);
                         }
-//                        for (JsonElement e : bodyContent){
-//                            JsonObject msrObj = e.getAsJsonObject();
-//                            measurable = new MeasurableListDataModel();
-//                            measurable.setId(msrObj.get("id").getAsString());
-//                            measurable.setMeasurableName(msrObj.get("name").getAsString());
-//                            measurables.add(measurable);
-//                        }
-//                        future.complete(measurables);
+
                     }
                     if (apiResponse instanceof APIErrorResponse) {
                         String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();

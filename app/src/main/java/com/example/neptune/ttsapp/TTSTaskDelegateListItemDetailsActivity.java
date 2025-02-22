@@ -202,19 +202,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                 if (timeShares != null && !timeShares.isEmpty() &&
                         taskProcessingItemDetails.getStatus().equals("In_Process") &&
                         !taskProcessingItemDetails.getTaskOwnerUserID().equals(getToken())) {
-                    Log.d("DEBUG", "timeShares != null: " + (timeShares != null));
-                    Log.d("DEBUG", "!timeShares.isEmpty(): " + (timeShares != null && !timeShares.isEmpty()));
-                    Log.d("DEBUG", "Status equals In_Process: " + taskProcessingItemDetails.getStatus().equals("In_Process"));
-                    Log.d("DEBUG", "DelegateOwnerUserID mismatch: " +
-                            !taskProcessingItemDetails.getTaskOwnerUserID().equals(getToken()));
 
-//                    Log.d("DEBUG", "setting visiblity of complete to be true " + (timeShares != null));
-//                    TDLIDComplete.setVisibility(View.VISIBLE);
-//                    Log.d("DEBUG", "TDLIDComplete visibility set to: " + TDLIDComplete.getVisibility());
-//                    TDLIDComplete.setText("ApRequest");
-//                    Log.d("DEBUG", "modifying comlete button text " + TDLIDComplete.getText());
-//                    TDLIDDisplayTimeShares.setVisibility(View.VISIBLE);
-//                    TDLIDProcessing.setVisibility(View.INVISIBLE);
                     appExecutors.getMainThread().execute(() -> {
                         TDLIDComplete.setVisibility(View.VISIBLE);
                         TDLIDComplete.setText("ApRequest");
@@ -359,7 +347,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                                 }
                             }).exceptionally( e -> {
                                 Log.e("Exception in CompletableFuture", e.getMessage());
-                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failed to update the task", Toast.LENGTH_LONG).show();
+                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                                 return null;
                             });
 
@@ -379,7 +367,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                                     });
                                 }
                             }).exceptionally( e -> {
-                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Send For Approval Completion", Toast.LENGTH_LONG).show();
+                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                                 return null;
                             });
 
@@ -399,7 +387,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                                     });
                                 }
                             }).exceptionally( e -> {
-                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Task Send For Approval Completion", Toast.LENGTH_LONG).show();
+                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                                 return null;
                             });
 
@@ -420,7 +408,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                                     });
                                 }
                             }).exceptionally( e -> {
-                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failed to update the task", Toast.LENGTH_LONG).show();
+                                Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                                 return null;
                             });
 
@@ -441,7 +429,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                                 });
                             }
                         }).exceptionally( e -> {
-                            Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failed to update the task", Toast.LENGTH_LONG).show();
+                            Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                             return null;
                         });
                     } else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show(); }
@@ -497,7 +485,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                             });
                         }
                     }).exceptionally( e -> {
-                        Toast.makeText(getApplicationContext(), "Failed to update the task", Toast.LENGTH_LONG).show();
+                           Toast.makeText(TTSTaskDelegateListItemDetailsActivity.this, "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                         return null;
                     });
 

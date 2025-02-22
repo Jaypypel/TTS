@@ -69,6 +69,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -395,7 +396,7 @@ public class AddDTSFragment extends Fragment{
                         }).exceptionally(e -> {
                             appExecutor.getMainThread().execute(() -> {
                                 timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                                Toast.makeText(getActivity(), "Insertion Failed", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "Failure: " +e.getMessage(), Toast.LENGTH_LONG).show();
                                 timeShareSubmit.setEnabled(true);
                             });
                             return null;
@@ -421,7 +422,12 @@ public class AddDTSFragment extends Fragment{
                                    .getMainThread()
                                    .execute(() -> timeShareProjCode.setText(projectCode))
                            ).exceptionally(e -> {
-                               appExecutor.getMainThread().execute(() -> Toast.makeText(getActivity(), "Failed to fetch project code due to ", Toast.LENGTH_LONG).show());
+                               appExecutor
+                                       .getMainThread()
+                                       .execute(() -> {
+                                           timeShareProjCode.setText("No project code is associated with name "+isProjectNameValid());
+                                           Toast.makeText(getActivity(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                                       });
                                return null;
                            }));
                 } else {
@@ -431,7 +437,7 @@ public class AddDTSFragment extends Fragment{
             }
         });
 
-        timeShareCancel.setOnClickListener(v -> {clearAll();  timeShareSubmit.setVisibility(View.VISIBLE);  timeShareCancel.setVisibility(View.VISIBLE);});
+        timeShareCancel.setOnClickListener(v -> {clearAll();  timeShareSubmit.setVisibility(View.VISIBLE);  timeShareCancel.setVisibility(View.VISIBLE); timeShareSubmit.setEnabled(true);});
 
         //  single click view Date and time pickers
         timeShareDate.setFocusable(false);
@@ -540,14 +546,14 @@ public class AddDTSFragment extends Fragment{
     }
 
     private void updateMeasurableObjectsAdapter(List<MeasurableListDataModel> measurableObjects) {
-        ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, measurableObjects);
+        ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, measurableObjects);
         adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         timeShareMeasurable.setAdapter(adapterMeasurable);
     }
 
     private void updateProjectNamesAdapter(ArrayList<String> projectNames) {
         ArrayAdapter<String> projectNamesAdapter = new ArrayAdapter<>(
-                requireContext(),
+                getActivity(),
                 android.R.layout.simple_list_item_1,
                 projectNames);
         timeShareProjName.setAdapter(projectNamesAdapter);
@@ -556,17 +562,17 @@ public class AddDTSFragment extends Fragment{
     }
 
     private void updateTaskNamesAdapter(ArrayList<String> taskNames) {
-        ArrayAdapter<String> taskNamesAdapter = new ArrayAdapter<>(
-                requireContext(),
+        ArrayAdapter<String> taskNamesAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_list_item_1,
                 taskNames);
         timeShareTaskName.setAdapter(taskNamesAdapter);
+
         setupAutoCompleteTextView(timeShareTaskName, taskNamesAdapter);
     }
 
     private void updateActivityNamesAdapter(ArrayList<String> activityNames) {
         ArrayAdapter<String> activityNamesAdapter = new ArrayAdapter<>(
-                requireContext(),
+                requireActivity(),
                 android.R.layout.simple_list_item_1,
                 activityNames);
         timeShareActivityName.setAdapter(activityNamesAdapter);
@@ -576,7 +582,6 @@ public class AddDTSFragment extends Fragment{
 
     private void setupAutoCompleteTextView(AutoCompleteTextView textView, ArrayAdapter<String> adapter) {
         textView.setThreshold(1); // Start suggesting after 1 character
-        textView.setDropDownBackgroundResource(android.R.color.white);
         textView.setDropDownVerticalOffset(4); // Add some spacing
 
         // Prevent dropdown from disappearing too quickly
@@ -699,7 +704,7 @@ public class AddDTSFragment extends Fragment{
                         .exceptionally(e -> {
                             appExecutor.getMainThread().execute(() -> {
                                 Toast.makeText(requireContext(),
-                                        "Failed to refresh data due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                                        "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                                 loadingIndicator.setVisibility(View.GONE);
                             });
                             return null;
@@ -826,8 +831,7 @@ public class AddDTSFragment extends Fragment{
         long difference = ChronoUnit.MINUTES.between(startTime, endTime);
         int hours = (int) (difference/ 60);
         int mins = (int) (difference % 60);
-        String timeConsumed = hours + " hr : "+mins+" mins";
-        return timeConsumed;
+        return hours + " hr : "+mins+" mins";
     }
 
 

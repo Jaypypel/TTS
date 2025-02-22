@@ -105,7 +105,7 @@ public class TTSTaskDelegatedListFragment extends Fragment {
                 getAssignedTask(getToken()).thenAccept(result -> {
                     assignedTasksState.setVisibility(View.INVISIBLE);
                     dataModels = result;
-                    adapter = new TaskDelegatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
+                    adapter = new TaskDelegatedListCustomAdapter(dataModels,getActivity());
                     listView.setAdapter(adapter);
                     if(dataModels == null || dataModels.isEmpty()){
                         assignedTasksState.setVisibility(View.VISIBLE);
@@ -113,6 +113,7 @@ public class TTSTaskDelegatedListFragment extends Fragment {
                 }).exceptionally( e -> {
                     assignedTasksState.setVisibility(View.VISIBLE);
                     assignedTasksState.setText("failed to get Delegated tasks due to error " +e.getMessage());
+                    Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                     return null;
                 });
             });
@@ -129,8 +130,7 @@ public class TTSTaskDelegatedListFragment extends Fragment {
                 i.putExtra("TaskDelegatedMeasurableList",measurables);
                 startActivity(i);
             })).exceptionally(e -> {
-                Log.e("Error", "Failed to get Tasks " );
-                Toast.makeText(getActivity().getApplicationContext(),"Failed to get Tasks", Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                 return  null;
             }));
         }));

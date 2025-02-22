@@ -18,7 +18,6 @@
         android:layout_height="28dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="19dp"
-        android:textColor="@android:color/black"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -29,7 +28,6 @@
         android:layout_height="31dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="56dp"
-        android:textColor="@android:color/black"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -53,7 +51,6 @@
         android:layout_height="56dp"
         android:layout_marginTop="92dp"
         android:layout_marginEnd="28dp"
-        android:textColor="@android:color/black"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -75,7 +72,6 @@
         android:layout_height="56dp"
         android:layout_marginTop="148dp"
         android:layout_marginEnd="24dp"
-        android:textColor="@android:color/black"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -98,7 +94,6 @@
         android:layout_height="56dp"
         android:layout_marginTop="204dp"
         android:layout_marginEnd="26dp"
-        android:textColor="@android:color/black"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -121,7 +116,6 @@
         android:layout_height="56dp"
         android:layout_marginTop="260dp"
         android:layout_marginEnd="21dp"
-        android:textColor="@android:color/black"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -144,7 +138,6 @@
         android:layout_height="56dp"
         android:layout_marginTop="316dp"
         android:layout_marginEnd="32dp"
-        android:textColor="@android:color/black"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -179,7 +172,6 @@
         android:layout_height="56dp"
         android:layout_marginTop="372dp"
         android:layout_marginEnd="28dp"
-        android:textColor="@android:color/black"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -224,7 +216,6 @@
         android:clickable="false"
         android:inputType="textMultiLine"
         android:maxLines="6"
-        android:textColor="@android:color/black"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

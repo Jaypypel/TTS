@@ -73,7 +73,7 @@
         android:layout_height="43dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textView5"
+
         tools:layout_editor_absoluteY="82dp">
 
         <com.google.android.material.textfield.TextInputEditText

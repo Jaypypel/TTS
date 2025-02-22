@@ -117,7 +117,7 @@ public class TTSTaskCompletedListFragment extends Fragment {
                 getCompletedTasks(getToken(),"completed").thenAccept(tasks -> {
                     completedTasksState.setVisibility(View.INVISIBLE);
                     dataModels = tasks;
-                    adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
+                    adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity());
                     listView.setAdapter(adapter);
                     if(dataModels == null || dataModels.isEmpty()){
                         completedTasksState.setVisibility(View.VISIBLE);
@@ -125,6 +125,7 @@ public class TTSTaskCompletedListFragment extends Fragment {
                 }).exceptionally( e -> {
                     completedTasksState.setVisibility(View.VISIBLE);
                     completedTasksState.setText("failed to get Completed tasks due to error " +e.getMessage());
+                    Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                     return null;
                 });
             });
@@ -148,8 +149,7 @@ public class TTSTaskCompletedListFragment extends Fragment {
                                         i.putExtra("TaskCompletedListMeasurableList",measurables);
                                         startActivity(i);
                                     })).exceptionally(e -> {
-                                Log.e("Error", "Failed to get Tasks " );
-                                Toast.makeText(getActivity().getApplicationContext(),"Failed to get Tasks", Toast.LENGTH_LONG).show();
+                                Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                                 return  null;
                             }));
         }));

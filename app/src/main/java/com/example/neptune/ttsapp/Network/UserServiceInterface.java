@@ -13,12 +13,12 @@ import retrofit2.http.Query;
 
 public interface UserServiceInterface {
 
-    @POST("/app/user/register")
+    @POST("/app1/user/register")
     Call<ResponseBody> registerUser(@Body User user);
 
-    @GET("/app/user/login")
+    @GET("/app1/user/login")
     Call<ResponseBody> login(@Query("username") String username,@Query("password") String password);
 
-    @GET("/app/user/list")
+    @GET("/app1/user/list")
     Call<ResponseBody> getUsernames();
 }

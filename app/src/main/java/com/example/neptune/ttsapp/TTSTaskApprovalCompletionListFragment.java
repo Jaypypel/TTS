@@ -77,7 +77,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ttsapproval_completion_list, container, false);
 
-        sessionManager = new SessionManager(getActivity().getApplicationContext());
+        sessionManager = new SessionManager(getActivity());
         userId = sessionManager.getToken();
         user=view.findViewById(R.id.textViewApprovalCompletionUser);
         user.setText(userId);
@@ -100,26 +100,26 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
             appExecutors.getNetworkIO().execute(() -> {
                 getSendModificationTasks(getToken(),"unapproved").thenAccept(tasks -> {
                     senderDataModels = tasks;
-                    adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity().getApplicationContext());
+                    adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity());
                     senderApprovalCompletionTaskList.setAdapter(adapter);
                 }).exceptionally(e -> {
-                   Toast.makeText(getContext().getApplicationContext(),"Failed to fetch outgoing tasks due to "+ e,Toast.LENGTH_LONG).show();
+                    Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                     return null;
                 });
             });
             appExecutors.getNetworkIO().execute(() -> {
                 getReceiveModificationTasks(getToken(),"unapproved").thenAccept(tasks -> {
                     receiverDataModels = tasks;
-                    adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity().getApplicationContext());
+                    adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity());
                     receiverApprovalCompletionTaskList.setAdapter(adapter);
                 }).exceptionally(e -> {
-                    Toast.makeText(getContext().getApplicationContext(),"Failed to fetch outgoing tasks due to "+ e,Toast.LENGTH_LONG).show();
+                    Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                     return null;
                 });
             });
 
 
-        }else { Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+        }else { Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
         senderApprovalCompletionTaskList.setOnItemClickListener((parent, view1, position, id) -> {
@@ -135,7 +135,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
                     i.putExtra("senderTaskApprovalMeasurableList", measurables);
                     startActivity(i);
                 }).exceptionally(e -> {
-                    Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
+                    Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                     return  null;
                 }));
             });
@@ -153,7 +153,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
                 i.putExtra("receiverTaskApprovalMeasurableList", measurables);
                 startActivity(i);
             }).exceptionally(e -> {
-                Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                 return  null;
             }));
         }));

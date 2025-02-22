@@ -14,7 +14,7 @@
         >
     <TextView
         android:id="@+id/textViewCompletedListUser"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold"
         android:padding="5dp"
         android:layout_width="0dp"
@@ -29,7 +29,7 @@
         android:id="@+id/textViewCompletedListDate"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold"
         android:layout_columnWeight="1"
         android:layout_rowWeight="1"
@@ -42,7 +42,7 @@
         android:id="@+id/textViewCompletedListTime"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold"
         android:layout_column="1"
         android:layout_row="1"
@@ -67,14 +67,14 @@
                 android:gravity="center"
 
                 android:text="User"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textViewCompletedListTaskDate"
                 android:gravity="center"
                 android:text="Date"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
@@ -84,7 +84,7 @@
                 android:id="@+id/textViewCompletedListTask"
                 android:gravity="center"
                 android:text="Task"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
@@ -95,7 +95,7 @@
                 android:id="@+id/textViewCompletedListStatus"
                 android:gravity="center"
                 android:text="Status"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
@@ -120,7 +120,6 @@
         android:layout_marginTop="250dp"
         android:gravity="center"
         android:layout_gravity="center"
-        android:textColor="?attr/colorOnBackground"
         android:textStyle="bold"
         />
 </RelativeLayout>

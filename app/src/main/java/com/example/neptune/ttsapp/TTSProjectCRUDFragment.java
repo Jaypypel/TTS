@@ -114,10 +114,6 @@ public class TTSProjectCRUDFragment extends Fragment {
                 projectCode.setAdapter(projectCodeAdapter);
             });
         });
-//
-//        projectCode=(AutoCompleteTextView) view.findViewById(R.id.editTextProjectCRUDProjectCode);
-//        ArrayAdapter<String> projectCodeAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,getProjectCodeList());
-//        projectCode.setAdapter(projectCodeAdapter);
 
         projectName=(AutoCompleteTextView) view.findViewById(R.id.editTextProjectCRUDProjectName);
 
@@ -130,21 +126,23 @@ public class TTSProjectCRUDFragment extends Fragment {
             });
 
 
+        }).exceptionally(e-> {
+            Toast.makeText(getActivity().getApplicationContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
+            return null;
         });
-//        ArrayAdapter<String> projectNameAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,getProjectNameList());
-//        projectName.setAdapter(projectNameAdapter);
 
-        addProject=(Button)view.findViewById(R.id.buttonProjectCRUDAdd);
+
+        addProject = view.findViewById(R.id.buttonProjectCRUDAdd);
 
         if (InternetConnectivity.isConnected()) {
-                        userSelect=(Spinner) view.findViewById(R.id.spinnerProjectCRUDUserSelect);
+                        userSelect = view.findViewById(R.id.spinnerProjectCRUDUserSelect);
             getUsernames().thenAccept(usernames -> {
                 ArrayList<String>  users = usernames;
                 users.add(0,"Select user");
                 ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
                 userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 userSelect.setAdapter(userSelectAdapter);
-            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                 return null;
             });
 
@@ -168,7 +166,7 @@ public class TTSProjectCRUDFragment extends Fragment {
                         activitySelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         activitySelect.setAdapter(activitySelectAdapter);
                     }).exceptionally(e -> {
-                        Toast.makeText(getActivity().getApplicationContext(),"Failed to get activities",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                         return null;
                     })); }
 
@@ -218,7 +216,7 @@ public class TTSProjectCRUDFragment extends Fragment {
                                });
                            }
                        }).exceptionally(e -> {
-                           Toast.makeText(getActivity().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                          Toast.makeText(getActivity().getApplicationContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                           addProject.setEnabled(true);
 
                           return null;
