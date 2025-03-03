@@ -76,13 +76,13 @@ public class TTSDailyTimeShareListFragment extends Fragment {
 
     ArrayList<DailyTimeShareDataModel> dailyTimeShareDataList;
 
-    private DailyTimeShareListCustomAdapter adapter;
+    private   static  DailyTimeShareListCustomAdapter adapter;
     private Context mContext;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        mContext = context.getApplicationContext();  // Use application context to avoid leaks
+        mContext = getActivity();  // Use application context to avoid leaks
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -121,44 +121,40 @@ public class TTSDailyTimeShareListFragment extends Fragment {
             }
         }, 10);
 
+        if (InternetConnectivity.isConnected()) {
+            appExecutor.getNetworkIO().execute(() -> getDailyTimeShareList(userId, getTodayDate()).thenAccept(result -> {
+                dailyTimeShares.setVisibility(View.INVISIBLE);
 
-       appExecutor.getNetworkIO().execute(() -> {
-           getDailyTimeShareList(userId, getTodayDate()).thenAccept(result -> {
-               dailyTimeShares.setVisibility(View.INVISIBLE);
-               if (InternetConnectivity.isConnected()) {
-                   appExecutor.getMainThread().execute(() -> {
-                       dailyTimeShareDataList = result;
-                       adapter = new DailyTimeShareListCustomAdapter(dailyTimeShareDataList, mContext);
-                       listViewDailyTimeShares.setAdapter(adapter);
-                       if(dailyTimeShareDataList == null ||dailyTimeShareDataList.isEmpty()){
-                           dailyTimeShares.setVisibility(View.VISIBLE);
-                       }
-                   });
-               } else {
-                   Toast.makeText(mContext, "No Internet Connection", Toast.LENGTH_LONG).show();
-               }
-           }).exceptionally(e -> {
-               Log.e("Error", "Failed to get DTSList due to" + e.getMessage());
-               Toast.makeText(mContext, "Failed to get DTSList ", Toast.LENGTH_LONG).show();
-               return null;
-           });
-       });
+                    appExecutor.getMainThread().execute(() -> {
+                        dailyTimeShareDataList = result;
+                        adapter = new DailyTimeShareListCustomAdapter(dailyTimeShareDataList, mContext);
+                        listViewDailyTimeShares.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                        if(dailyTimeShareDataList == null ||dailyTimeShareDataList.isEmpty()){
+                            dailyTimeShares.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+            }).exceptionally(e -> {
+                Toast.makeText(mContext, "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                return null;
+            }));
+        } else {
+            Toast.makeText(mContext, "No Internet Connection", Toast.LENGTH_LONG).show();
+        }
 
 
         if (InternetConnectivity.isConnected()) {
             listViewDailyTimeShares.setOnItemClickListener((parent, view1, position, id) -> {
                 DailyTimeShareDataModel dataModel = dailyTimeShareDataList.get(position);
                 appExecutor.getNetworkIO().execute(() -> {
-                    getDTSMeasurableList(dataModel.getId()).thenAccept(result -> {
-                        appExecutor.getMainThread().execute(() -> {
-                            Intent i = new Intent(getActivity(),TTSTaskModificationActivity.class);
-                            i.putExtra("DTSListItemDetails",dataModel);
-                            i.putExtra("DTSMeasurableList",result);
-                            startActivity(i);
-                        });
-                    }).exceptionally(e -> {
-                        Log.e("Error", "c");
-                        Toast.makeText(mContext,"Failed to get DTSMeasurableList",Toast.LENGTH_LONG).show();
+                    getDTSMeasurableList(dataModel.getId()).thenAccept(result -> appExecutor.getMainThread().execute(() -> {
+                        Intent i = new Intent(getActivity(),TTSTaskModificationActivity.class);
+                        i.putExtra("DTSListItemDetails",dataModel);
+                        i.putExtra("DTSMeasurableList",result);
+                        startActivity(i);
+                    })).exceptionally(e -> {
+                        Toast.makeText(mContext, "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                         return null;
                     });
                 });

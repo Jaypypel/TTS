@@ -109,7 +109,7 @@ public class TTSMeasurableCRUDFragment extends Fragment {
                 ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,users);
                 userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 userSelect.setAdapter(userSelectAdapter);
-            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update usernames", Toast.LENGTH_LONG).show();
+            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                 return null;
             });
 //            ArrayList users = getUserList();
@@ -132,7 +132,7 @@ public class TTSMeasurableCRUDFragment extends Fragment {
                                    ArrayAdapter<String> taskNameAdapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,measurableNames);
                                    measurableName.setAdapter(taskNameAdapter);
                                }).exceptionally(e -> {
-                                   Toast.makeText(getActivity().getApplicationContext(), "can't update task names", Toast.LENGTH_LONG).show();
+                                   Toast.makeText(getActivity().getApplicationContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                                    return null;
                                });
                            });
@@ -182,7 +182,7 @@ public class TTSMeasurableCRUDFragment extends Fragment {
                             addMeasurable.setEnabled(true);
                         }
                     }).exceptionally(e -> {
-                        Toast.makeText(getActivity().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                         addMeasurable.setEnabled(true);
                         return null;
                     });

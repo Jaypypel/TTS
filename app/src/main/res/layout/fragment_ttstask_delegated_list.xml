@@ -14,7 +14,7 @@
         >
     <TextView
         android:id="@+id/textViewDelegatedListUser"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold"
         android:padding="5dp"
         android:layout_width="0dp"
@@ -29,7 +29,7 @@
         android:id="@+id/textViewDelegatedListDate"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold"
         android:layout_columnWeight="1"
         android:layout_rowWeight="1"
@@ -42,7 +42,7 @@
         android:id="@+id/textViewDelegatedListTime"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold"
         android:layout_column="1"
         android:layout_row="1"
@@ -65,14 +65,14 @@
             android:gravity="center"
 
             android:text="User"
-            android:textColor="@android:color/black"
+
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textViewDelegatedListTaskDate"
             android:gravity="center"
             android:text="Date"
-            android:textColor="@android:color/black"
+
             android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -82,7 +82,7 @@
             android:id="@+id/textViewDelegatedListTask"
             android:gravity="center"
             android:text="Task"
-            android:textColor="@android:color/black"
+
             android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -93,7 +93,7 @@
             android:id="@+id/textViewDelegatedListStatus"
             android:gravity="center"
             android:text="Status"
-            android:textColor="@android:color/black"
+
             android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -123,7 +123,7 @@
     <!--                android:layout_column="1"-->
     <!--                android:layout_marginStart="10dp"-->
     <!--                android:text="User"-->
-    <!--                android:textColor="@android:color/black"-->
+    <!--               -->
     <!--                android:textStyle="bold"-->
     <!--                android:gravity="center"/>-->
 
@@ -134,7 +134,7 @@
     <!--                android:layout_column="2"-->
     <!--                android:layout_marginStart="25dp"-->
     <!--                android:text="Date"-->
-    <!--                android:textColor="@android:color/black"-->
+    <!--               -->
     <!--                android:textStyle="bold"-->
     <!--                android:gravity="center"/>-->
 
@@ -145,7 +145,7 @@
     <!--                android:layout_column="3"-->
     <!--                android:layout_marginStart="12dp"-->
     <!--                android:text="Task"-->
-    <!--                android:textColor="@android:color/black"-->
+    <!--               -->
     <!--                android:textStyle="bold"-->
     <!--                android:gravity="center"-->
     <!--                />-->
@@ -156,7 +156,7 @@
     <!--                android:layout_height="35dp"-->
     <!--                android:layout_column="4"-->
     <!--                android:text="Status"-->
-    <!--                android:textColor="@android:color/black"-->
+    <!--               -->
     <!--                android:textStyle="bold"-->
     <!--                android:gravity="center"/>-->
 
@@ -180,7 +180,6 @@
         android:layout_marginTop="250dp"
         android:gravity="center"
         android:layout_gravity="center"
-        android:textColor="?attr/colorOnBackground"
         android:textStyle="bold"
         />
 

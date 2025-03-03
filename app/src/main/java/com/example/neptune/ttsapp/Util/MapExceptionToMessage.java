@@ -13,6 +13,6 @@ public class MapExceptionToMessage {
         if(e instanceof CompletionException){
             return "Server is down";
         }
-        return "Unknown error occurred";
+        return e.getMessage();
     }
 }

@@ -172,7 +172,7 @@ public class TTSTaskModificationActivity extends AppCompatActivity {
                             submit.setEnabled(true);
                         }
                     }).exceptionally(e -> {
-                        Toast.makeText(getApplicationContext().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext().getApplicationContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                         submit.setEnabled(true);
                         return null;
                     });

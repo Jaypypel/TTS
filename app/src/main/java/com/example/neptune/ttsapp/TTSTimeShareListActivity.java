@@ -90,7 +90,7 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                     listView.setAdapter(adapter);
 
                 }).exceptionally(e -> {
-                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     return null;
                 });
 
@@ -111,7 +111,7 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                     gotoTimeshare.setVisibility(View.INVISIBLE);
 
                 }).exceptionally(e -> {
-                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     return null;
                 });
 
@@ -129,7 +129,7 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                     gotoTimeshare.setVisibility(View.INVISIBLE);
 
                 }).exceptionally(e -> {
-                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     return null;
                 });
 
@@ -147,7 +147,7 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                     adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
                     listView.setAdapter(adapter);
                 }).exceptionally(e -> {
-                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     return null;
                 });
 
@@ -165,7 +165,7 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                     gotoTimeshare.setVisibility(View.INVISIBLE);
 
                 }).exceptionally(e -> {
-                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     return null;
                 });
 
@@ -184,7 +184,7 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
                     gotoTimeshare.setVisibility(View.INVISIBLE);
 
                 }).exceptionally(e -> {
-                    Log.e("Server Error", "Failed to get Timeshares due to " + e.getMessage());
+                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     return null;
                 });
 

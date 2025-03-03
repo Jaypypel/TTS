@@ -1,73 +1,70 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout5"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:orientation="vertical"
-    android:padding="5dp">
-
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:gravity="center">
-
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center">
+    android:layout_height="80dp">
 
 
-            <TextView
-                android:id="@+id/taskDeligateOwnerName"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_column="1"
-                android:layout_marginRight="1dp"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_weight="1"/>
+    <TextView
+        android:id="@+id/taskDeligateOwnerName"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="1dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/taskDeligateTaskDate"
+        app:layout_constraintEnd_toStartOf="@+id/taskDeligateTaskDate"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
-            <TextView
-                android:id="@+id/taskDeligateTaskDate"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_column="2"
-                android:layout_marginRight="1dp"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_weight="1"/>
+    <TextView
+        android:id="@+id/taskDeligateTaskDate"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/taskDeligateTaskName"
+        app:layout_constraintStart_toEndOf="@+id/taskDeligateOwnerName"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
-            <TextView
-                android:id="@+id/taskDeligateTaskName"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_column="3"
-                android:layout_marginRight="1dp"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_weight="3"/>
+    <TextView
+        android:id="@+id/taskDeligateTaskName"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="1dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/taskDeligateTaskDate"
+        app:layout_constraintEnd_toStartOf="@+id/taskDeligateTaskStatus"
+        app:layout_constraintStart_toEndOf="@+id/taskDeligateTaskDate" />
 
 
-            <TextView
-                android:id="@+id/taskDeligateTaskStatus"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_column="4"
-                android:layout_marginRight="1dp"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_weight="1"/>
+    <TextView
+        android:id="@+id/taskDeligateTaskStatus"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
 
-        </TableRow>
-    </TableLayout>
-</RelativeLayout>
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="1dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/taskDeligateTaskName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/taskDeligateTaskName" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 

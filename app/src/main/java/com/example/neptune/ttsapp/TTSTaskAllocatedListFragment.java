@@ -67,8 +67,6 @@ public class TTSTaskAllocatedListFragment extends Fragment {
     @Inject
     MeasurableServiceInterface measurableService;
 
-    public TTSTaskAllocatedListFragment() { }
-
     private SessionManager sessionManager;
 
     private ArrayList<TaskDataModel> tasks;
@@ -113,7 +111,7 @@ public class TTSTaskAllocatedListFragment extends Fragment {
                allocatedTaskState.setVisibility(View.INVISIBLE);
                appExecutors.getMainThread().execute(() -> {
                    tasks = result;
-                   adapter = new TaskAllocatedListCustomAdapter(tasks,requireContext());
+                   adapter = new TaskAllocatedListCustomAdapter(tasks,getActivity());
                    listView.setAdapter(adapter);
                    if(tasks == null || tasks.isEmpty()){
                        allocatedTaskState.setVisibility(View.VISIBLE);
@@ -122,11 +120,12 @@ public class TTSTaskAllocatedListFragment extends Fragment {
            }).exceptionally( e -> {
                allocatedTaskState.setVisibility(View.VISIBLE);
                allocatedTaskState.setText("failed to get received tasks due to error " +e.getMessage());
+               Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                return null;
            });
         });
         } else {
-            Toast.makeText(requireContext(),"No Internet Connection", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(),"No Internet Connection", Toast.LENGTH_LONG).show();
         }
 
 
@@ -148,9 +147,9 @@ public class TTSTaskAllocatedListFragment extends Fragment {
                                     i.putExtra("TaskAllocatedListMeasurableList",measurables);
                                     startActivity(i);
                                 })).exceptionally(e -> {
-                            Log.e("Error", "Failed to get Tasks " );
-                            Toast.makeText(requireContext(),"Failed to get Tasks", Toast.LENGTH_LONG).show();
-                            return  null;
+
+                            Toast.makeText(getActivity(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                            return null;
                         }));
         }));
         return view;

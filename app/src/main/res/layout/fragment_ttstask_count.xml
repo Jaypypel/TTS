@@ -21,7 +21,7 @@
         android:layout_column="0"
         android:layout_row="0"
         android:gravity="center_vertical"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold"/>
 
     <TextView
@@ -34,7 +34,7 @@
         android:layout_column="1"
         android:layout_row="0"
         android:gravity="right"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold" />
 
     <TextView
@@ -47,7 +47,7 @@
         android:layout_column="1"
         android:layout_row="1"
         android:gravity="right"
-        android:textColor="@android:color/black"
+
         android:textStyle="bold" />
 
     </GridLayout>
@@ -64,7 +64,7 @@
             android:id="@+id/textViewPendingTask"
             android:layout_width="150dp"
             android:layout_height="56dp"
-            android:textColor="@android:color/black"
+
             android:textStyle="bold"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
@@ -76,7 +76,7 @@
             android:layout_width="150dp"
             android:layout_height="56dp"
 
-            android:textColor="@android:color/black"
+
             android:textStyle="bold"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
@@ -87,7 +87,7 @@
             android:id="@+id/textViewApprovalTask"
             android:layout_width="150dp"
             android:layout_height="56dp"
-            android:textColor="@android:color/black"
+
             android:textStyle="bold"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
@@ -97,7 +97,7 @@
             android:id="@+id/textViewCompletedTask"
             android:layout_width="150dp"
             android:layout_height="56dp"
-            android:textColor="@android:color/black"
+
             android:textStyle="bold"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
@@ -121,7 +121,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="User"
-            android:textColor="@android:color/black"
+
             android:textStyle="bold"
             />
 
@@ -129,7 +129,7 @@
             android:id="@+id/textViewWDSDate"
             android:gravity="center"
             android:text="Date"
-            android:textColor="@android:color/black"
+
             android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -139,7 +139,7 @@
             android:id="@+id/textViewWDSTask"
             android:gravity="center"
             android:text="Task"
-            android:textColor="@android:color/black"
+
             android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -149,7 +149,7 @@
             android:id="@+id/textViewWDSStatus"
             android:gravity="center"
             android:text="Status"
-            android:textColor="@android:color/black"
+
             android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="48dp"

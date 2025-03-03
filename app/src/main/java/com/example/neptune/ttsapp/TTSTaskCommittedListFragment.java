@@ -78,7 +78,7 @@ public class TTSTaskCommittedListFragment extends Fragment {
 
         listView=view.findViewById(R.id.processingTaskList);
 
-        sessionManager = new SessionManager(getActivity().getApplicationContext());
+        sessionManager = new SessionManager(getActivity());
         userId = sessionManager.getToken();
         user=view.findViewById(R.id.textViewProcessingListUser);
         user.setText(userId);
@@ -100,16 +100,18 @@ public class TTSTaskCommittedListFragment extends Fragment {
             appExecutors.getNetworkIO().execute(() -> {
                 getProcessingTasks(getToken(),"In_Process").thenAccept(tasks -> {
                     committedTasksState.setVisibility(View.INVISIBLE);
-                    dataModels = tasks;
-                    adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity().getApplicationContext());
-                    listView.setAdapter(adapter);
-                    if(dataModels == null || dataModels.isEmpty()){
-                        committedTasksState.setVisibility(View.VISIBLE);
-                    }
+                    appExecutors.getMainThread().execute(() -> {
+                        dataModels = tasks;
+                        adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity());
+                        listView.setAdapter(adapter);
+                        if(dataModels == null || dataModels.isEmpty()){
+                            committedTasksState.setVisibility(View.VISIBLE);
+                        }
+                    });
                 }).exceptionally(e-> {
-                    Toast.makeText(getActivity().getApplicationContext(),"Failed to fetch tasks",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                     committedTasksState.setVisibility(View.VISIBLE);
-                    committedTasksState.setText("failed to get Committed tasks due to error " +e.getMessage());
+                    committedTasksState.setText("Failure: " +e.getMessage());
                     return null;
                 });
             });
@@ -118,17 +120,14 @@ public class TTSTaskCommittedListFragment extends Fragment {
 
         listView.setOnItemClickListener((parent, view1, position, id) -> Debounce.debounceEffect(() -> {
             TaskDataModel dataModel= dataModels.get(position);
-            getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
-                appExecutors.getMainThread().execute(() -> {
-                    Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
-                    i.putExtra("TaskProcessingItemDetails",dataModel);
-                    i.putExtra("TaskProcessingMeasurableDetails",measurables);
-                    startActivity(i);
-                });
-            }).exceptionally(e -> {
-                Log.e("Error", "Failed to get Tasks " );
-                Toast.makeText(getActivity().getApplicationContext(),"Failed to get the  accepted Tasks", Toast.LENGTH_LONG).show();
-                return  null;
+            getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> appExecutors.getMainThread().execute(() -> {
+                Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
+                i.putExtra("TaskProcessingItemDetails",dataModel);
+                i.putExtra("TaskProcessingMeasurableDetails",measurables);
+                startActivity(i);
+            })).exceptionally(e -> {
+                Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                return null;
             });
         }));
         return view;
@@ -161,31 +160,6 @@ public class TTSTaskCommittedListFragment extends Fragment {
                             ArrayList<TaskDataModel> tasks = gson.fromJson(content,taskType);
                             future.complete(tasks);
                         }
-      //                  return;
-//                        for (JsonElement item: bodyContent
-//                        ) {
-//                            JsonObject taskObj = item.getAsJsonObject();
-//                            task = new TaskDataModel();
-//                            task.setId(taskObj.get("id").getAsLong());
-//                            JsonObject taskOwnerObj = taskObj.get("taskOwnerUserID").getAsJsonObject();
-//                            JsonObject taskRecevierObj = taskObj.get("taskReceivedUserID").getAsJsonObject();
-//                            task.setTaskReceivedUserId(taskRecevierObj.get("username").getAsString());
-//                            task.setTaskDeligateOwnerUserID(taskOwnerObj.get("username").getAsString());
-//                            task.setActivityName(taskObj.get("activityName").getAsString());
-//                            task.setTaskName(taskObj.get("taskName").getAsString());
-//                            task.setProjectNo(taskObj.get("projectCode").getAsString());
-//                            task.setProjectName(taskObj.get("projectName").getAsString());
-//                            task.setExpectedDate(taskObj.get("expectedDate").getAsString());
-////                            task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
-//                            task.setDescription(taskObj.get("description").getAsString());
-//                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
-//                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
-//                            task.setSeenOn(taskObj.get("taskSeenOn").getAsString());
-//                            task.setAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
-//                            task.setStatus(taskObj.get("status").getAsString());
-//                            tasks.add(task);
-//
-//                        }future.complete(tasks);
                     }
 
                     if (apiResponse instanceof APIErrorResponse) {
@@ -241,14 +215,6 @@ public class TTSTaskCommittedListFragment extends Fragment {
                             ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurableType);
                             future.complete(measurables);
                         }
-//                        for (JsonElement e : bodyContent){
-//                            JsonObject msrObj = e.getAsJsonObject();
-//                            measurable = new MeasurableListDataModel();
-//                            measurable.setId(msrObj.get("id").getAsString());
-//                            measurable.setMeasurableName(msrObj.get("name").getAsString());
-//                            measurables.add(measurable);
-//                        }
-//                        future.complete(measurables);
                     }
                     if (apiResponse instanceof APIErrorResponse) {
                         String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();

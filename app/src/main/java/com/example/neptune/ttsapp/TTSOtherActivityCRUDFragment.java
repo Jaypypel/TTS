@@ -92,7 +92,7 @@ public class TTSOtherActivityCRUDFragment extends Fragment {
                 ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, names);
                 userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 otherActivityName.setAdapter(userSelectAdapter);
-            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update activityNames due to " + MapExceptionToMessage.getMessageFromThrownException(e) + e, Toast.LENGTH_LONG).show();
+            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                 return null;
             });
 
@@ -127,7 +127,7 @@ public class TTSOtherActivityCRUDFragment extends Fragment {
                         });
                     }
                 }).exceptionally(e -> {
-                    Toast.makeText(getActivity().getApplicationContext(), "Failed to add other activity due to "+MapExceptionToMessage.getMessageFromThrownException(e), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity().getApplicationContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                     addOtherActivity.setEnabled(true);
 
                     return null;

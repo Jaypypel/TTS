@@ -32,6 +32,7 @@ import com.example.neptune.ttsapp.Network.ReportServiceInterface;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.UserServiceInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -44,6 +45,10 @@ import java.lang.reflect.Type;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -81,9 +86,6 @@ public class TTSReportGenerationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ttsreport_generation, container, false);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
 
         user=view.findViewById(R.id.textViewRGUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
@@ -112,7 +114,7 @@ public class TTSReportGenerationFragment extends Fragment {
                 ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item,users);
                 userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinnerSelectUser.setAdapter(userSelectAdapter);
-            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update usernames", Toast.LENGTH_LONG).show();
+            }).exceptionally(e -> { Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                 return null;
             });
 
@@ -123,37 +125,65 @@ public class TTSReportGenerationFragment extends Fragment {
         startDate.setFocusable(false);
         endDate.setFocusable(false);
 
-        //Date Picker start
         startDate.setOnClickListener(v -> {
-            //To show current date in the datepicker
-            Calendar mcurrentDate=Calendar.getInstance();
-            mYear=mcurrentDate.get(Calendar.YEAR);
-            mMonth=mcurrentDate.get(Calendar.MONTH);
-            mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
+            MaterialDatePicker<Long> datePicker = MaterialDatePicker
+                    .Builder
+                    .datePicker()
+                    .setTitleText("Select Date")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build();
 
-            DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), (view12, year, month, dayOfMonth) ->
-            startDate.setText(convertDateTime(dayOfMonth) + "/" + convertDateTime((month+1))  + "/" + year),mYear, mMonth, mDay);
-            mDatePicker.getDatePicker().setCalendarViewShown(false);
-            mDatePicker.setTitle("Select date");
-            mDatePicker.show();
+            if (!datePicker.isAdded()){
+                datePicker.show(getChildFragmentManager(),"Date_Picker");
+            }
 
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                Log.e("Date",""+datePicker.getHeaderText());
+                appExecutors.getNetworkIO().execute(() -> {
+                    LocalDate selectedDate = Instant
+                            .ofEpochMilli(selection)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+
+                    DateTimeFormatter df =  DateTimeFormatter.ofPattern("dd/MM/yyyy",Locale.ENGLISH);
+                    String formattedDate = selectedDate.format(df);
+                    appExecutors.getMainThread().execute(() -> startDate.setText(formattedDate));
+                });
+
+
+            });
         });
 
         endDate.setOnClickListener(v -> {
+            MaterialDatePicker<Long> datePicker = MaterialDatePicker
+                    .Builder
+                    .datePicker()
+                    .setTitleText("Select Date")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build();
 
-            //To show current date in the datepicker
-            Calendar mcurrentDate=Calendar.getInstance();
-            mYear=mcurrentDate.get(Calendar.YEAR);
-            mMonth=mcurrentDate.get(Calendar.MONTH);
-            mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
+            if (!datePicker.isAdded()){
+                datePicker.show(getChildFragmentManager(),"Date_Picker");
+            }
 
-            DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), (view1, year, month, dayOfMonth) ->
-            endDate.setText(convertDateTime(dayOfMonth) + "/" + convertDateTime((month+1))  + "/" + year),mYear, mMonth, mDay);
-            mDatePicker.getDatePicker().setCalendarViewShown(false);
-            mDatePicker.setTitle("Select date");
-            mDatePicker.show();
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                Log.e("Date",""+datePicker.getHeaderText());
+                appExecutors.getNetworkIO().execute(() -> {
+                    LocalDate selectedDate = Instant
+                            .ofEpochMilli(selection)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
 
+                    DateTimeFormatter df =  DateTimeFormatter.ofPattern("dd/MM/yyyy",Locale.ENGLISH);
+                    String formattedDate = selectedDate.format(df);
+                    appExecutors.getMainThread().execute(() -> endDate.setText(formattedDate));
+                });
+
+
+            });
         });
+
+
 
         btnReportGenerate.setOnClickListener(v -> {
             btnReportGenerate.setEnabled(false);
@@ -174,8 +204,7 @@ public class TTSReportGenerationFragment extends Fragment {
                         btnReportGenerate.setEnabled(true);
 
                     }).exceptionally(e -> {
-                        Toast.makeText(getActivity().getApplicationContext(), "Failed to get the file from the server "  , Toast.LENGTH_LONG).show();
-                        Log.e("Error", "getting error : "+e.getMessage() +" cause : "+e.getCause()+" error : "+e);
+                        Toast.makeText(getActivity().getApplicationContext(), "Failure: "+e.getMessage()  , Toast.LENGTH_LONG).show();
                         btnReportGenerate.setEnabled(true);
 
                         return null;

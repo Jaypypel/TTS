@@ -11,17 +11,17 @@ import retrofit2.http.Query;
 
 public interface ProjectServiceInterface {
 
-    @GET("/Projects/name/list")
+    @GET("/Projects1/name/list")
     Call<ResponseBody> getProjectNameList();
 
-    @GET("/Projects/project/projectName")
+    @GET("/Projects1/project/projectName")
     Call<ResponseBody> getProjectCodeViaProjectName(@Query("proj_name") String projectName);
 
 
-    @GET("/Projects/list/code")
+    @GET("/Projects1/list/code")
     Call<ResponseBody> getProjectCodesList();
 
-    @POST("/Projects/project/")
+    @POST("/Projects1/project/")
     Call<ResponseBody> addProject(@Query("user_id") String username, @Query("activity_id")
     Long activityId, @Query("proj_code") String projectCode, @Query("proj_name") String prjNme
             , @Query("created_on") String createdOn);

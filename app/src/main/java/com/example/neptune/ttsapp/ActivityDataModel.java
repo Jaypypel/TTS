@@ -1,26 +1,29 @@
 package com.example.neptune.ttsapp;
 
+import androidx.annotation.NonNull;
+
 public class ActivityDataModel {
 
     private String id;
     private String name;
 
-    public String getid() {
+    public String getId() {
         return id;
     }
 
-    public void setid(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getname() {
+    public String getName() {
         return name;
     }
 
-    public void setname(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return this.id + "-" + this.name;

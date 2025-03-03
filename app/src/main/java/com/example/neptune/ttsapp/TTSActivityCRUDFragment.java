@@ -106,7 +106,7 @@ public class TTSActivityCRUDFragment extends Fragment {
                 ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item,users);
                 userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 userSelect.setAdapter(userSelectAdapter);
-            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "can't update usernames", Toast.LENGTH_LONG).show();
+            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 return null;
             });
 
@@ -128,7 +128,7 @@ public class TTSActivityCRUDFragment extends Fragment {
                                 ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, activityNames);
                                 activityName.setAdapter(activityNameAdapter);
                             }).exceptionally(e -> {
-                                Toast.makeText(requireContext(), "can't update activity names", Toast.LENGTH_LONG).show();
+                                Toast.makeText(requireContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                                 return null;
                             });
                         }
@@ -166,11 +166,11 @@ public class TTSActivityCRUDFragment extends Fragment {
                                     });
                                 }else {
                                     appExecutors.getMainThread().execute(() ->
-                                    {Toast.makeText(getActivity().getApplicationContext(), "insertion failed ", Toast.LENGTH_LONG).show();
+                                    {Toast.makeText(getActivity().getApplicationContext(), "Insertion failed ", Toast.LENGTH_LONG).show();
                                         addActivity.setEnabled(true);});
                                 }
                             }).exceptionally(e -> {
-                                Toast.makeText(getActivity().getApplicationContext(), "Failed to add activity due to "+e.getMessage(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity().getApplicationContext(), "Failure :"+e.getMessage(), Toast.LENGTH_LONG).show();
                                 addActivity.setEnabled(true);
                                 return null;
                             });

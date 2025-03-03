@@ -28,7 +28,7 @@
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:layout_column="1"
-                    android:textColor="@android:color/black"
+
                     android:textStyle="bold"
                     android:layout_gravity="top"/>
 
@@ -38,7 +38,7 @@
                     android:layout_height="wrap_content"
                     android:layout_column="3"
                     android:layout_gravity="top"
-                    android:textColor="@android:color/black"
+
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -149,6 +149,7 @@
                 app:hintEnabled="true"
                 android:hint="Enter Task Name"
                 app:boxBackgroundMode="outline"
+
                 >
 
                 <AutoCompleteTextView
@@ -176,6 +177,7 @@
                 android:layout_marginEnd="40dp"
                 android:layout_weight="1"
                 app:hintEnabled="true"
+                android:background="@android:color/transparent"
                 android:hint="Enter Task Description"
                 app:boxBackgroundMode="outline"
                 >
@@ -206,7 +208,7 @@
                 android:layout_height="56dp"
                 android:layout_marginLeft="45dp"
                 android:text="Project No"
-                android:textColor="@android:color/black"
+
                 android:textStyle="bold"
                 android:paddingLeft="10dp"
                 android:ems="10"
@@ -237,13 +239,14 @@
                 app:boxBackgroundMode="outline"
                 android:hint="Enter Project Name">
 
-                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                <AutoCompleteTextView
                     android:id="@+id/editTextMainProjName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:inputType="textPersonName"
-                    android:importantForAccessibility="yes"/>
+                    android:importantForAccessibility="yes"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -266,7 +269,7 @@
                 app:placeholderText="Enter Activity Name"
                 app:boxBackgroundMode="outline">
 
-                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                <AutoCompleteTextView
                     android:id="@+id/editTextMainActName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -306,7 +309,7 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:spinnerMode="dialog"
-                android:textColor="@android:color/black" />
+                />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayoutQty"
@@ -335,7 +338,7 @@
                 app:boxBackgroundMode="outline"
                 app:hintEnabled="true">
 
-                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                <AutoCompleteTextView
                     android:id="@+id/editTextMainUnit"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

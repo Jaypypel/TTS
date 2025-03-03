@@ -11,7 +11,7 @@
         android:layout_width="362dp"
         android:layout_height="14dp"
         android:indeterminate="true"
-        app:indicatorColor="@color/primaryGreen"
+        app:indicatorColor="@color/md_theme_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

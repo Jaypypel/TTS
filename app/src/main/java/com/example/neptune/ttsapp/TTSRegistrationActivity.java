@@ -85,10 +85,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
         progressBar.setVisibility(View.INVISIBLE);
 
 
-        btnSubmit.setOnClickListener(view -> {
-            processUserRegistration();
-
-        });
+        btnSubmit.setOnClickListener(view -> processUserRegistration());
 
 
 
@@ -189,7 +186,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                 if (!isValidFullName() || !isValidUserId() || !checkPassword() || !isValidEmail() || !isValidMobileNo()) {
                     appExecutors.getMainThread().execute(() -> Toast
                             .makeText(TTSRegistrationActivity
-                                    .this, "Details entered aren't validated, Please Entered Details Again", Toast.LENGTH_LONG)
+                                    .this, "Entered Details validation failed, Please Entered Details Again", Toast.LENGTH_LONG)
                             .show());
                     btnSubmit.setEnabled(true);
                     return;
@@ -220,7 +217,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                     }).exceptionally(e -> {
                         appExecutors.getMainThread().execute(() -> {
                             progressBar.setVisibility(View.INVISIBLE);
-                            Toast.makeText(TTSRegistrationActivity.this, "Registration Failed due to " +e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(TTSRegistrationActivity.this, "Failure: " +e.getMessage(), Toast.LENGTH_LONG).show();
                             btnSubmit.setEnabled(true);
                         });
                         isRequestInProcess = false;

@@ -2,7 +2,7 @@
 plugins {
     id 'com.android.application'
     id 'com.google.dagger.hilt.android'
-
+   // id 'kotlin-android'
      // Add this plugin
 }
 
@@ -30,10 +30,19 @@ android {
     }
 
     buildFeatures {
+        //compose true
         viewBinding true
         dataBinding true
     }
 
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.3.2'
+    }
+
+//    kotlinOptions {
+//        jvmTarget = '1.8'
+//    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -47,6 +56,45 @@ dependencies {
 //    implementation 'com.androidx.support:appcompat-v7:28.0.0'
 //    implementation 'com.androidx.support.constraint:constraint-layout:2.0.4'
 //    implementation 'com.androidx.support:support-v4:28.0.0'
+
+
+//    def composeBom = platform('androidx.compose:compose-bom:2025.02.00')
+//
+//    implementation composeBom
+//    androidTestImplementation composeBom
+//
+//
+//
+//    //incorporates material design 3 in compose
+//    implementation 'androidx.compose.material3:material3'
+//
+//    //incorporates main APIs for underlying toolkit systems eg. input and measurement /layout
+//    implementation 'androidx.compose.ui:ui'
+//
+//
+//    //indulges android studio support
+//    implementation 'androidx.compose.ui:ui-tooling-preview'
+//    debugImplementation 'androidx.compose.ui:ui-tooling'
+//
+//
+//    //indulges UI Tests
+//    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+//    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+//
+//    //indulges an entire set of material icons
+//    implementation 'androidx.compose.material:material-icons-extended'
+//
+//    //indulges window size utils
+//    implementation 'androidx.compose.material3.adaptive:adaptive'
+//
+//    //allows integration with activities
+//    implementation 'androidx.activity:activity-compose:1.10.0'
+//
+//    //allows integration with viewModels
+//    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7'
+//
+//    //allows integration with LiveData
+//    implementation 'androidx.compose.runtime:runtime-livedata'
 
     implementation 'com.google.android.material:material:1.9.0'
 
@@ -65,8 +113,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'org.jetbrains:annotations:23.0.0'
-
-    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
+   // implementation 'androidx.core:core-ktx:1.15.0'
     implementation 'com.google.dagger:hilt-android:2.51'
     //annotationProcessor 'com.google.dagger:hilt-compiler:2.51.1'
 

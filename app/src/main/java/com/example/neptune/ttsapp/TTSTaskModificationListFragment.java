@@ -101,18 +101,18 @@ public class TTSTaskModificationListFragment extends Fragment {
         if (InternetConnectivity.isConnected()) {
             appExecutors.getNetworkIO().execute(() -> getSendModificationTaskList(getToken(),"revised").thenAccept(tasks -> {
                 senderDataModels = tasks;
-                adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity().getApplicationContext());
+                adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity());
                 senderModificationTaskList.setAdapter(adapter);
             }).exceptionally(e -> {
-                Toast.makeText(getContext().getApplicationContext(),"Failed to fetch outgoing tasks due to "+ e,Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 return null;
             }));
             appExecutors.getNetworkIO().execute(() -> getReceiveModificationTaskList(getToken(),"revised").thenAccept(tasks -> {
                 receiverDataModels = tasks;
-                adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity().getApplicationContext());
+                adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity());
                 receiverModificationTaskList.setAdapter(adapter);
             }).exceptionally(e -> {
-                Toast.makeText(getContext().getApplicationContext(),"Failed to fetch outgoing tasks due to "+ e,Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 return null;
             }));
 
@@ -127,7 +127,7 @@ public class TTSTaskModificationListFragment extends Fragment {
                 i.putExtra("senderTaskModificationMeasurableList", measurables);
                 startActivity(i);
             }).exceptionally(e -> {
-                Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 return  null;
             }));
 
@@ -141,7 +141,7 @@ public class TTSTaskModificationListFragment extends Fragment {
                 i.putExtra("receiverTaskModificationMeasurableList", measurables);
                 startActivity(i);
             }).exceptionally(e -> {
-                Toast.makeText(getContext().getApplicationContext(),"Failed to fetch measurables  due to "+ e,Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 return  null;
             }));
         }));

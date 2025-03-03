@@ -153,8 +153,7 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
                                 Log.e("Update failed", "Future resolved with false");
                             }
                         }).exceptionally( e -> {
-                            Log.e("Exception in CompletableFuture", e.getMessage());
-                            Toast.makeText(TTSTaskAllocatedListItemDetailsActivity.this, "Failed to update the task", Toast.LENGTH_LONG).show();
+                            Toast.makeText(TTSTaskAllocatedListItemDetailsActivity.this, "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                             return null;
                         });
                     }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}

@@ -7,7 +7,7 @@ import retrofit2.http.Query;
 
 public interface ReportServiceInterface {
 
-    @GET("/report/dts")
+    @GET("/report1/dts")
     Call<ResponseBody> getDTSReportByUsernameAndDateRange(@Query("username") String username,
                                                           @Query("startDate") String startDate,
                                                           @Query("endDate") String endDate);
