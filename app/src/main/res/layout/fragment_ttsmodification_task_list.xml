@@ -118,7 +118,7 @@
         android:layout_width="match_parent"
         android:layout_height="310dp"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="202dp" />
+        android:layout_marginTop="150dp" />
 
     <TextView
         android:id="@+id/textViewIncomingModificationTask"
@@ -137,5 +137,28 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="511dp"
         android:layout_marginBottom="5dp"/>
+    <TextView
+        android:id="@+id/receivedModifiedTasksState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No received modified task available!"
+        android:layout_marginStart="125dp"
+        android:layout_marginTop="250dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/assignedModifiedTasksState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No assigned modified task available!"
+        android:layout_marginStart="125dp"
+        android:layout_marginTop="650dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        />
 
 </RelativeLayout>

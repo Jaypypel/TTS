@@ -10,7 +10,7 @@ public class TimeShareDTO {
 
     private String endTime;
 
-    private String TimeDifference;
+    private String timeDifference;
 
     private String description;
 
@@ -49,11 +49,11 @@ public class TimeShareDTO {
     }
 
     public String getTimeDifference() {
-        return TimeDifference;
+        return timeDifference;
     }
 
     public void setTimeDifference(String timeDifference) {
-        TimeDifference = timeDifference;
+        this.timeDifference = timeDifference;
     }
 
     public String getDescription() {
@@ -70,5 +70,10 @@ public class TimeShareDTO {
 
     public void setCreatedOn(String createdOn) {
         this.createdOn = createdOn;
+
+
+
     }
+
+
 }

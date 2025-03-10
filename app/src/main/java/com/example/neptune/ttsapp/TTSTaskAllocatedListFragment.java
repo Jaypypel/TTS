@@ -111,7 +111,7 @@ public class TTSTaskAllocatedListFragment extends Fragment {
                allocatedTaskState.setVisibility(View.INVISIBLE);
                appExecutors.getMainThread().execute(() -> {
                    tasks = result;
-                   adapter = new TaskAllocatedListCustomAdapter(tasks,getActivity());
+                   adapter = new TaskAllocatedListCustomAdapter(tasks,requireContext());
                    listView.setAdapter(adapter);
                    if(tasks == null || tasks.isEmpty()){
                        allocatedTaskState.setVisibility(View.VISIBLE);

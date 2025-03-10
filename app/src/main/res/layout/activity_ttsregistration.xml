@@ -1,224 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout7"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+    android:layout_marginVertical="@dimen/activity_vertical_margin"
+    android:padding="16dp"
     tools:context=".TTSRegistrationActivity">
 
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout1"
-        android:layout_width="fill_parent"
+
+    <TextView
+        android:id="@+id/registeration"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
+        android:gravity="center"
+        android:layout_marginVertical="40dp"
+        android:text="Registration"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/fullname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintVertical_chainStyle="packed" />
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <TextView
-                android:id="@+id/textView11"
-                android:layout_width="103dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:layout_marginLeft="100dp"
-                android:text="Registration"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </TableRow>
-    </TableLayout>
-
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout2"
-        android:layout_width="fill_parent"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/fullname"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/tableLayout1">
+        app:layout_constraintBottom_toTopOf="@+id/username"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registeration">
 
-        <TableRow
-            android:id="@+id/tableRow2"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="10dp">
+            android:ems="10"
+            android:hint="Enter Name"
+            android:inputType="textPersonName" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText
-                android:id="@+id/editTextName"
-                android:layout_width="220dp"
-                android:layout_height="40dp"
-                android:layout_column="1"
-                android:layout_marginLeft="45dp"
-                android:ems="10"
-                android:hint="Enter Name"
-                android:inputType="textPersonName" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <EditText
-                android:id="@+id/editTextRegUserName"
-                android:layout_width="220dp"
-                android:layout_height="40dp"
-                android:layout_column="1"
-                android:layout_marginLeft="45dp"
-                android:ems="10"
-                android:hint="Enter User Name"
-                android:inputType="textPersonName" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-
-            <EditText
-                android:id="@+id/editTextRegPassword"
-                android:layout_width="220dp"
-                android:layout_height="40dp"
-                android:layout_column="1"
-                android:layout_marginLeft="45dp"
-                android:ems="10"
-                android:hint="Enter Password"
-                android:inputType="textPassword" />
-
-            <ToggleButton
-                android:id="@+id/reg_password_visibility"
-                android:layout_width="31dp"
-                android:layout_height="26dp"
-                android:layout_alignRight="@+id/editTextRegPassword"
-                android:layout_marginLeft="-30dp"
-                android:background="@drawable/icon_password_eye"
-                android:clickable="true"
-                android:textOn=""
-                android:textOff=""
-                android:text=""/>
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <EditText
-                android:id="@+id/editTextRetypePassword"
-                android:layout_width="220dp"
-                android:layout_height="40dp"
-                android:layout_column="1"
-                android:layout_marginLeft="45dp"
-                android:ems="10"
-                android:hint="Retype Password"
-                android:inputType="textPassword" />
-
-            <ToggleButton
-                android:id="@+id/reg_retype_password_visibility"
-                android:layout_width="31dp"
-                android:layout_height="26dp"
-                android:layout_alignRight="@+id/editTextRetypePassword"
-                android:layout_marginLeft="-30dp"
-                android:background="@drawable/icon_password_eye"
-                android:clickable="true"
-                android:textOn=""
-                android:textOff=""
-                android:text=""/>
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <EditText
-                android:id="@+id/editTextEmail"
-                android:layout_width="220dp"
-                android:layout_height="40dp"
-                android:layout_column="1"
-                android:layout_marginLeft="45dp"
-                android:ems="10"
-                android:hint="Enter E-Mail"
-                android:inputType="textEmailAddress" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow7"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <EditText
-                android:id="@+id/editTextMobileNo"
-                android:layout_width="220dp"
-                android:layout_height="40dp"
-                android:layout_column="1"
-                android:layout_marginLeft="45dp"
-                android:ems="10"
-                android:hint="Enter Mobile No"
-                android:inputType="phone" />
-        </TableRow>
-
-    </TableLayout>
-
-    <TableLayout
-        android:id="@+id/tableLayout3"
-        android:layout_width="fill_parent"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/username"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_below="@+id/tableLayout2">
+        android:layout_marginVertical="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fullname">
 
-        <TableRow
-            android:id="@+id/tableRow8"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextRegUserName"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="10dp">
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter User Name"
+            android:inputType="textPersonName"
+            tools:layout_editor_absoluteX="100dp"
+            tools:layout_editor_absoluteY="233dp" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/buttonCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:layout_marginLeft="20dp"
-                android:text="@android:string/cancel"
-                android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/buttonSubmit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:layout_marginLeft="100dp"
-                android:text="Submit"
-                android:textStyle="bold" />
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:endIconMode="password_toggle"
+        app:passwordToggleEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/retypepassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/username">
 
-            <requestFocus />
-        </TableRow>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextRegPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter Password"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    </TableLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/retypepassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:endIconMode="password_toggle"
+        app:passwordToggleEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/password"
+        android:layout_marginVertical="5dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextRetypePassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Retype Password"
+            android:inputType="textPassword"
+
+
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/contactNo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/retypepassword">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter E-Mail"
+            android:inputType="textEmailAddress" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/contactNo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextMobileNo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter Mobile No"
+            android:inputType="phone" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--    <requestFocus-->
+    <!--        android:id="@+id/requestFocus"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content" />-->
+
 
     <ProgressBar
         android:id="@+id/progressBarInReg"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:progressDrawable="@drawable/circular_progress_bar" />
+        android:layout_marginVertical="5dp"
+        android:layout_marginStart="151dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="136dp"
 
-</RelativeLayout>
+
+        android:progressDrawable="@drawable/circular_progress_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonSubmit" />
+
+    <Button
+        android:id="@+id/buttonSubmit"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="30dp"
+        android:paddingHorizontal="50dp"
+        android:text="@string/submit"
+        android:textStyle="bold"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/buttonCancel"
+        app:layout_constraintTop_toBottomOf="@id/contactNo"
+        tools:layout_editor_absoluteY="493dp" />
+
+    <Button
+        android:id="@+id/buttonCancel"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="30dp"
+        android:paddingHorizontal="50dp"
+        android:layout_marginEnd="10dp"
+        android:text="@android:string/cancel"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/buttonSubmit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contactNo"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -75,7 +75,7 @@ public class TTSLoginActivity extends AppCompatActivity {
         password = findViewById(R.id.editTextLoginPassword);
         btnLogin = findViewById(R.id.buttonSignin);
         btnRegister = findViewById(R.id.buttonRegister);
-        togglePassword = findViewById(R.id.login_password_visibility);
+        //togglePassword = findViewById(R.id.login_password_visibility);
         progressBarInLogin= findViewById(R.id.progressBarInLogin);
         progressBarInLogin.setVisibility(View.INVISIBLE);
 
@@ -89,40 +89,40 @@ public class TTSLoginActivity extends AppCompatActivity {
         });
 
 
-        // Code for show/hide togglePassword Button
-        togglePassword.setVisibility(View.INVISIBLE);
-        password.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable s)
-            {
-                togglePassword.setVisibility(View.VISIBLE);
-                String pass = password.getText().toString().trim().replaceAll("\\s+", "");
-                if (pass.isEmpty()){togglePassword.setVisibility(View.INVISIBLE);}
-            }
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {togglePassword.setVisibility(View.INVISIBLE); }
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
-        });
-
-        // Code for show/hide Password
-        togglePassword.setOnClickListener(v -> {
-            if(togglePassword.isChecked())
-            {
-
-                password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                // Code for set focus to right of text in EditText
-                int pos = password.getText().length();
-                password.setSelection(pos);
-            }
-            else
-            {
-                //Button is OFF
-                // hide password
-                password.setTransformationMethod(PasswordTransformationMethod.getInstance());
-//                    password.setBackground(getApplicationContext().getResources().getDrawable(R.drawable.icon_password_cross_eye));
-                // Code for set focus to right of text in EditText
-                int pos = password.getText().length();
-                password.setSelection(pos);
-            }
-        });
+//        // Code for show/hide togglePassword Button
+//        togglePassword.setVisibility(View.INVISIBLE);
+//        password.addTextChangedListener(new TextWatcher() {
+//            public void afterTextChanged(Editable s)
+//            {
+//                togglePassword.setVisibility(View.VISIBLE);
+//                String pass = password.getText().toString().trim().replaceAll("\\s+", "");
+//                if (pass.isEmpty()){togglePassword.setVisibility(View.INVISIBLE);}
+//            }
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {togglePassword.setVisibility(View.INVISIBLE); }
+//            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+//        });
+//
+//        // Code for show/hide Password
+//        togglePassword.setOnClickListener(v -> {
+//            if(togglePassword.isChecked())
+//            {
+//
+//                password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+//                // Code for set focus to right of text in EditText
+//                int pos = password.getText().length();
+//                password.setSelection(pos);
+//            }
+//            else
+//            {
+//                //Button is OFF
+//                // hide password
+//                password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+////                    password.setBackground(getApplicationContext().getResources().getDrawable(R.drawable.icon_password_cross_eye));
+//                // Code for set focus to right of text in EditText
+//                int pos = password.getText().length();
+//                password.setSelection(pos);
+//            }
+//        });
 
 
         // code for user fill password then press button of DONE on keyboard they get logged in

@@ -1,83 +1,109 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout8"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+    android:layout_marginVertical="@dimen/activity_vertical_margin"
+    android:padding="10dp"
     tools:context=".TTSActivityCRUDFragment">
 
-    <GridLayout
+
+    <TextView
+        android:id="@+id/textViewActCRUDUser"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:textStyle="bold"
+
+        app:layout_constraintEnd_toStartOf="@id/textViewActCRUDDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewActCRUDDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/textViewActCRUDUser"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/textViewActCRUDTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="180dp"
+        android:layout_marginTop="10dp"
+        android:gravity="end"
+
+        android:textStyle="bold"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewActCRUDDate"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/userninput"
+        style="Widget.Material3.TextInputLayout.*.ExposedDropdownMenu"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:rowCount="2"
-        android:columnCount="2"
-        >
+        android:layout_height="60dp"
 
-        <TextView
-            android:id="@+id/textViewActCRUDUser"
-            android:padding="5dp"
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:layout_column="0"
-            android:layout_row="0"
-            android:gravity="center_vertical"
+        app:endIconMode="custom"
+        app:hintEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/activityselector"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewActCRUDTime"
+        app:layout_constraintVertical_chainStyle="packed">
 
-            android:textStyle="bold"  />
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:hint="Select a user"
+            android:id="@+id/spinnerActCRUDUserSelect"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textViewActCRUDDate"
-            android:padding="5dp"
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:layout_column="1"
-            android:layout_row="0"
-            android:gravity="right"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/activityselector"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center"
+        android:hint="Enter an activity"
+        app:layout_constraintBottom_toTopOf="@+id/buttonActCRUDAddAct"
+        app:layout_constraintTop_toBottomOf="@+id/userninput"
+        android:layout_marginVertical="10dp">
 
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textViewActCRUDTime"
-            android:padding="5dp"
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:layout_column="1"
-            android:layout_row="1"
-            android:gravity="right"
-
-            android:textStyle="bold" />
-
-    </GridLayout>
-
-
-    <Spinner
-        android:id="@+id/spinnerActCRUDUserSelect"
-        android:layout_width="225dp"
-        android:layout_height="35dp"
-        android:layout_marginLeft="60dp"
-        android:layout_marginTop="80dp"
-        android:spinnerMode="dialog" />
-
-    <AutoCompleteTextView
-        android:id="@+id/editTextActCRUDActivity"
-        android:layout_width="225dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="60dp"
-        android:layout_marginTop="130dp"
-        android:ems="10"
-        android:hint="Enter Activity"
-        android:inputType="textPersonName" />
+        <AutoCompleteTextView
+            android:gravity="center"
+            android:id="@+id/editTextActCRUDActivity"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/buttonActCRUDAddAct"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:padding="15dp"
+        app:layout_constraintWidth_percent="0.5"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="120dp"
-        android:layout_marginTop="200dp"
         android:text="Add activity"
-        android:textStyle="bold" />
-</RelativeLayout>
+        android:textStyle="bold"
+        app:iconGravity="textStart"
+        app:icon="@drawable/baseline_add_24"
+        android:layout_marginVertical="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/activityselector" />
+</androidx.constraintlayout.widget.ConstraintLayout>

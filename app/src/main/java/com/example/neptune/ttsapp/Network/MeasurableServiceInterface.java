@@ -23,7 +23,7 @@ public interface MeasurableServiceInterface{
     @GET("Measurables1/names")
     Call<ResponseBody> getMeasurableNamesbyUsername(@Query("username") String username);
 
-    @GET("Measurables1/DTSMeasurables1List/{dtsId}")
+    @GET("Measurables1/DTSMeasurablesList/{dtsId}")
     Call<ResponseBody> getDTSMeasurableList(@Path("dtsId") Long dtsId);
 
     @GET("/delegationMeasurables1/allocatedMeasurabeslist/{taskId}")
