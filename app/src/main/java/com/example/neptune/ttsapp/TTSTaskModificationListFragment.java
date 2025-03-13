@@ -72,8 +72,6 @@ public class TTSTaskModificationListFragment extends Fragment {
 
     private ArrayList<TaskDataModel> senderDataModels,receiverDataModels;
 
-    private TextView receivedModifiedTasks,assignedModifiedTasksState;
-
 
 
     @Override
@@ -86,8 +84,7 @@ public class TTSTaskModificationListFragment extends Fragment {
         userId = sessionManager.getToken();
         user=view.findViewById(R.id.textViewModificationListUser);
         user.setText(userId);
-        receivedModifiedTasks = view.findViewById(R.id.receivedModifiedTasksState);
-        assignedModifiedTasksState = view.findViewById(R.id.assignedModifiedTasksState);
+
         date=view.findViewById(R.id.textViewModificationListDate);
         time=view.findViewById(R.id.textViewModificationListTime);
 
@@ -102,31 +99,18 @@ public class TTSTaskModificationListFragment extends Fragment {
 
 
         if (InternetConnectivity.isConnected()) {
-            appExecutors
-                    .getNetworkIO()
-                    .execute(() -> getSendModificationTaskList(getToken(),"revised")
-                            .thenAccept(tasks -> {
-                receivedModifiedTasks.setVisibility(View.INVISIBLE);
+            appExecutors.getNetworkIO().execute(() -> getSendModificationTaskList(getToken(),"revised").thenAccept(tasks -> {
                 senderDataModels = tasks;
                 adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity());
                 senderModificationTaskList.setAdapter(adapter);
-                if(tasks == null || tasks.isEmpty()){
-                    receivedModifiedTasks.setVisibility(View.VISIBLE);
-                }
             }).exceptionally(e -> {
                 Toast.makeText(requireContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 return null;
             }));
-            appExecutors.getNetworkIO().execute(() ->
-                    getReceiveModificationTaskList(getToken(),"revised")
-                            .thenAccept(tasks -> {
-                                assignedModifiedTasksState.setVisibility(View.INVISIBLE);
+            appExecutors.getNetworkIO().execute(() -> getReceiveModificationTaskList(getToken(),"revised").thenAccept(tasks -> {
                 receiverDataModels = tasks;
                 adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity());
                 receiverModificationTaskList.setAdapter(adapter);
-                if(tasks == null || tasks.isEmpty()){
-                    assignedModifiedTasksState.setVisibility(View.VISIBLE);
-                }
             }).exceptionally(e -> {
                 Toast.makeText(requireContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 return null;
@@ -190,6 +174,28 @@ public class TTSTaskModificationListFragment extends Fragment {
                             ArrayList<TaskDataModel> tasks = gson.fromJson(content,taskType);
                             future.complete(tasks);
                         }
+//                        for (JsonElement item: bodyContent
+//                        ) {
+//                            JsonObject taskObj = item.getAsJsonObject();
+//                            task = new TaskDataModel();
+//                            task.setId(taskObj.get("id").getAsLong());
+//                            JsonObject usr = taskObj.get("taskReceivedUserID").getAsJsonObject();
+//                            task.setTaskDeligateOwnerUserID(usr.get("username").getAsString());
+//                            task.setActivityName(taskObj.get("activityName").getAsString());
+//                            task.setTaskName(taskObj.get("taskName").getAsString());
+//                            task.setProjectNo(taskObj.get("projectCode").getAsString());
+//                            task.setProjectName(taskObj.get("projectName").getAsString());
+//                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
+//                            //        task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
+//                            task.setDescription(taskObj.get("description").getAsString());
+//                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
+////                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
+////                            task.setSeenOn(taskObj.get("taskSeenOn").getAsString());
+////                            task.setAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
+//                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
+//                            task.setStatus(taskObj.get("status").getAsString());
+//                            tasks.add(task);
+
                     }
 
                     if (apiResponse instanceof APIErrorResponse) {
@@ -244,6 +250,31 @@ public class TTSTaskModificationListFragment extends Fragment {
                             ArrayList<TaskDataModel> tasks = gson.fromJson(content,taskType);
                             future.complete(tasks);
                         }
+//
+//                        for (JsonElement item: bodyContent
+//                        ) {
+//                            JsonObject taskObj = item.getAsJsonObject();
+//                            task = new TaskDataModel();
+//                            task.setId(taskObj.get("id").getAsLong());
+//                            JsonObject taskReceivedUserID = taskObj.get("taskReceivedUserID").getAsJsonObject();
+//                            JsonObject taskOwnerUserID = taskObj.get("taskOwnerUserID").getAsJsonObject();
+//                            task.setTaskReceivedUserId(taskReceivedUserID.get("username").getAsString());
+//                            task.setTaskDeligateOwnerUserID(taskOwnerUserID.get("username").getAsString());
+//                            task.setActivityName(taskObj.get("activityName").getAsString());
+//                            task.setTaskName(taskObj.get("taskName").getAsString());
+//                            task.setProjectNo(taskObj.get("projectCode").getAsString());
+//                            task.setProjectName(taskObj.get("projectName").getAsString());
+//                            task.setExpectedDate(taskObj.get("expectedDate").getAsString().split("T")[0]);
+//                            //        task.setExpectedTotalTime(taskObj.get("expectedTotalTime").getAsString());
+//                            task.setDescription(taskObj.get("description").getAsString());
+//                            task.setActualTotalTime(taskObj.get("actualTotalTime").getAsString());
+//                            task.setDeligationDateTime(taskObj.get("taskAssignedOn").getAsString());
+////                            task.setSeenOn(taskObj.get("taskSeenOn").getAsString());
+////                            task.setAcceptedOn(taskObj.get("taskAcceptedOn").getAsString());
+//                            task.setStatus(taskObj.get("status").getAsString());
+//                            tasks.add(task);
+//
+//                        }future.complete(tasks);
                     }
 
                     if (apiResponse instanceof APIErrorResponse) {
@@ -299,6 +330,15 @@ public class TTSTaskModificationListFragment extends Fragment {
                             ArrayList<MeasurableListDataModel> measurables = gson.fromJson(content,measurableType);
                             future.complete(measurables);
                         }
+
+//                        for (JsonElement e : bodyContent){
+//                            JsonObject msrObj = e.getAsJsonObject();
+//                            measurable = new MeasurableListDataModel();
+//                            measurable.setId(msrObj.get("id").getAsString());
+//                            measurable.setMeasurableName(msrObj.get("name").getAsString());
+//                            measurables.add(measurable);
+//                        }
+//                        future.complete(measurables);
                     }
                     if (apiResponse instanceof APIErrorResponse) {
                         String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();

@@ -1,353 +1,439 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/relativeLayout12"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginHorizontal="@dimen/activity_horizontal_margin">
-
-
-    <TextView
-        android:id="@+id/textViewMainDate"
-        android:layout_width="0dp"
-        android:layout_height="36dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/textInputMainStartTimeLayout"
-        app:layout_constraintEnd_toStartOf="@id/textInputMainDateLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewMainTime"
-        app:layout_constraintWidth_percent="0.5" />
-
-    <TextView
-        android:id="@+id/textViewMainTime"
-        android:layout_width="0dp"
-        android:layout_height="36dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/textViewMainDate"
-        app:layout_constraintEnd_toStartOf="@id/textInputMainDateLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintWidth_percent="0.5" />
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputMainDateLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/textInputMainEndTimeLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textViewMainDate"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.5"
-        android:hint="Enter Date">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextMainDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:inputType="date"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputMainStartTimeLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/textInputMainTaskNameLayout"
-        app:layout_constraintEnd_toStartOf="@+id/textInputMainEndTimeLayout"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewMainDate"
-        app:layout_constraintWidth_percent="0.45"
-        android:hint="Start Time">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextMainStartTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:inputType="time" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputMainEndTimeLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/textInputMainTaskNameLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textInputMainStartTimeLayout"
-        app:layout_constraintTop_toBottomOf="@+id/textInputMainDateLayout"
-        app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintWidth_percent="0.45"
-        android:hint="End Time">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextMainEndTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:inputType="time" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputMainTaskNameLayout"
+    android:orientation="vertical"
+    android:layout_width="match_parent">
+    <TableLayout
+        android:id="@+id/tableLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxWidth="488dp"
-        android:minWidth="56dp"
-        app:layout_constraintBottom_toTopOf="@+id/textInputMainDescriptionLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputMainStartTimeLayout"
-        app:layout_constraintVertical_chainStyle="packed"
-        android:hint="Enter Task Description">
+        android:layout_height="wrap_content">
 
-        <AutoCompleteTextView
-            android:id="@+id/editTextMainTaskName"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:gravity="center"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputMainDescriptionLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:hint="Enter Task Description"
-        app:boxBackgroundMode="outline"
-        app:hintEnabled="true"
-        app:layout_constraintBottom_toTopOf="@+id/editTextMainProjNo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputMainTaskNameLayout">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextMainDescription"
+        <TableRow
+            android:id="@+id/tableRow1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:ems="10"
-            android:gravity="center"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:orientation="horizontal"
+            android:gravity="center">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/editTextMainProjNo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:maxHeight="56dp"
-        android:minHeight="48dp"
-        android:text="Project No"
-        android:gravity="center"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/textInputMainProjectLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputMainDescriptionLayout"
-        app:layout_constraintWidth_percent="1" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputMainProjectLayout"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="20dp">
+                <TextView
+                    android:id="@+id/textViewMainDate"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+
+                    android:textStyle="bold"
+                    android:layout_gravity="top"/>
+
+                <TextView
+                    android:id="@+id/textViewMainTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="3"
+                    android:layout_gravity="top"
+
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputMainDateLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="110dp"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:hint="Enter Date"
+                app:boxBackgroundMode="outline"
+                app:hintEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextMainDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:inputType="date" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/textInputActivityLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextMainProjNo"
-        android:hint="Enter Project Name">
+        android:layout_marginTop="60dp">
 
-        <AutoCompleteTextView
-            android:id="@+id/editTextMainProjName"
+        <TableRow
+            android:id="@+id/tableRow6"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:gravity="center"
-            android:importantForAccessibility="yes"
-            android:inputType="textPersonName" />
-    </com.google.android.material.textfield.TextInputLayout>
+            >
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputMainStartTimeLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                app:hintEnabled="true"
+                app:boxBackgroundMode="outline"
+                android:hint="Start Time">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextMainStartTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:inputType="time" />
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-    <!--            <com.google.android.material.textfield.TextInputLayout-->
-    <!--                android:id="@+id/textInputMeasurable"-->
-    <!--                android:layout_width="0dp"-->
-    <!--                android:layout_height="56dp"-->
-    <!--                android:layout_marginEnd="8dp"-->
-    <!--                android:layout_weight="2"-->
-    <!--                android:hint="Meas"-->
-    <!--                app:boxBackgroundMode="outline">-->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputMainEndTimeLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="70dp"
+                android:layout_marginEnd="20dp"
+                app:hintEnabled="true"
+                android:hint="End Time"
+                android:layout_weight="1"
+                app:boxBackgroundMode="outline">
 
-    <!--                <com.google.android.material.textfield.MaterialAutoCompleteTextView-->
-    <!--                    android:id="@+id/measurableSelect"-->
-    <!--                    android:layout_width="match_parent"-->
-    <!--                    android:layout_height="match_parent"-->
-    <!--                    android:inputType="none"-->
-    <!--                    android:gravity="center_vertical"-->
-    <!--                   />-->
-    <!--            </com.google.android.material.textfield.TextInputLayout>-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextMainEndTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="time"
+                    android:gravity="center_vertical"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputActivityLayout"
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/textInputLayoutQty"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputMainProjectLayout">
+        android:layout_marginTop="120dp"
+        >
 
-        <AutoCompleteTextView
-            android:id="@+id/editTextMainActName"
+        <TableRow
+            android:id="@+id/tableRow5"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:ems="10"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputMainTaskNameLayout"
+                android:layout_width="296dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="1"
+                app:hintEnabled="true"
+                android:hint="Enter Task Name"
+                app:boxBackgroundMode="outline"
+
+                >
+
+                <AutoCompleteTextView
+                    android:id="@+id/editTextMainTaskName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputMainDescriptionLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:layout_weight="1"
+                app:hintEnabled="true"
+                android:background="@android:color/transparent"
+                android:hint="Enter Task Description"
+                app:boxBackgroundMode="outline"
+                >
+
+                <EditText
+                    android:id="@+id/editTextMainDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:gravity="center"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+        </TableRow>
+
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/editTextMainProjNo"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginLeft="45dp"
+                android:text="Project No"
+
+                android:textStyle="bold"
+                android:paddingLeft="10dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:gravity="center_vertical"/>
+
+
+        </TableRow>
+
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputMainProjectLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginBottom="5dp"
+                app:hintEnabled="true"
+                app:boxBackgroundMode="outline"
+                android:hint="Enter Project Name">
+
+                <AutoCompleteTextView
+                    android:id="@+id/editTextMainProjName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:inputType="textPersonName"
+                    android:importantForAccessibility="yes"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputActivityLayout"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:layout_weight="1"
+                app:hintEnabled="true"
+                app:placeholderText="Enter Activity Name"
+                app:boxBackgroundMode="outline">
+
+                <AutoCompleteTextView
+                    android:id="@+id/editTextMainActName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:inputType="textPersonName"
+                    android:hint="Enter Activity Name" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </TableRow>
+
+
+    </TableLayout>
+
+
+    <TableLayout
+        android:id="@+id/tableLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="410dp"
+        >
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+
+            <Spinner
+                android:id="@+id/measurableSelect"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="2"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:spinnerMode="dialog"
+                />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutQty"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:hint="Qty"
+                app:boxBackgroundMode="outline">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextMainQty"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="number"
+                    android:gravity="center_vertical" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Unit Input Field -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutUnit"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:hint="Unit"
+                app:boxBackgroundMode="outline"
+                app:hintEnabled="true">
+
+                <AutoCompleteTextView
+                    android:id="@+id/editTextMainUnit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </TableRow>
+
+
+        <!-- Bottom Row with Button -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonMainMeasurableAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Add measurables"
+                android:textStyle="bold" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="520dp">
+
+        <TableRow
+            android:id="@+id/tableRow9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:gravity="center"
-            android:hint="Enter Activity Name"
-            android:inputType="textPersonName" />
-    </com.google.android.material.textfield.TextInputLayout>
+            >
 
+            <ListView
+                android:id="@+id/listMainMeasurable"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"/>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout30"
-        android:layout_width="0dp"
+        </TableRow>
+
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout6"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@+id/textInputLayoutQty"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textInputActivityLayout"
-        tools:layout_editor_absoluteY="594dp"
-        app:layout_constraintWidth_percent="0.58">
+        android:layout_marginTop="620dp">
 
-        <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/measurableSelect"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:spinnerMode="dropdown"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="583dp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <!-- Unit Input Field -->
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutQty"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintWidth_percent="0.19"
-        app:layout_constraintEnd_toStartOf="@+id/textInputLayoutUnit"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textInputLayout30"
-        app:layout_constraintTop_toBottomOf="@id/textInputActivityLayout"
-        android:hint="Qty">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextMainQty"
+        <TableRow
+            android:id="@+id/tableRow11"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:inputType="number" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:gravity="center">
 
+            <com.google.android.material.button.MaterialButton
+                android:padding="10dp"
+                android:id="@+id/buttonMainCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginLeft="20dp"
+                android:text="Cancel"
+                />
 
-    <!-- Bottom Row with Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonMainSubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
+                android:layout_column="2"
+                android:layout_marginLeft="100dp"
+                android:text="Submit"
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutUnit"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
-        android:maxHeight="56dp"
-        app:layout_constraintWidth_percent="0.19"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textInputLayoutQty"
-        app:layout_constraintTop_toBottomOf="@id/textInputActivityLayout"
-        tools:layout_editor_absoluteY="586dp"
-        android:hint="Unit">
+                android:padding="10dp"
 
-        <AutoCompleteTextView
-            android:id="@+id/editTextMainUnit"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:gravity="center_vertical"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
+                />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonMainMeasurableAdd"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintWidth_percent="0.5"
-        android:text="Add measurables"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.568"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textInputLayoutQty"
-        />
+        </TableRow>
 
-    <ListView
-        android:id="@+id/listMainMeasurable"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buttonMainMeasurableAdd" />
-
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonMainCancel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="Cancel"
-        app:layout_constraintWidth_percent="0.45"
-        app:layout_constraintEnd_toStartOf="@+id/buttonMainSubmit"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/listMainMeasurable" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonMainSubmit"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-
-        android:padding="10dp"
-
-        android:text="Submit"
-        app:layout_constraintWidth_percent="0.45"
-
-        app:layout_constraintEnd_toEndOf="parent"
-
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/buttonMainCancel"
-        app:layout_constraintTop_toBottomOf="@id/listMainMeasurable"
-      />
-
+    </TableLayout>
     <ProgressBar
         android:id="@+id/progressBarInMainPage"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:progressDrawable="@drawable/circular_progress_bar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buttonMainSubmit" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_centerInParent="true"
+        android:progressDrawable="@drawable/circular_progress_bar" />
+</RelativeLayout>

@@ -7,7 +7,7 @@
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progressBarSplash"
-        style="@style/Widget.Material3.LinearProgressIndicator"
+        style="@style/Widget.MaterialComponents.LinearProgressIndicator"
         android:layout_width="362dp"
         android:layout_height="14dp"
         android:indeterminate="true"

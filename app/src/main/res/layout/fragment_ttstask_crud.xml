@@ -5,117 +5,107 @@
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-    android:layout_marginVertical="@dimen/activity_vertical_margin"
-    android:padding="10dp"
-    tools:context=".TTSTaskCRUDFragment">
-
-
-    <TextView
-        android:id="@+id/textViewTaskCRUDUser"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/textViewTaskCRUDDate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.5" />
-
-    <TextView
-        android:id="@+id/textViewTaskCRUDDate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textViewTaskCRUDUser"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.5" />
-
-    <TextView
-        android:id="@+id/textViewTaskCRUDTime"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="180dp"
-        android:layout_marginTop="10dp"
-        android:gravity="end"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewTaskCRUDDate"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintWidth_percent="0.5" />
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout16"
+    tools:context=".TTSTaskCRUDFragment"
+    >
+    <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        app:layout_constraintBottom_toTopOf="@+id/textInputLayout15"
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="2"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/textViewTaskCRUDUser"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:gravity="center_vertical"
+
+            android:textStyle="bold"  />
+
+        <TextView
+            android:id="@+id/textViewTaskCRUDDate"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:gravity="right"
+
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewTaskCRUDTime"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_row="1"
+            android:gravity="right"
+
+            android:textStyle="bold" />
+
+    </GridLayout>
+
+    <Spinner
+        android:id="@+id/spinnerTaskCRUDActivitySelect"
+        android:layout_width="225dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="180dp"
+        android:spinnerMode="dialog"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout17"
-        android:layout_marginVertical="10dp">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <Spinner
-            android:id="@+id/spinnerTaskCRUDActivitySelect"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+    <AutoCompleteTextView
+        android:id="@+id/editTextTaskCRUDTaskName"
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
 
-            android:spinnerMode="dialog" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout15"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonTaskCRUDAdd"
+        android:layout_marginTop="252dp"
+        android:ems="10"
+        android:hint="Enter Task Name"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout16">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <AutoCompleteTextView
-            android:id="@+id/editTextTaskCRUDTaskName"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:ems="10"
-            android:hint="Enter Task Name"
-            android:inputType="textPersonName" />
-    </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout17"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
 
-        app:layout_constraintBottom_toTopOf="@+id/textInputLayout16"
+
+
+
+
+    <Spinner
+        android:id="@+id/spinnerTaskCRUDUserSelect"
+        android:layout_width="225dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="112dp"
+        android:spinnerMode="dialog"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTaskCRUDTime"
-        app:layout_constraintVertical_chainStyle="packed">
-
-        <Spinner
-            android:id="@+id/spinnerTaskCRUDUserSelect"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:spinnerMode="dropdown" />
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/buttonTaskCRUDAdd"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="40dp"
-        android:padding="15dp"
         android:text="Add a task"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.463"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout15"
-        app:layout_constraintWidth_percent="0.5" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.393" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

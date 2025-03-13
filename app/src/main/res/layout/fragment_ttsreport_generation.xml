@@ -1,124 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/relativeLayout11"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-    android:layout_marginVertical="@dimen/activity_vertical_margin"
-    android:padding="10dp"
+    android:orientation="vertical"
     tools:context=".TTSReportGenerationFragment">
-
-
-    <TextView
-        android:id="@+id/textViewRGUser"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/textViewRGDate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.5" />
-
-    <TextView
-        android:id="@+id/textViewRGDate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textViewRGUser"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.5" />
-
-    <TextView
-        android:id="@+id/textViewRGTime"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="180dp"
-        android:layout_marginTop="10dp"
-        android:gravity="end"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewRGDate"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintWidth_percent="0.5" />
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout23"
+    <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="200dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewRGTime"
-        app:layout_constraintBottom_toTopOf="@id/textInputLayout20">
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="2"
+        >
 
-        <Spinner
-            android:id="@+id/spinnerRGSelectUser"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:spinnerMode="dropdown"
+        <TextView
+            android:id="@+id/textViewRGUser"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:gravity="center_vertical"
+
+            android:textStyle="bold"  />
+
+        <TextView
+            android:id="@+id/textViewRGDate"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:gravity="right"
 
             android:textStyle="bold" />
-    </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout21"
-        android:layout_width="0dp"
+        <TextView
+            android:id="@+id/textViewRGTime"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_row="1"
+            android:gravity="right"
+
+            android:textStyle="bold" />
+
+    </GridLayout>
+
+    <Spinner
+        android:id="@+id/spinnerRGSelectUser"
+        android:layout_width="153dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@+id/textInputLayout20"
-        android:layout_marginVertical="10dp"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout23"
-        app:layout_constraintWidth_percent="0.45">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="87dp"
+        android:layout_marginLeft="87dp"
+        android:layout_marginTop="92dp"
+        android:spinnerMode="dialog"
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextRGStartDate"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:ems="10"
-            android:hint="Enter Start Date"
-            android:inputType="date" />
-    </com.google.android.material.textfield.TextInputLayout>
+        android:textStyle="bold" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout20"
-        android:layout_width="0dp"
+    <EditText
+        android:id="@+id/editTextRGStartDate"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textInputLayout21"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout23"
-        app:layout_constraintWidth_percent="0.45"
-        android:layout_marginVertical="10dp">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="11dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginTop="190dp"
+        android:ems="10"
+        android:hint="Enter Start Date"
+        android:inputType="date" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextRGEndDate"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:ems="10"
-            android:hint="Enter End Date"
-            android:inputType="date" />
-    </com.google.android.material.textfield.TextInputLayout>
+    <EditText
+        android:id="@+id/editTextRGEndDate"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="172dp"
+        android:layout_marginLeft="172dp"
+        android:layout_marginTop="190dp"
+        android:ems="10"
+        android:hint="Enter End Date"
+        android:inputType="date" />
 
     <Button
         android:id="@+id/buttonRGReportGenerate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="40dp"
-        app:layout_constraintWidth_percent="0.5"
-        android:text="Generate Report"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout20"
-        />
+        android:layout_width="196dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="63dp"
+        android:layout_marginLeft="63dp"
+        android:layout_marginTop="284dp"
+        android:text="Generate Report" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

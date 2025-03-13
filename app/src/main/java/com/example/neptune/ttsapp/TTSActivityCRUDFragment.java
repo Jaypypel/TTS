@@ -29,7 +29,6 @@ import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.UserServiceInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -72,9 +71,8 @@ public class TTSActivityCRUDFragment extends Fragment {
 
     private TextView user,date,time;
     private AutoCompleteTextView activityName;
-
     private Button addActivity;
-    private MaterialAutoCompleteTextView userSelect;
+    private Spinner userSelect;
 
     private SessionManager sessionManager;
 
@@ -102,38 +100,45 @@ public class TTSActivityCRUDFragment extends Fragment {
         userSelect=view.findViewById(R.id.spinnerActCRUDUserSelect);
         if (InternetConnectivity.isConnected()) {
 
-            appExecutors.getNetworkIO().execute(() ->
-                    getUsernames()
-                            .thenAccept(this::accept)
-                            .exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            getUsernames().thenAccept(usernames -> {
+               ArrayList<String>  users = usernames;
+                users.add(0,"Select user");
+                ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item,users);
+                userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                userSelect.setAdapter(userSelectAdapter);
+            }).exceptionally(e -> {Toast.makeText(getActivity().getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 return null;
-            }));
+            });
 
         }else {Toast.makeText(getActivity().getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
 
 
         try {
-            userSelect.setOnItemClickListener((parent, v, position, id) -> {
-                if (InternetConnectivity.isConnected()) {
+            userSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    // Set AutoCompleteTextView
+                    if (InternetConnectivity.isConnected()) {
 
-                    activityName.setText("");
-                    Log.e("Debugging", "Checking userSelect.isSelected value"+userSelect.isSelected());
-                    Log.e("Debugging", "Checking !getUser().isEmpty()) value"+!getUser().isEmpty());
-                    if(!getUser().equals("Select user") && !getUser().isBlank()) {
-                        appExecutors.getNetworkIO().execute(() -> getActivityNameByUsername(getUser()).thenAccept(activityNames -> {
-                            appExecutors.getMainThread().execute(() -> {
+                        activityName.setText("");
+                        if(!getUser().equals("Select user")) {
+
+
+                            getActivityNameByUsername(getUser()).thenAccept(activityNames -> {
                                 ArrayAdapter<String> activityNameAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, activityNames);
                                 activityName.setAdapter(activityNameAdapter);
+                            }).exceptionally(e -> {
+                                Toast.makeText(requireContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                return null;
                             });
-                        }).exceptionally(e -> {
-                            Toast.makeText(requireContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            return null;
-                        }));
-
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
                     }
-                } else {
-                    Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
                 }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) { }
             });
         }catch (Exception e){e.printStackTrace();}
 
@@ -184,7 +189,8 @@ public class TTSActivityCRUDFragment extends Fragment {
 
     private String getUser()
     {
-        return userSelect.getText().toString().trim();
+        String user = userSelect.getSelectedItem().toString().trim();
+        return user;
     }
 
     private String isActivityName()
@@ -365,16 +371,5 @@ public class TTSActivityCRUDFragment extends Fragment {
         });
 
         return future;
-    }
-
-    private void accept(ArrayList<String> usernames) {
-        appExecutors.getMainThread().execute(()-> {
-            ArrayList<String> users = usernames;
-            users.add(0, "Select user");
-            ArrayAdapter<String> userSelectAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, users);
-//                userSelectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            userSelect.setSimpleItems(users.stream().toArray(String[]::new));
-            userSelect.setOnClickListener(v -> userSelect.showDropDown());
-        });
     }
 }

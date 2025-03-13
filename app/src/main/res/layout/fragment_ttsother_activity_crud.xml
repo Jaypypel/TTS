@@ -1,85 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/relativeLayout10"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-    android:layout_marginVertical="@dimen/activity_vertical_margin"
-    android:padding="10dp"
     tools:context=".TTSOtherActivityCRUDFragment">
 
-
-    <TextView
-        android:id="@+id/textViewOtherActivityCRUDUser"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:textStyle="bold"
-
-        app:layout_constraintEnd_toStartOf="@id/textViewOtherActivityCRUDDate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textViewOtherActivityCRUDDate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textViewOtherActivityCRUDUser"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textViewOtherActivityCRUDTime"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="180dp"
-        android:layout_marginTop="10dp"
-        android:gravity="end"
-
-        android:textStyle="bold"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewOtherActivityCRUDDate"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout10"
+    <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonOtherActivityCRUDAddOtherActivity"
-        app:layout_constraintTop_toBottomOf="@+id/textViewOtherActivityCRUDDate"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:layout_editor_absoluteX="26dp">
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="2"
+        >
 
-        <AutoCompleteTextView
-            android:id="@+id/editTextOtherActivityCRUDOtherActivity"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="Enter Other Activity"
-            android:inputType="textPersonName" />
-    </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:id="@+id/textViewOtherActivityCRUDUser"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:gravity="center_vertical"
+
+            android:textStyle="bold"  />
+
+        <TextView
+            android:id="@+id/textViewOtherActivityCRUDDate"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:gravity="right"
+
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewOtherActivityCRUDTime"
+            android:padding="5dp"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_row="1"
+            android:gravity="right"
+
+            android:textStyle="bold" />
+
+    </GridLayout>
+
+
+
+
+
+    <AutoCompleteTextView
+        android:id="@+id/editTextOtherActivityCRUDOtherActivity"
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="80dp"
+        android:ems="10"
+        android:hint="Enter Other Activity"
+        android:inputType="textPersonName" />
 
     <Button
         android:id="@+id/buttonOtherActivityCRUDAddOtherActivity"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="40dp"
-        android:padding="15dp"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="175dp"
         android:text="Add other activity"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout10"
-        app:layout_constraintWidth_percent="0.5" />
+        android:textStyle="bold" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

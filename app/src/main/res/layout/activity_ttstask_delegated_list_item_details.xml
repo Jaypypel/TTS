@@ -65,17 +65,18 @@
 
             <TextView
                 android:id="@+id/textView18"
-                android:layout_width="99dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
                 android:layout_column="1"
                 android:text="Activity Name"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textViewTDLIDActName"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
+                android:layout_width="170dp"
+                android:layout_height="56dp"
                 android:layout_column="2"
+                android:layout_marginStart="60dp"
                 android:textStyle="bold" />
 
         </TableRow>
@@ -89,17 +90,18 @@
 
             <TextView
                 android:id="@+id/textView19"
-                android:layout_width="99dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
                 android:layout_column="1"
                 android:text="Task Name"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textViewTDLIDTaskName"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
+                android:layout_width="170dp"
+                android:layout_height="56dp"
                 android:layout_column="2"
+                android:layout_marginStart="60dp"
                 android:textStyle="bold" />
 
         </TableRow>
@@ -113,17 +115,18 @@
 
             <TextView
                 android:id="@+id/textView13"
-                android:layout_width="99dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
                 android:layout_column="1"
                 android:text="Project Code"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textViewTDLIDProjNo"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
+                android:layout_width="170dp"
+                android:layout_height="56dp"
                 android:layout_column="2"
+                android:layout_marginStart="60dp"
                 android:textStyle="bold" />
 
         </TableRow>
@@ -137,17 +140,18 @@
 
             <TextView
                 android:id="@+id/textView20"
-                android:layout_width="99dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
                 android:layout_column="1"
                 android:text="Project Name"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textViewTDLIDProjName"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
+                android:layout_width="170dp"
+                android:layout_height="56dp"
                 android:layout_column="2"
+                android:layout_marginStart="60dp"
                 android:textStyle="bold" />
 
         </TableRow>
@@ -161,17 +165,18 @@
 
             <TextView
                 android:id="@+id/textView14"
-                android:layout_width="67dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
                 android:layout_column="1"
                 android:text="Expected Date"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textViewTDLIDExpDate"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
+                android:layout_width="170dp"
+                android:layout_height="56dp"
                 android:layout_column="2"
+                android:layout_marginStart="60dp"
                 android:textStyle="bold" />
 
         </TableRow>
@@ -185,17 +190,18 @@
 
             <TextView
                 android:id="@+id/textView15"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
                 android:layout_column="1"
                 android:text="Expected Time"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textViewTDLIDExpTime"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
+                android:layout_width="170dp"
+                android:layout_height="56dp"
                 android:layout_column="2"
+                android:layout_marginStart="60dp"
                 android:textStyle="bold" />
         </TableRow>
 
@@ -208,8 +214,8 @@
 
             <TextView
                 android:id="@+id/textViewTDLIDMeasurableLabel"
-                android:layout_width="95dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
                 android:layout_column="1"
                 android:text="Measurables"
                 android:textStyle="bold" />
@@ -235,7 +241,7 @@
             <ListView
                 android:id="@+id/listMeasurableTDLID"
                 android:layout_width="301dp"
-                android:layout_height="45dp"
+                android:layout_height="55dp"
                 android:layout_column="1"
                 android:layout_marginLeft="10dp" />
 
@@ -257,8 +263,8 @@
 
             <TextView
                 android:id="@+id/textView16"
-                android:layout_width="77dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
                 android:layout_column="1"
                 android:text="Description"
                 android:textStyle="bold" />
@@ -313,26 +319,29 @@
             <Button
                 android:id="@+id/buttonTDLIDProcessing"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:layout_marginBottom="26dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:text="Start"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/buttonTDLIDComplete"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_column="2"
-                android:layout_marginBottom="26dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp"
                 android:text="Complete"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/buttonTDLIDDisplayTimeShares"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_column="3"
+                android:layout_marginLeft="35dp"
                 android:text="Timeshares"
                 android:textStyle="bold" />
 

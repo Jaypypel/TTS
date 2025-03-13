@@ -3,7 +3,6 @@ package com.example.neptune.ttsapp;
 import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -54,7 +53,6 @@ public class TTSTaskModificationListItemDetailsActivity extends AppCompatActivit
 
         // Getting Task Details From Receiver Modification List
         receiverTaskModificationListItemDetails = (TaskDataModel) getIntent().getSerializableExtra("receiverTaskModificationItemDetails");
-        Log.e("debugging", "task"+receiverTaskModificationListItemDetails);
         receiverModificationMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent().getSerializableExtra("receiverTaskModificationMeasurableList");
 
 
@@ -79,7 +77,7 @@ public class TTSTaskModificationListItemDetailsActivity extends AppCompatActivit
         else
         {
             TMLIDDate.setText(receiverTaskModificationListItemDetails.getTaskAssignedOn());
-            TMLIDUserName.setText(receiverTaskModificationListItemDetails.getTaskReceivedUserID());
+            TMLIDUserName.setText(receiverTaskModificationListItemDetails.getTaskOwnerUserID());
             TMLIDReceivedUserName.setText("From,  " + receiverTaskModificationListItemDetails.getTaskOwnerUserID());
             TMLIDActivityName.setText(receiverTaskModificationListItemDetails.getActivityName());
             TMLIDTaskName.setText(receiverTaskModificationListItemDetails.getTaskName());

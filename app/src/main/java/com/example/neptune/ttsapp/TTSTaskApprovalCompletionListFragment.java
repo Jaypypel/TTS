@@ -28,8 +28,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.Connection;
@@ -71,7 +69,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
     private static TaskAllocatedListCustomAdapter adapter;
 
     private ArrayList<TaskDataModel> senderDataModels,receiverDataModels;
-    private TextView receivedApprovalCompletionTasks,assignedTasksState;
+    private TaskDataModel dataModel;
 
 
     @Override
@@ -83,8 +81,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
         userId = sessionManager.getToken();
         user=view.findViewById(R.id.textViewApprovalCompletionUser);
         user.setText(userId);
-        receivedApprovalCompletionTasks = view.findViewById(R.id.receivedApprovalCompletionTasks);
-        assignedTasksState = view.findViewById(R.id.assignedTasksState);
+
         date=view.findViewById(R.id.textViewApprovalCompletionListDate);
         time=view.findViewById(R.id.textViewApprovalCompletionListTime);
 
@@ -102,32 +99,24 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
         if (InternetConnectivity.isConnected()) {
             appExecutors.getNetworkIO().execute(() -> {
                 getSendModificationTasks(getToken(),"unapproved").thenAccept(tasks -> {
-                    receivedApprovalCompletionTasks.setVisibility(View.INVISIBLE);
                     senderDataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity());
                     senderApprovalCompletionTaskList.setAdapter(adapter);
-                    if(tasks == null || tasks.isEmpty()){
-                        receivedApprovalCompletionTasks.setVisibility(View.VISIBLE);
-                    }
                 }).exceptionally(e -> {
                     Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
                     return null;
                 });
             });
-            appExecutors.getNetworkIO().execute(() ->
-                    getReceiveModificationTasks(getToken(),"unapproved")
-                            .thenAccept(tasks -> {
-                assignedTasksState.setVisibility(View.INVISIBLE);
-                receiverDataModels = tasks;
-                adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity());
-                receiverApprovalCompletionTaskList.setAdapter(adapter);
-                if(tasks == null || tasks.isEmpty()){
-                    assignedTasksState.setVisibility(View.VISIBLE);
-                }
-            }).exceptionally(e -> {
-                Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
-                return null;
-            }));
+            appExecutors.getNetworkIO().execute(() -> {
+                getReceiveModificationTasks(getToken(),"unapproved").thenAccept(tasks -> {
+                    receiverDataModels = tasks;
+                    adapter = new TaskAllocatedListCustomAdapter(receiverDataModels,getActivity());
+                    receiverApprovalCompletionTaskList.setAdapter(adapter);
+                }).exceptionally(e -> {
+                    Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                    return null;
+                });
+            });
 
 
         }else { Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();}

@@ -78,8 +78,8 @@ public class TTSRegistrationActivity extends AppCompatActivity {
         btnCancel =  findViewById(R.id.buttonCancel);
         btnSubmit =  findViewById(R.id.buttonSubmit);
 
-//        togglePassword =  findViewById(R.id.reg_password_visibility);
-//        toggleRetypePassword =  findViewById(R.id.reg_retype_password_visibility);
+        togglePassword =  findViewById(R.id.reg_password_visibility);
+        toggleRetypePassword =  findViewById(R.id.reg_retype_password_visibility);
 
         progressBar = findViewById(R.id.progressBarInReg);
         progressBar.setVisibility(View.INVISIBLE);
@@ -96,86 +96,86 @@ public class TTSRegistrationActivity extends AppCompatActivity {
 
         });
 
-//        // Code for show/hide togglePassword Button
-//        togglePassword.setVisibility(View.INVISIBLE);
-//        password.addTextChangedListener(new TextWatcher() {
-//            public void afterTextChanged(Editable s) {
-//                togglePassword.setVisibility(View.VISIBLE);
-//                String pass = password.getText().toString().trim().replaceAll("\\s+", "");
-//                if (pass.isEmpty()) {
-//                    togglePassword.setVisibility(View.INVISIBLE);
-//                }
-//            }
-//
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                togglePassword.setVisibility(View.INVISIBLE);
-//            }
-//
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//            }
-//        });
-//
-//        // Code for show/hide Password
-//        togglePassword.setOnClickListener(v -> {
-//            if (togglePassword.isChecked()) {
-//                //Button is ON
-//                //Show Password
-//                password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-//
-//                // Code for set focus to right of text in EditText
-//                int pos = password.getText().length();
-//                password.setSelection(pos);
-//            } else {
-//                //Button is OFF
-//                // hide password
-//                password.setTransformationMethod(PasswordTransformationMethod.getInstance());
-//
-//                // Code for set focus to right of text in EditText
-//                int pos = password.getText().length();
-//                password.setSelection(pos);
-//            }
-//        });
-//
-//
-//        // Code for show/hide togglePassword Button
-//        toggleRetypePassword.setVisibility(View.INVISIBLE);
-//        retypePassword.addTextChangedListener(new TextWatcher() {
-//            public void afterTextChanged(Editable s) {
-//                toggleRetypePassword.setVisibility(View.VISIBLE);
-//                String retypePass = retypePassword.getText().toString().trim().replaceAll("\\s+", "");
-//                if (retypePass.length() == 0) {
-//                    toggleRetypePassword.setVisibility(View.INVISIBLE);
-//                }
-//            }
-//
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                toggleRetypePassword.setVisibility(View.INVISIBLE);
-//            }
-//
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//            }
-//        });
-//
-//        // Code for show/hide Retype Password
-//        toggleRetypePassword.setOnClickListener(v -> {
-//            if (toggleRetypePassword.isChecked()) {
-//                //Button is ON
-//                //Show Password
-//                retypePassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-//
-//                // Code for set focus to right of text in EditText
-//                int pos = retypePassword.getText().length();
-//                retypePassword.setSelection(pos);
-//            } else {
-//                //Button is OFF
-//                // hide password
-//                retypePassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-//
-//                // Code for set focus to right of text in EditText
-//                int pos = retypePassword.getText().length();
-//                retypePassword.setSelection(pos);
-//            }
-//        });
+        // Code for show/hide togglePassword Button
+        togglePassword.setVisibility(View.INVISIBLE);
+        password.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                togglePassword.setVisibility(View.VISIBLE);
+                String pass = password.getText().toString().trim().replaceAll("\\s+", "");
+                if (pass.isEmpty()) {
+                    togglePassword.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                togglePassword.setVisibility(View.INVISIBLE);
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });
+
+        // Code for show/hide Password
+        togglePassword.setOnClickListener(v -> {
+            if (togglePassword.isChecked()) {
+                //Button is ON
+                //Show Password
+                password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+
+                // Code for set focus to right of text in EditText
+                int pos = password.getText().length();
+                password.setSelection(pos);
+            } else {
+                //Button is OFF
+                // hide password
+                password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
+                // Code for set focus to right of text in EditText
+                int pos = password.getText().length();
+                password.setSelection(pos);
+            }
+        });
+
+
+        // Code for show/hide togglePassword Button
+        toggleRetypePassword.setVisibility(View.INVISIBLE);
+        retypePassword.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                toggleRetypePassword.setVisibility(View.VISIBLE);
+                String retypePass = retypePassword.getText().toString().trim().replaceAll("\\s+", "");
+                if (retypePass.length() == 0) {
+                    toggleRetypePassword.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                toggleRetypePassword.setVisibility(View.INVISIBLE);
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });
+
+        // Code for show/hide Retype Password
+        toggleRetypePassword.setOnClickListener(v -> {
+            if (toggleRetypePassword.isChecked()) {
+                //Button is ON
+                //Show Password
+                retypePassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+
+                // Code for set focus to right of text in EditText
+                int pos = retypePassword.getText().length();
+                retypePassword.setSelection(pos);
+            } else {
+                //Button is OFF
+                // hide password
+                retypePassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
+                // Code for set focus to right of text in EditText
+                int pos = retypePassword.getText().length();
+                retypePassword.setSelection(pos);
+            }
+        });
     }
 
 
