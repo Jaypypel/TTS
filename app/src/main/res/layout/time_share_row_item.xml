@@ -1,21 +1,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="140dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="10dp">
+
 
     <TextView
         android:id="@+id/timeShareDate"
         android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="2dp"
-
-
         android:textStyle="bold" />
-
 
     <TextView
         android:id="@+id/timeShareStartTime"

@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.neptune.ttsapp.EnumStatus.Status;
@@ -142,21 +143,26 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
                 if(allocatedTaskListItemDetails.getTaskAcceptedOn()!=null && allocatedTaskListItemDetails.getTaskAcceptedOn().equals("not_accepted")) {
                     if (InternetConnectivity.isConnected())
                     {
-
+                        TALIDAccept.setEnabled(false);
                         updateTaskManagementStatus(allocatedTaskListItemDetails.getId(),accepted).thenAccept(isCompleted -> {
                             if(isCompleted){
                                 appExecutor.getMainThread().execute(() -> {
                                     Toast.makeText(TTSTaskAllocatedListItemDetailsActivity.this, "Task Accepted", Toast.LENGTH_LONG).show();
+
                                     finish();
+                                    TALIDAccept.setEnabled(true);
                                 });
                             }else {
-                                Log.e("Update failed", "Future resolved with false");
+                                Toast.makeText(TTSTaskAllocatedListItemDetailsActivity.this, "Failure: ", Toast.LENGTH_LONG).show();
+                                TALIDAccept.setEnabled(true);
                             }
                         }).exceptionally( e -> {
                             Toast.makeText(TTSTaskAllocatedListItemDetailsActivity.this, "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                            TALIDAccept.setEnabled(true);
                             return null;
                         });
-                    }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();}
+                    }else { Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                        TALIDAccept.setEnabled(true);}
                 }
 
             });
@@ -196,19 +202,16 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
         Call<ResponseBody> call = taskHandlerService.updateTaskManagementStatus(taskId,obj.name());
         call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 Log.e("response",":-"+response);
                 try {
                     APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
-                    Log.e("apiResponse",":-"+apiResponse);
-
                     if (apiResponse instanceof APISuccessResponse){
-
-                        String msg = ((APISuccessResponse<ResponseBody> ) apiResponse).getBody().getMessage().getAsString();
-                        Log.e("msg",":-"+msg);
+                        String msg = ((APISuccessResponse<ResponseBody> ) apiResponse)
+                                .getBody()
+                                .getMessage()
+                                .getAsString();
                         if(msg.equals("updated")){
-                            Log.e("task updated"," return true");
-
                             isUpdated.complete(true);
                            // return;
                         }

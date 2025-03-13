@@ -1,82 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout9"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+    android:layout_marginVertical="@dimen/activity_vertical_margin"
+    android:padding="10dp"
     tools:context=".TTSMeasurableCRUDFragment">
 
-    <GridLayout
-        android:layout_width="match_parent"
+
+    <TextView
+        android:id="@+id/textViewMeasurableCRUDUser"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:rowCount="2"
-        android:columnCount="2"
+        android:gravity="center_vertical"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/textViewMeasurableCRUDDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.5" />
+
+    <TextView
+        android:id="@+id/textViewMeasurableCRUDDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/textViewMeasurableCRUDUser"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.5" />
+
+    <TextView
+        android:id="@+id/textViewMeasurableCRUDTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="180dp"
+        android:layout_marginTop="10dp"
+        android:gravity="end"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewMeasurableCRUDDate"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintWidth_percent="0.5" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout19"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayout18"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewMeasurableCRUDTime"
+        app:layout_constraintVertical_chainStyle="packed">
+
+        <Spinner
+            android:id="@+id/spinnerMeasurableCRUDUserSelect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:spinnerMode="dialog" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout18"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonMeasurableCRUDAddMeasurable"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout19"
+        android:layout_marginVertical="10dp"
         >
 
-        <TextView
-            android:id="@+id/textViewMeasurableCRUDUser"
-            android:padding="5dp"
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:layout_column="0"
-            android:layout_row="0"
-            android:gravity="center_vertical"
-
-            android:textStyle="bold"  />
-
-        <TextView
-            android:id="@+id/textViewMeasurableCRUDDate"
-            android:padding="5dp"
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:layout_column="1"
-            android:layout_row="0"
-            android:gravity="right"
-
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textViewMeasurableCRUDTime"
-            android:padding="5dp"
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:layout_column="1"
-            android:layout_row="1"
-            android:gravity="right"
-
-            android:textStyle="bold" />
-
-    </GridLayout>
-    <Spinner
-        android:id="@+id/spinnerMeasurableCRUDUserSelect"
-        android:layout_width="225dp"
-        android:layout_height="35dp"
-        android:layout_marginLeft="60dp"
-        android:layout_marginTop="90dp"
-        android:spinnerMode="dialog" />
-
-
-    <AutoCompleteTextView
-        android:id="@+id/editTextMeasurableCRUDMeasurable"
-        android:layout_width="225dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="60dp"
-        android:layout_marginTop="155dp"
-        android:ems="10"
-        android:hint="Enter Measurable"
-        android:inputType="textPersonName" />
+        <AutoCompleteTextView
+            android:id="@+id/editTextMeasurableCRUDMeasurable"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:hint="Enter Measurable"
+            android:inputType="textPersonName"
+            android:gravity="center"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/buttonMeasurableCRUDAddMeasurable"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="130dp"
-        android:layout_marginTop="220dp"
+        android:layout_marginVertical="40dp"
+        android:padding="15dp"
         android:text="Add measurable"
-        android:textStyle="bold" />
-</RelativeLayout>
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout18"
+        app:layout_constraintWidth_percent="0.5" />
+</androidx.constraintlayout.widget.ConstraintLayout>

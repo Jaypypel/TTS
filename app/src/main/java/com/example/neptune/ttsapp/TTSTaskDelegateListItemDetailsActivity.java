@@ -108,7 +108,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                     .getSerializableExtra("TaskDelegatedItemDetails");
             delegatedMeasurableList = (ArrayList<MeasurableListDataModel>) getIntent()
                     .getSerializableExtra("TaskDelegatedMeasurableList");
-            Log.e("taskDelegateListItemDetails","-"+taskDelegateListItemDetails);
+
 
             // Getting Details From Accepted Task
             taskAcceptedItemDetails =  (TaskDataModel) getIntent()
@@ -451,13 +451,28 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
                     startActivity(i);
                     return;
                 }
-                if (taskProcessingItemDetails != null)
-                {
 
-                    Intent i = new Intent(getApplicationContext(), TTSTimeShareListActivity.class);
-                    i.putExtra("TaskProcessingDetails", taskProcessingItemDetails);
-                    startActivity(i);
-                    return;
+              if(taskProcessingItemDetails != null)  {
+                   appExecutors.getNetworkIO().execute(()-> {
+                       if(getTimeShares(taskProcessingItemDetails.getId()).join().isEmpty()){
+                           appExecutors.getMainThread().execute(() -> {
+                               Toast.makeText(getApplicationContext(), "add the timeshare as you don't have timeshares", Toast.LENGTH_LONG).show();
+
+                               Intent i = new Intent(getApplicationContext(),TTSTimeShareFormActivity.class);
+                               i.putExtra("TaskProcessingDetails", taskProcessingItemDetails);
+                               startActivity(i);
+                           });
+
+                       }else {
+
+                         appExecutors.getMainThread().execute(() -> {
+                             Intent i = new Intent(getApplicationContext(), TTSTimeShareListActivity.class);
+                             i.putExtra("TaskProcessingDetails", taskProcessingItemDetails);
+                             startActivity(i);
+                         });
+                       }
+                   });
+                   return ;
                 }
                 if (taskSenderApprovalItemDetails != null)
                 {

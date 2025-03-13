@@ -1,6 +1,8 @@
 package com.example.neptune.ttsapp;
 
 import android.content.Intent;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import okhttp3.internal.concurrent.Task;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -62,157 +65,65 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
         listView =  findViewById(R.id.timeShareList);
         gotoTimeshare =  findViewById(R.id.buttonGotoTimeshare);
 
-        //Get Data from clicking on Task Accepted Tab ListView
-        taskAcceptedDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskAcceptedItemDetails");
+        getAcceptedTask();
+        getCompletedTask();
+        getDelegatedTask();
+        getProcessTask();
+        getSenderApproveTask();
+        getReceiverApproveTask();
 
-        //Get Data from clicking on Task Completed Tab ListView
-        taskCompletedDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskCompletedDetails");
-
-        //Get Data from clicking on Task Delegated Tab ListView
-        taskDelegatedDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskDelegatedDetails");
-
-        //Get Data from clicking on Task Processing Tab ListView
-        taskProcessingDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskProcessingDetails");
-
-        //Get Data from clicking on ShowTimeshare button in Task Sender Approval
-        taskSenderApprovalItemDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskSenderApprovalDetails");
-
-        //Get Data from clicking on ShowTimeshare button in Task Receiver Approval
-        taskReceiverApprovalItemDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskReceiverApprovalDetails");
-
-        if (taskAcceptedDetails != null) {
-            if (InternetConnectivity.isConnected()) {
+        if(InternetConnectivity.isConnected()){
+            if (taskAcceptedDetails != null) {
                 taskId = taskAcceptedDetails.getId();
-                getTimeShares(taskId).thenAccept(timeShares -> {
-                    dataModels = timeShares;
-                    Log.e("TimeShares",""+dataModels);
-                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
-                    listView.setAdapter(adapter);
+                getTimeShares(taskId)
+                            .thenAccept(this::setTimeshares)
+                            .exceptionally(this::displayExceptionMessage);
+            } else
+                if (taskCompletedDetails != null) {
+                    taskId = taskCompletedDetails.getId();
+                    getTimeShares(taskId).thenAccept(timeShares -> {
+                        setTimeshares(timeShares);
+                        gotoTimeshare.setVisibility(View.INVISIBLE);
+                    }).exceptionally(this::displayExceptionMessage);
 
-                }).exceptionally(e -> {
-                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    return null;
-                });
-
+            } else
+                if (taskDelegatedDetails != null) {
+                    taskId = taskDelegatedDetails.getId();
+                    getTimeShares(taskId).thenAccept(timeShares -> {
+                        setTimeshares(timeShares);
+                        gotoTimeshare.setVisibility(View.INVISIBLE);
+                    }).exceptionally(this::displayExceptionMessage);
+            } else
+                if (taskProcessingDetails != null) {
+                    taskId = taskProcessingDetails.getId();
+                    getTimeShares(taskId).thenAccept(this::setTimeshares)
+                            .exceptionally(this::displayExceptionMessage);
+               
+            } else
+                if (taskSenderApprovalItemDetails != null) {
+               
+                    taskId = taskSenderApprovalItemDetails.getId();
+                    getTimeShares(taskId).thenAccept(timeShares -> {
+                        setTimeshares(timeShares);
+                        gotoTimeshare.setVisibility(View.INVISIBLE);
+                    }).exceptionally(this::displayExceptionMessage);
+               
             } else {
-                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                    taskId = taskReceiverApprovalItemDetails.getId();
+                    getTimeShares(taskId).thenAccept(timeShares -> {
+                        setTimeshares(timeShares);
+                        gotoTimeshare.setVisibility(View.INVISIBLE);
+                    }).exceptionally(this::displayExceptionMessage);
             }
 
-
-        } else if (taskCompletedDetails != null) {
-            if (InternetConnectivity.isConnected()) {
-                taskId = taskCompletedDetails.getId();
-                getTimeShares(taskId).thenAccept(timeShares -> {
-
-                    dataModels = timeShares;
-                    Log.e("TimeShares",""+dataModels);
-                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
-                    listView.setAdapter(adapter);
-                    gotoTimeshare.setVisibility(View.INVISIBLE);
-
-                }).exceptionally(e -> {
-                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    return null;
-                });
-
-            } else {
-                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
-            }
-        } else if (taskDelegatedDetails != null) {
-            if (InternetConnectivity.isConnected()) {
-                taskId = taskDelegatedDetails.getId();
-                getTimeShares(taskId).thenAccept(timeShares -> {
-                    dataModels = timeShares;
-                    Log.e("TimeShares",""+dataModels);
-                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
-                    listView.setAdapter(adapter);
-                    gotoTimeshare.setVisibility(View.INVISIBLE);
-
-                }).exceptionally(e -> {
-                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    return null;
-                });
-
-
-            } else {
-                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
-            }
-        } else if (taskProcessingDetails != null) {
-            if (InternetConnectivity.isConnected()) {
-                taskId = taskProcessingDetails.getId();
-                getTimeShares(taskId).thenAccept(timeShares -> {
-
-
-                    dataModels = timeShares;
-                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
-                    listView.setAdapter(adapter);
-                }).exceptionally(e -> {
-                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    return null;
-                });
-
-            } else {
-                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
-            }
-        } else if (taskSenderApprovalItemDetails != null) {
-            if (InternetConnectivity.isConnected()) {
-                taskId = taskSenderApprovalItemDetails.getId();
-                getTimeShares(taskId).thenAccept(timeShares -> {
-                    dataModels = timeShares;
-                    Log.e("TimeShares",""+dataModels);
-                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
-                    listView.setAdapter(adapter);
-                    gotoTimeshare.setVisibility(View.INVISIBLE);
-
-                }).exceptionally(e -> {
-                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    return null;
-                });
-
-
-            } else {
-                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
-            }
-        } else {
-            if (InternetConnectivity.isConnected()) {
-                taskId = taskReceiverApprovalItemDetails.getId();
-                getTimeShares(taskId).thenAccept(timeShares -> {
-                    dataModels = timeShares;
-                    Log.e("TimeShares",""+dataModels);
-                    adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
-                    listView.setAdapter(adapter);
-                    gotoTimeshare.setVisibility(View.INVISIBLE);
-
-                }).exceptionally(e -> {
-                    Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    return null;
-                });
-
-            } else {
-                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
-            }
+        }else {
+            Toast.makeText(getApplicationContext(),"No Internet Connection",Toast.LENGTH_LONG).show();
         }
 
-        gotoTimeshare.setOnClickListener(v -> {
-            if (taskAcceptedDetails != null) {
-                Intent i = new Intent(getApplicationContext(), TTSTimeShareFormActivity.class);
-                i.putExtra("TaskAcceptedDetails", taskAcceptedDetails);
-                startActivity(i);
-                finish();
-            } else {
-                Intent i = new Intent(getApplicationContext(), TTSTimeShareFormActivity.class);
-                i.putExtra("TaskProcessingDetails", taskProcessingDetails);
-                startActivity(i);
-                finish();
-            }
-            // Code for finishing Accepted List
-            if (TTSMainActivity.mainActivity != null) {
-                TTSMainActivity.mainActivity.finish();
-            } else {
-                Log.e("TTSTimeShareListActivity", "TTSMainActivity is null");
-            }
 
-        });
+
+        gotoTimeshare
+                .setOnClickListener(v -> timeShareAction());
 
     }
 
@@ -227,7 +138,7 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
         Call<ResponseBody> call = timeShareService.getTimeShares(taskId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 try {
                     APIResponse<ResponseBody> apiResponse = APIResponse.create(response);
                     if (apiResponse instanceof APISuccessResponse) {
@@ -263,11 +174,74 @@ public class TTSTimeShareListActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                 future.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
 
         return future;
+    }
+
+
+/* set timeshares to its adapter*/
+    public void setTimeshares(ArrayList<TimeShareDataModel> timeshares){
+        dataModels = timeshares;
+        adapter = new TimeShareListCustomAdapter(dataModels, getApplicationContext());
+        listView.setAdapter(adapter);
+    }
+
+    /* share task details via an intent to other fragments of activity*/
+    public void shareATask(TaskDataModel task){
+        Intent i = new Intent(getApplicationContext(), TTSTimeShareFormActivity.class);
+        i.putExtra("TaskDetails", task);
+        startActivity(i);
+        finish();
+    }
+
+    /* display exception message if the exception is thrown to user*/
+    public Void displayExceptionMessage(Throwable e){
+        Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        return null;
+    }
+    /* this is listener method which is called when "gototimeshare" button clicked */
+    public void timeShareAction(){
+        if (taskAcceptedDetails != null) shareATask(taskAcceptedDetails);
+        else shareATask(taskProcessingDetails);
+        // Code for finishing Accepted List
+        if (TTSMainActivity.mainActivity != null) {
+            TTSMainActivity.mainActivity.finish();
+        } else {
+            Log.e("TTSTimeShareListActivity", "TTSMainActivity is null");
+        }
+    }
+    //Get Data from clicking on Task Accepted Tab ListView
+    public void getAcceptedTask(){
+        taskAcceptedDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskAcceptedItemDetails");
+    }
+
+    //Get Data from clicking on Task Completed Tab ListView
+    public void getCompletedTask(){
+        taskCompletedDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskCompletedDetails");
+    }
+
+
+    //Get Data from clicking on Task Delegated Tab ListView
+    public void getDelegatedTask(){
+        taskDelegatedDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskDelegatedDetails");
+    }
+
+    //Get Data from clicking on Task Processing Tab ListView
+    public void getProcessTask(){
+        taskProcessingDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskProcessingDetails");
+    }
+
+    //Get Data from clicking on ShowTimeshare button in Task Sender Approval
+    public void getSenderApproveTask(){
+        taskSenderApprovalItemDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskSenderApprovalDetails");
+    }
+
+    //Get Data from clicking on ShowTimeshare button in Task Receiver Approval
+    public void getReceiverApproveTask(){
+        taskReceiverApprovalItemDetails = (TaskDataModel) getIntent().getSerializableExtra("TaskReceiverApprovalDetails");
     }
 }

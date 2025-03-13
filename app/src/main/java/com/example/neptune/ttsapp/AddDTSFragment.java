@@ -546,8 +546,9 @@ public class AddDTSFragment extends Fragment{
     }
 
     private void updateMeasurableObjectsAdapter(List<MeasurableListDataModel> measurableObjects) {
+
         ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, measurableObjects);
-        adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterMeasurable.setDropDownViewResource(R.layout.measurable_name_item);
         timeShareMeasurable.setAdapter(adapterMeasurable);
     }
 

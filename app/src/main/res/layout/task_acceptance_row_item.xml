@@ -10,10 +10,6 @@
         android:id="@+id/taskDeligateOwnerName"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginRight="1dp"
         android:gravity="center"
         android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/taskDeligateTaskDate"
@@ -28,7 +24,6 @@
 
         android:layout_marginTop="10dp"
         android:layout_marginEnd="1dp"
-        android:layout_marginRight="1dp"
         android:layout_marginBottom="10dp"
         android:gravity="center"
         android:textStyle="bold"
@@ -44,7 +39,6 @@
         android:layout_height="56dp"
 
         android:layout_marginEnd="1dp"
-        android:layout_marginRight="1dp"
         android:gravity="center"
         android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/taskDeligateTaskDate"
@@ -56,9 +50,7 @@
         android:id="@+id/taskDeligateTaskStatus"
         android:layout_width="0dp"
         android:layout_height="56dp"
-
         android:layout_marginEnd="1dp"
-        android:layout_marginRight="1dp"
         android:gravity="center"
         android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/taskDeligateTaskName"
