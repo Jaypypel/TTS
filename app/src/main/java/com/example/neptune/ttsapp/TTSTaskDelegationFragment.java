@@ -386,7 +386,7 @@ public class TTSTaskDelegationFragment extends Fragment {
                                 updateMeasurablesAdapter(measurables.join());
                             })).exceptionally(e -> {
                                 appExecutor.getMainThread().execute(() -> {
-                                    Toast.makeText(getActivity().getApplicationContext(),
+                                    Toast.makeText(requireActivity().getApplicationContext(),
                                             "Failed to refresh data",Toast.LENGTH_LONG).show();
                                 });
                                 return null;

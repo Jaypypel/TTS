@@ -13,30 +13,30 @@ import retrofit2.http.Query;
 public interface MeasurableServiceInterface{
 
 
-    @GET("Measurables1/list")
+    @GET("Measurables/list")
     Call<ResponseBody> getMeasurableList();
 
 
-    @GET("Measurables1/measurable-list/")
-    Call<ResponseBody> getMeasurables1();
+    @GET("Measurables/measurable-list/")
+    Call<ResponseBody> getMeasurables();
 
-    @GET("Measurables1/names")
+    @GET("Measurables/names")
     Call<ResponseBody> getMeasurableNamesbyUsername(@Query("username") String username);
 
-    @GET("Measurables1/DTSMeasurablesList/{dtsId}")
+    @GET("Measurables/DTSMeasurablesList/{dtsId}")
     Call<ResponseBody> getDTSMeasurableList(@Path("dtsId") Long dtsId);
 
-    @GET("/delegationMeasurables1/allocatedMeasurabeslist/{taskId}")
+    @GET("/delegationMeasurables/allocatedMeasurabeslist/{taskId}")
     Call<ResponseBody> getAllocatedMeasurableList(@Path("taskId") Long taskId);
 
-    @POST("/delegationMeasurables1/add-delegationMeasurable")
+    @POST("/delegationMeasurables/add-delegationMeasurable")
     Call<ResponseBody> addDelegationMeasurable(@Query("taskHandlerId") Long taskHandlerId,
                                                @Query("measurablesId") Long measurablesId,
                                                @Query("mesrbQunty") Long mesrbQunty,
                                                @Query("mesrbUnit") String mesrbUnit);
 
 
-    @POST("timesharemeasurables1/add/timeharemeasurable")
+    @POST("timesharemeasurables/add/timeharemeasurable")
     Call<ResponseBody> addTimeShareMeasurable(@Query("timeShareId") Long timeShareId,
                                               @Query("measuableId")  Long measuableId,
                                               @Query("measurableQuantity") Long measurableQuantity,
@@ -44,6 +44,6 @@ public interface MeasurableServiceInterface{
 
 
 
-    @POST("Measurables1/measurable")
+    @POST("Measurables/measurable")
     Call<ResponseBody> addMeasurable(@Query("username") String username, @Query("measurableName") String measurableName, @Query("createdOn") String createdOn);
 }

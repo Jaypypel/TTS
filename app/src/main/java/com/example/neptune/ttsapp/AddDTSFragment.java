@@ -175,6 +175,7 @@ public class AddDTSFragment extends Fragment{
         });
 
         // code for go to Next EditText when press button of DONE on keyboard
+        //timeShareDate.setVisibility(View.INVISIBLE);
 
         timeShareTaskName.setOnEditorActionListener((v, actionId, event) -> {
             if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE))
@@ -283,7 +284,7 @@ public class AddDTSFragment extends Fragment{
                         }
                         if (isDateValid().isEmpty()) {
                             appExecutor.getMainThread().execute(() -> {
-                                timeShareDate.setError("Date Cannot Be Empty");
+                                tsDate.setError("Date Cannot Be Empty");
                                 timeShareSubmit.setEnabled(true);
 
                             });
@@ -307,14 +308,7 @@ public class AddDTSFragment extends Fragment{
 //                                .show();
 //                        return;
 //                    }
-                        if (!(sessionManager.getToken().equals("Prerna") || sessionManager.getToken().equals("YoKo")) && !isDateValid().equals(getTodayDate()))
-                        { appExecutor.getMainThread().execute(() -> {
-                            Toast.makeText(getActivity(), "Date Has Been Expired Contact to Admin", Toast.LENGTH_LONG).show();
-                            timeShareSubmit.setEnabled(true);
 
-                        });
-                            return;
-                        }
                         if (isStartTimeValid().isEmpty()) { timeShareStartTime.setError("Start Time Cannot Be Empty");
                             appExecutor.getMainThread().execute(() -> {
                                 timeShareSubmit.setEnabled(true);
@@ -337,7 +331,7 @@ public class AddDTSFragment extends Fragment{
                         }
                         if (isProjectNameValid().isEmpty()) {
                             appExecutor.getMainThread().execute(() -> {
-                                timeShareProjName.setError("Project Name Cannot Be Empty");
+                                tsProjectName.setError("Project Name Cannot Be Empty");
                                 timeShareSubmit.setEnabled(true);
                             });
                             return;
@@ -466,7 +460,7 @@ public class AddDTSFragment extends Fragment{
                             .atZone(ZoneId.systemDefault())
                             .toLocalDate();
 
-                    DateTimeFormatter df =  DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    DateTimeFormatter df =  DateTimeFormatter.ofPattern("dd/MM/yyyy",Locale.ENGLISH);
                     String formattedDate = selectedDate.format(df);
                     appExecutor.getMainThread().execute(() -> timeShareDate.setText(formattedDate));
                 });
@@ -671,7 +665,15 @@ public class AddDTSFragment extends Fragment{
         tsMeasurableUnit.setVisibility(View.VISIBLE);
         tsProjectName.setVisibility(View.VISIBLE);
 
+        if (!(sessionManager.getToken().equals("Prerna") || sessionManager.getToken().equals("Yo") || sessionManager.getToken().equals("Jaypel"))                                   )
+        { appExecutor.getMainThread().execute(() -> {
+          //  Toast.makeText(getActivity(), "Date Has Been Expired Contact to Admin", Toast.LENGTH_LONG).show();
+            timeShareDate.setVisibility(View.INVISIBLE);
+            tsDate.setVisibility(View.INVISIBLE);
+            //timeShareSubmit.setEnabled(true);
 
+        });
+        }
 
 
 
@@ -801,11 +803,11 @@ public class AddDTSFragment extends Fragment{
     // Clear All EditText
     public void clearAll()
     {
-        timeShareDate.setText("");
-        timeShareStartTime.setText("");
-        timeShareEndTime.setText("");
+        timeShareDate.setText(DateConverter.currentDate());
+        timeShareStartTime.setText(!timeShareEndTime.getText().toString().isEmpty()? timeShareEndTime.getText().toString():DateConverter.currentTime());
+        timeShareEndTime.setText(DateConverter.currentTime());
         timeShareDescription.setText("");
-        timeShareMeasurableQty.setText("");
+        timeShareMeasurableQty.setText("1");
         timeShareProjCode.setText("");
         timeShareActivityName.setText("");
         timeShareTaskName.setText("");

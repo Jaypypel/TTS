@@ -10,12 +10,12 @@ import retrofit2.http.Query;
 
 public interface TaskServiceInterface {
 
-    @GET("/tasks1/list/name")
+    @GET("/tasks/list/name")
     Call<ResponseBody> getTaskNames();
 
-    @GET("/tasks1/name")
+    @GET("/tasks/name")
     Call<ResponseBody> getTaskNamesByUsername(@Query("userId") String username);
 
-    @POST("/tasks1/task")
+    @POST("/tasks/task")
     Call<ResponseBody>  addTask(@Query("username") String username,@Query("activityId") Long activityId,@Query("taskName") String taskName,@Query("createdOn") String createdOn);
 }

@@ -1,131 +1,132 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout11"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <!--<androidx.fragment.widget.SwipeRefreshLayout-->
-        <!--android:id="@+id/swipeToRefreshAllocatedList"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content">-->
+    <!--android:id="@+id/swipeToRefreshAllocatedList"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content">-->
 
 
     <!--</androidx.fragment.widget.SwipeRefreshLayout>-->
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:rowCount="2"
-        android:columnCount="2"
-        >
+
     <TextView
         android:id="@+id/textViewAllocatedListUser"
-        android:padding="5dp"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_columnWeight="1"
-        android:layout_rowWeight="1"
-        android:layout_column="0"
-        android:layout_row="0"
         android:gravity="center_vertical"
-
-        android:textStyle="bold"  />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAllocatedListDate"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.45" />
 
     <TextView
         android:id="@+id/textViewAllocatedListDate"
-        android:padding="5dp"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_columnWeight="1"
-        android:layout_rowWeight="1"
-        android:layout_column="1"
-        android:layout_row="0"
-        android:gravity="right"
-
-        android:textStyle="bold"  />
+        android:gravity="end"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewAllocatedListUser"
+        app:layout_constraintTop_toTopOf="@+id/textViewAllocatedListUser"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintWidth_percent="0.45" />
 
     <TextView
         android:id="@+id/textViewAllocatedListTime"
-        android:padding="5dp"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_columnWeight="1"
-        android:layout_rowWeight="1"
-        android:layout_column="1"
-        android:layout_row="1"
-        android:gravity="right"
+        android:gravity="end"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewAllocatedListTask"
+        app:layout_constraintEnd_toEndOf="@+id/textViewAllocatedListDate"
+        app:layout_constraintStart_toStartOf="@+id/textViewAllocatedListDate"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAllocatedListDate"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintWidth_percent="0.45" />
 
-        android:textStyle="bold" />
-    </GridLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:orientation="horizontal"
-        android:gravity="center">
+    <TextView
+        android:id="@+id/textViewAllocatedListTaskUser"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="48dp"
+        android:gravity="center"
+        android:text="User"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAllocatedListTaskDate"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAllocatedListUser"
+        app:layout_constraintWidth_percent="0.20" />
 
-            <TextView
-                android:id="@+id/textViewAllocatedListTaskUser"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:layout_marginEnd="1dp"
-                android:text="User"
+    <TextView
+        android:id="@+id/textViewAllocatedListTaskDate"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="48dp"
+        android:gravity="center"
+        android:text="Date"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAllocatedListTask"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewAllocatedListTaskUser"
+        app:layout_constraintTop_toBottomOf="@id/textViewAllocatedListUser"
+        app:layout_constraintWidth_percent="0.20" />
 
-                android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/textViewAllocatedListTask"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="Task"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAllocatedListStatus"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewAllocatedListTaskDate"
+        app:layout_constraintTop_toBottomOf="@id/textViewAllocatedListTime"
+        app:layout_constraintWidth_percent="0.40" />
 
-            <TextView
-                android:id="@+id/textViewAllocatedListTaskDate"
-                android:gravity="center"
-                android:text="Date"
+    <TextView
+        android:id="@+id/textViewAllocatedListStatus"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="Status"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewAllocatedListTask"
+        app:layout_constraintTop_toBottomOf="@id/textViewAllocatedListTime"
+        app:layout_constraintWidth_percent="0.20" />
 
-                android:textStyle="bold"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="1dp"/>
-
-            <TextView
-                android:id="@+id/textViewAllocatedListTask"
-                android:gravity="center"
-                android:text="Task"
-
-                android:textStyle="bold"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="3"
-                android:layout_marginEnd="1dp" />
-
-            <TextView
-                android:id="@+id/textViewAllocatedListStatus"
-                android:gravity="center"
-                android:text="Status"
-
-                android:textStyle="bold"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="1dp" />
-
-    </LinearLayout>
 
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="150dp"
-        android:layout_marginBottom="5dp"/>
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewAllocatedListTask"
+        app:layout_constraintWidth_percent="0.65" />
+
     <TextView
         android:id="@+id/receivedTasksState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No received tasks available!"
-        android:layout_marginStart="125dp"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="100dp"
         android:gravity="center"
-        android:layout_gravity="center"
+        android:text="No received task available!"
         android:textStyle="bold"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAllocatedListTask" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

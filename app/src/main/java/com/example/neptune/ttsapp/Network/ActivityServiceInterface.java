@@ -11,22 +11,22 @@ import retrofit2.http.Query;
 
 public interface ActivityServiceInterface {
 
-    @GET("/activities1/names")
+    @GET("/activities/names")
     Call<ResponseBody> getActivitiesName();
 
-    @GET("/activities1/activityNames")
+    @GET("/activities/activityNames")
     Call<ResponseBody> getActivitiesNamebyUsername(@Query("username") String username);
 
-    @GET("/activities1/names/{username}")
+    @GET("/activities/names/{username}")
     Call<ResponseBody> getActivities(@Path("username") String username);
 
-    @POST("/activities1/activity")
+    @POST("/activities/activity")
     Call<ResponseBody> addActivity(@Query("username") String username, @Query("actvtyNme") String activityName, @Query("createdOn") String createdOn);
 
-    @POST("OtherActivities1/activity")
+    @POST("Otheractivities/activity")
     Call<ResponseBody> addOtherActivity(@Query("otherActiName") String name, @Query("createdOn") String createdOn);
 
-    @GET("OtherActivities1/list")
+    @GET("Otheractivities/list")
     Call<ResponseBody> getOtherActivityNames();
 
 }

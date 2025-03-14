@@ -10,9 +10,9 @@ import retrofit2.http.Path;
 
 public interface TimeShareServiceInterface {
 
-    @GET("timeshares1/list/{taskId}")
+    @GET("timeshares/list/{taskId}")
     Call<ResponseBody> getTimeShares(@Path("taskId") Long taskId);
 
-    @POST("timeshares1/timeshare")
+    @POST("timeshares/timeshare")
     Call<ResponseBody> addTimeShare(@Body TimeShareDTO timeShare);
 }

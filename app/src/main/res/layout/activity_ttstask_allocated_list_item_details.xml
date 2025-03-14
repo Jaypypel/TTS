@@ -5,7 +5,7 @@
     android:id="@+id/relativeLayout4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
     tools:context=".TTSTaskAllocatedListItemDetailsActivity">
 
 
@@ -14,247 +14,286 @@
 
     <TextView
         android:id="@+id/textViewTALIDUser"
-        android:layout_width="133dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="19dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView18"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTALIDDate"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        app:layout_constraintWidth_percent="0.48" />
 
     <TextView
         android:id="@+id/textViewTALIDDate"
-        android:layout_width="105dp"
-        android:layout_height="31dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="56dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewTALIDUser"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewTALIDUser"
+        app:layout_constraintTop_toTopOf="@+id/textViewTALIDUser"
+        app:layout_constraintWidth_percent="0.48" />
 
     <TextView
         android:id="@+id/textView18"
-        android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="88dp"
-        android:padding="5dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:text="Activity Name"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView19"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTALIDActName"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewTALIDUser"
+        app:layout_constraintWidth_percent="0.34" />
 
 
     <TextView
         android:id="@+id/textViewTALIDActName"
-        android:layout_width="182dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="92dp"
-        android:layout_marginEnd="28dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textStyle="bold"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/textView18"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView18"
+        app:layout_constraintTop_toTopOf="@+id/textView18"
+        app:layout_constraintWidth_percent="0.64" />
 
     <TextView
         android:id="@+id/textView19"
-        android:layout_width="wrap_content"
-        android:layout_height="55dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="144dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:text="Task Name"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView13"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTALIDTaskName"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView18"
+        app:layout_constraintWidth_percent="0.34" />
 
     <TextView
         android:id="@+id/textViewTALIDTaskName"
-        android:layout_width="182dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="148dp"
-        android:layout_marginEnd="24dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textStyle="bold"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/textView19"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView19"
+        app:layout_constraintTop_toTopOf="@+id/textView19"
+        app:layout_constraintWidth_percent="0.64" />
 
     <TextView
         android:id="@+id/textView13"
-        android:layout_width="wrap_content"
-        android:layout_height="58dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="200dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:text="Project Code"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView20"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTALIDProjNo"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView19"
+        app:layout_constraintWidth_percent="0.34" />
 
 
     <TextView
         android:id="@+id/textViewTALIDProjNo"
-        android:layout_width="182dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="204dp"
-        android:layout_marginEnd="26dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textStyle="bold"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/textView13"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView13"
+        app:layout_constraintTop_toTopOf="@+id/textView13"
+        app:layout_constraintWidth_percent="0.64" />
 
     <TextView
         android:id="@+id/textView20"
-        android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="260dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:text="Project Name"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView14"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTALIDProjName"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView13"
+        app:layout_constraintWidth_percent="0.34" />
 
 
     <TextView
         android:id="@+id/textViewTALIDProjName"
-        android:layout_width="182dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="260dp"
-        android:layout_marginEnd="21dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textStyle="bold"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/textView20"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView20"
+        app:layout_constraintTop_toTopOf="@+id/textView20"
+        app:layout_constraintWidth_percent="0.64" />
 
     <TextView
         android:id="@+id/textView14"
-        android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="316dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:text="Expected Date"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView15"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTALIDExpDate"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView20"
+        app:layout_constraintWidth_percent="0.34" />
 
 
     <TextView
         android:id="@+id/textViewTALIDExpDate"
-        android:layout_width="182dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="316dp"
-        android:layout_marginEnd="32dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textStyle="bold"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/textView14"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView14"
+        app:layout_constraintTop_toTopOf="@+id/textView14"
+        app:layout_constraintWidth_percent="0.64" />
+
+
+    <!-- 2 columns -->
+
+
+    <!-- 2 columns -->
+
+
+    <!-- 2 columns -->
+
+
+    <!-- 2 columns -->
+
 
     <TextView
         android:id="@+id/textView15"
-        android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="372dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:text="Expected Time"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView16"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTALIDExpTime"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <!-- 2 columns -->
-
-
-    <!-- 2 columns -->
-
-
-    <!-- 2 columns -->
-
-
-    <!-- 2 columns -->
-
+        app:layout_constraintTop_toBottomOf="@+id/textView14"
+        app:layout_constraintWidth_percent="0.34" />
 
     <TextView
         android:id="@+id/textViewTALIDExpTime"
-        android:layout_width="182dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="372dp"
-        android:layout_marginEnd="28dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:textStyle="bold"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/textView15"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView15"
+        app:layout_constraintTop_toTopOf="@+id/textView15"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintWidth_percent="0.64" />
 
     <TextView
         android:id="@+id/textView12"
-        android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="560dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="4dp"
         android:text="Measurables"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/listMeasurableTALID"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewTALIDDescription"
+        app:layout_constraintWidth_percent="0.34" />
 
     <ListView
         android:id="@+id/listMeasurableTALID"
-        android:layout_width="382dp"
+        android:layout_width="match_parent"
         android:layout_height="61dp"
-        android:layout_marginTop="624dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.551"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/buttonTALIDModify"
+        app:layout_constraintStart_toStartOf="@+id/textView12"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
     <TextView
         android:id="@+id/textView16"
-        android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="428dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="4dp"
         android:text="Description"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/textViewTALIDDescription"
+        app:layout_constraintStart_toStartOf="@+id/textViewTALIDDescription"
+        app:layout_constraintTop_toBottomOf="@+id/textView15"
+        app:layout_constraintWidth_percent="0.34" />
 
     <TextView
         android:id="@+id/textViewTALIDDescription"
-        android:layout_width="179dp"
+        android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_marginTop="492dp"
         android:clickable="false"
         android:inputType="textMultiLine"
         android:maxLines="6"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewTALIDExpTime"
+        app:layout_constraintVertical_chainStyle="spread_inside" />
 
     <Button
         android:id="@+id/buttonTALIDAccept"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="688dp"
-        android:layout_marginEnd="36dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:text="Accept"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/buttonTALIDDisplayTimeShare"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/buttonTALIDModify"
+        app:layout_constraintTop_toBottomOf="@+id/listMeasurableTALID"
+        app:layout_constraintWidth_percent="0.45" />
 
     <Button
         android:id="@+id/buttonTALIDDisplayTimeShare"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="792dp"
         android:text="Show Timeshares"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonTALIDAccept" />
 
     <Button
         android:id="@+id/buttonTALIDModify"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="688dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:text="Modify"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonTALIDAccept"
+        app:layout_constraintEnd_toStartOf="@+id/buttonTALIDAccept"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/buttonTALIDAccept"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintWidth_percent="0.45" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
