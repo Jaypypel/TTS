@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.DTO.AssignTaskDto;
 import com.example.neptune.ttsapp.DTO.TaskManagement;
 import com.example.neptune.ttsapp.EnumStatus.Status;
 import com.example.neptune.ttsapp.Network.APIErrorResponse;
@@ -58,11 +59,13 @@ import java.lang.reflect.Type;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -286,7 +289,6 @@ public class TTSTaskDelegationFragment extends Fragment {
 
 
                 if (measurableListDataModels.isEmpty() ) {
-
                     Toast.makeText(getActivity().getApplicationContext(), "Measurable list is empty", Toast.LENGTH_LONG).show();
                     taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
                     taskDelegate.setEnabled(true);
@@ -309,7 +311,7 @@ public class TTSTaskDelegationFragment extends Fragment {
                 taskManagement.setExpectedDate(isExpDateValid());
                 taskManagement.setExpectedTime(isExpTimeValid());
                 taskManagement.setExpectedTotalTime(isTotalTimeValid());
-                taskManagement.setActualTotalTime("Not_Available");
+                taskManagement.setActualTotalTime("not_Available");
                 taskManagement.setTaskAssignedOn(delegationTime());
                 taskManagement.setStatus(pending.name());
                 taskManagement.setTaskAcceptedOn("not_accepted");
@@ -318,40 +320,72 @@ public class TTSTaskDelegationFragment extends Fragment {
                 taskManagement.setTaskCompletedOn("not_completed");
                 taskManagement.setTaskProcessedOn("not_processed");
 
-
-                                        appExecutor.getNetworkIO().execute(() -> assignTaskToUser(taskManagement).thenCompose(result -> {
-
-                                            Long id = Long.valueOf(result.get(1));
+                AssignTaskDto assignTaskDto = new AssignTaskDto(taskManagement,measurableListDataModels);
 
 
-                                            return addDailyTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
-                                                if (finalResult) {
-
-                                                    appExecutor.getMainThread().execute(() -> {
-                                                        Toast.makeText(getActivity(), "Thank You..! Task Is Assigned", Toast.LENGTH_LONG).show();
-                                                        clearAll();
-                                                        clearMeasurableDetails();
-                                                        taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
-                                                        taskDelegate.setEnabled(true);
-                                                    });
-                                                }
-                                            });
-                                        }).exceptionally(e -> {
-                                            appExecutor.getMainThread().execute(() -> {
-                                                taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
-                                                Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
-                                                taskDelegate.setEnabled(true);
-                                            });
-                                            return null;
-
-
-                                        }).join());
+                appExecutor.getNetworkIO().execute(() -> assignTaskToUser(assignTaskDto).thenAccept(finalResult -> {
+                        if (finalResult.equals("Successful")) {
+                            appExecutor.getMainThread().execute(() -> {
+                                Toast
+                                        .makeText(getActivity(),
+                                                "Thank You..! Task Is Assigned",
+                                                Toast.LENGTH_LONG)
+                                        .show();
+                                clearAll();
+                                clearMeasurableDetails();
+                                taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
+                                taskDelegate.setEnabled(true);
+                            });
+                        }
+                }).exceptionally(e -> {
+                    appExecutor.getMainThread().execute(() -> {
+                        taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
+                        Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                        taskDelegate.setEnabled(true);
+                    });
+                    return null;
+                }).join());
 
             } catch (Exception e) {
                 Toast.makeText(getActivity(), "An error occurred while assigning the task", Toast.LENGTH_LONG).show();
                 taskDelegate.setEnabled(true);
             }
         });
+
+//                                        appExecutor.getNetworkIO().execute(() -> assignTaskToUser(taskManagement).thenCompose(result -> {
+//
+//                                            Long id = Long.valueOf(result.get(1));
+//
+//
+//                                            return addDailyTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
+//                                                if (finalResult) {
+//                                                    appExecutor.getMainThread().execute(() -> {
+//                                                        Toast
+//                                                                .makeText(getActivity(),
+//                                                                        "Thank You..! Task Is Assigned",
+//                                                                        Toast.LENGTH_LONG)
+//                                                                .show();
+//                                                        clearAll();
+//                                                        clearMeasurableDetails();
+//                                                        taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
+//                                                        taskDelegate.setEnabled(true);
+//                                                    });
+//                                                }
+//                                            });
+//                                        }).exceptionally(e -> {
+//                                            appExecutor.getMainThread().execute(() -> {
+//                                                taskDelegate.setBackgroundResource(android.R.drawable.btn_default);
+//                                                Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
+//                                                taskDelegate.setEnabled(true);
+//                                            });
+//                                            return null;
+//                                        }).join());
+//
+//            } catch (Exception e) {
+//                Toast.makeText(getActivity(), "An error occurred while assigning the task", Toast.LENGTH_LONG).show();
+//                taskDelegate.setEnabled(true);
+//            }
+//        });
 
 
         taskDeleCancel.setOnClickListener(v -> {
@@ -385,25 +419,27 @@ public class TTSTaskDelegationFragment extends Fragment {
                                 updateProjectNamesAdapter(projectNames.join());
                                 updateMeasurablesAdapter(measurables.join());
                             })).exceptionally(e -> {
-                                appExecutor.getMainThread().execute(() -> {
-                                    Toast.makeText(requireActivity().getApplicationContext(),
-                                            "Failed to refresh data",Toast.LENGTH_LONG).show();
-                                });
+                                appExecutor
+                                        .getMainThread()
+                                        .execute(() -> Toast
+                                                .makeText(requireActivity()
+                                                                .getApplicationContext(),
+                                        "Failed to refresh data",Toast
+                                                                .LENGTH_LONG)
+                                                .show());
                                 return null;
                             });
 
                 });
 
-                getMeasurableListAndUpdateUI().thenAccept(measurableListDataModels1 -> {
-                   appExecutor.getMainThread().execute(() -> {
-
-                           ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
-                           adapterMeasurable.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                           spinnerMeasurable.setAdapter(adapterMeasurable);
-
-
-                    });
-                }).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
+                getMeasurableListAndUpdateUI().thenAccept(measurableListDataModels1 -> appExecutor.getMainThread().execute(() -> {
+                        ArrayAdapter<MeasurableListDataModel> adapterMeasurable = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, measurableListDataModels1);
+                        adapterMeasurable.setDropDownViewResource(android.
+                                R.
+                                layout
+                                .simple_spinner_dropdown_item);
+                        spinnerMeasurable.setAdapter(adapterMeasurable);
+                })).exceptionally(e ->{    Log.e("Error", "Failed to fetch measurable list: " + e.getMessage());
                     appExecutor.getMainThread().execute(() ->
                             Toast.makeText(getActivity(), "couldn't fetch measurable list", Toast.LENGTH_LONG).show());
                     return null;
@@ -471,28 +507,14 @@ public class TTSTaskDelegationFragment extends Fragment {
             });
         });
 
-        //Date Picker for Expected Date start
-//        taskDeliExpDate.setOnClickListener((View v) -> {
-//
-//            //To show current date in the DatePicker
-//            Calendar mcurrentDate=Calendar.getInstance();
-//            mYear=mcurrentDate.get(Calendar.YEAR);
-//            mMonth=mcurrentDate.get(Calendar.MONTH);
-//            mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
-//
-//            DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), (view1, year, month, dayOfMonth) ->
-//                    taskDeliExpDate.setText(convertDateTime(dayOfMonth) + "-" + convertDateTime((month+1))  + "-" + year),mYear, mMonth, mDay);
-//            mDatePicker.getDatePicker().setCalendarViewShown(false);
-//            mDatePicker.setTitle("Select date");
-//            mDatePicker.show();
-//        });
+
 
         taskDeliExpTime.setOnClickListener(v -> {
             MaterialTimePicker timePicker = new MaterialTimePicker
                     .Builder().setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
                     .setTimeFormat(TimeFormat.CLOCK_12H)
-                    .setHour(12)
-                    .setMinute(10)
+                    .setHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY))
+                    .setMinute(Calendar.getInstance().get(Calendar.MINUTE))
                     .setTitleText("Select Start Time")
                     .build();
 
@@ -517,17 +539,6 @@ public class TTSTaskDelegationFragment extends Fragment {
 
         });
 
-        // Time Picker for Expected Time
-//        taskDeliExpTime.setOnClickListener(v -> {
-//            final Calendar c = Calendar.getInstance();
-//            mHour = c.get(Calendar.HOUR_OF_DAY);
-//            mMinute = c.get(Calendar.MINUTE);
-//
-//            // Launch Time Picker Dialog
-//            TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), (view12, hourOfDay, minute) ->
-//                    taskDeliExpTime.setText(convertDateTime(hourOfDay) + ":" + convertDateTime(minute)), mHour, mMinute, true);
-//            timePickerDialog.show();
-//        });
 
 
         taskDeliTotalTimeMM.addTextChangedListener(new TextWatcher() {
@@ -859,8 +870,9 @@ public class TTSTaskDelegationFragment extends Fragment {
         return future;
     }
 
-    public CompletableFuture<ArrayList<String>> assignTaskToUser(TaskManagement taskManagement){
-        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+
+    public CompletableFuture<String> assignTaskToUser(AssignTaskDto taskManagement){
+        CompletableFuture<String> future = new CompletableFuture<>();
         ArrayList<String> messageAndId = new ArrayList<>();
         Call<ResponseBody> call = taskHandlerInterface.addAssignTaskHandler(taskManagement);
         call.enqueue(new Callback<ResponseBody>() {
@@ -872,12 +884,8 @@ public class TTSTaskDelegationFragment extends Fragment {
                     if (apiResponse != null) {
                         if (apiResponse instanceof APISuccessResponse) {
                             String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
-                            JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();
-                            String dtsId = dtsobject.get("id").getAsString();
                             if ("Successful".equals(message)) {
-                                messageAndId.add(message);
-                                messageAndId.add(dtsId);
-                                future.complete(messageAndId);
+                                future.complete(message);
                             }
                         }
                         if (apiResponse instanceof APIErrorResponse) {
@@ -908,6 +916,56 @@ public class TTSTaskDelegationFragment extends Fragment {
         });
         return future;
     }
+//
+//    public CompletableFuture<ArrayList<String>> assignTaskToUser(TaskManagement taskManagement){
+//        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+//        ArrayList<String> messageAndId = new ArrayList<>();
+//        Call<ResponseBody> call = taskHandlerInterface.addAssignTaskHandler(taskManagement);
+//        call.enqueue(new Callback<ResponseBody>() {
+//            @Override
+//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//
+//                try {
+//                    APIResponse  apiResponse = APIResponse.create(response);
+//                    if (apiResponse != null) {
+//                        if (apiResponse instanceof APISuccessResponse) {
+//                            String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+//                            JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();
+//                            String dtsId = dtsobject.get("id").getAsString();
+//                            if ("Successful".equals(message)) {
+//                                messageAndId.add(message);
+//                                messageAndId.add(dtsId);
+//                                future.complete(messageAndId);
+//                            }
+//                        }
+//                        if (apiResponse instanceof APIErrorResponse) {
+//                            String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+//                            future.completeExceptionally(new Throwable(erMsg));
+//                        }
+//                        if (apiResponse instanceof APIErrorResponse) {
+//                            future.completeExceptionally(new Throwable("empty response"));
+//                        }
+//                    }
+//                }
+//                catch (ClassCastException e){
+//                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+//                }
+//                catch (IOException e) {
+//                    Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+//                    future.completeExceptionally(new Throwable("Exception occured while performing input output of task due to" + e.getMessage()));
+//                }
+//                catch (RuntimeException e) {
+//                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+//                future.completeExceptionally(new Throwable(t.getMessage()));
+//            }
+//        });
+//        return future;
+//    }
 
     public CompletableFuture<Boolean> addDailyTimeShareMeasurables(Long taskHandlerId,List<MeasurableListDataModel> measurableListDataModel){
         CompletableFuture<Boolean> future  = new CompletableFuture<>();

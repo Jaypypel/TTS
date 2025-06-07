@@ -35,8 +35,17 @@ import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.UserServiceInterface;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -158,7 +167,7 @@ public class TTSLoginActivity extends AppCompatActivity {
                 return false;
             }
                 appExecutors.getNetworkIO().execute(() -> {
-                    CompletableFuture<Boolean> isRequestDone = makeUserLogin(isValidUserId(),isValidPassword());
+                    CompletableFuture<ArrayList<String>> isRequestDone = makeUserLogin(isValidUserId(),isValidPassword());
                   CompletableFuture<Void> future =  new CompletableFuture<>();
                     if(!future.isDone()) {
                         appExecutors.getMainThread().execute(() -> {
@@ -170,9 +179,8 @@ public class TTSLoginActivity extends AppCompatActivity {
                         });
                         isRequestInProgress = false;
                     }
-                    CompletableFuture<Void> finalFuture = future;
-                    future.allOf(isRequestDone).thenRun(() -> {
-                       if(isRequestDone.join()){
+                    CompletableFuture.allOf(isRequestDone).thenRun(() -> {
+                       if(isRequestDone.join().contains("ROLE_SYSTEM_USER")   ){
 
                                appExecutors.getMainThread().execute(() -> {
                                    String userId = userName
@@ -181,7 +189,8 @@ public class TTSLoginActivity extends AppCompatActivity {
                                            .trim()
                                            .replaceAll("\\s+", "");
                                    sessionManager = new SessionManager(this);
-                                   sessionManager.saveSession(userId);
+                                   Log.e("debuggin","rols "+isRequestDone.join());
+                                   sessionManager.saveSession(userId,isRequestDone.join());
                                    Toast.makeText(TTSLoginActivity.this, "You're logged in now", Toast.LENGTH_SHORT).show();
                                    Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);
                                    startActivity(i);
@@ -208,7 +217,7 @@ public class TTSLoginActivity extends AppCompatActivity {
                           isRequestInProgress = false;
 
                       }); return null;
-                  }).whenComplete((result,throwable) -> finalFuture.complete(null));
+                  }).whenComplete((result,throwable) -> future.complete(null));
 
 
                 });
@@ -251,7 +260,8 @@ public class TTSLoginActivity extends AppCompatActivity {
 
     // Checking UserName valid Or Not
     public String isValidUserId() {
-        String uName = userName.getText().toString().trim().replaceAll("\\s+", "");
+       // String uName = userName.getText().toString().trim().replaceAll("\\s+", "");
+        String uName = userName.getText().toString().trim();
         if (uName.isEmpty()) { userName.setError("User Name Cannot Be Empty"); }
         return uName;
     }
@@ -268,8 +278,8 @@ public class TTSLoginActivity extends AppCompatActivity {
     }
 
 
-    public CompletableFuture<Boolean> makeUserLogin(String username, String password){
-        CompletableFuture<Boolean> isLoggedIn = new CompletableFuture<>();
+    public CompletableFuture<ArrayList<String>> makeUserLogin(String username, String password){
+        CompletableFuture<ArrayList<String>> result = new CompletableFuture<>();
         Call<ResponseBody> call = userServiceInterface.login(username,password);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -278,39 +288,48 @@ public class TTSLoginActivity extends AppCompatActivity {
                     APIResponse apiResponse = APIResponse.create(response);
                     if (apiResponse != null) {
                         if (apiResponse instanceof APISuccessResponse) {
-                            ResponseBody responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody();
+                            JsonElement responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
+                            Log.e("dEBUGIN","responseBody"+ responseBody);
+                            Gson gson = new Gson();
+                            Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+
                             String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+                            Log.e("dEBUGIN","message"+ message);
                             if ("Successful".equals(message)) {
-                                isLoggedIn.complete(true);
+                                if (responseBody.isJsonArray()){
+                                    JsonArray roles = responseBody.getAsJsonArray();
+                                    ArrayList<String> rolesArr = gson.fromJson(roles,listType);
+                                    result.complete(rolesArr);
+                                }
                             }
                         }
                         if (apiResponse instanceof APIErrorResponse) {
                             String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
-                            isLoggedIn.completeExceptionally(new Throwable(erMsg));
+                            result.completeExceptionally(new Throwable(erMsg));
 
                         }
                         if (apiResponse instanceof APIErrorResponse) {
-                            isLoggedIn.completeExceptionally(new Throwable("empty response"));
+                            result.completeExceptionally(new Throwable("empty response"));
                         }
                     }
                 }
                 catch (ClassCastException e){
-                    isLoggedIn.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    result.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
                 }
                 catch (IOException e) {
                     Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                    isLoggedIn.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
+                    result.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
                 }
                 catch (RuntimeException e) {
-                    isLoggedIn.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                    result.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                isLoggedIn.completeExceptionally(new Throwable(t.getMessage()));
+                result.completeExceptionally(new Throwable(t.getMessage()));
             }
         });
-        return isLoggedIn;
+        return result;
     }
 }

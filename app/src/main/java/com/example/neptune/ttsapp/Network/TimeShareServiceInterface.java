@@ -1,5 +1,6 @@
 package com.example.neptune.ttsapp.Network;
 
+import com.example.neptune.ttsapp.DTO.AddTimeshareDto;
 import com.example.neptune.ttsapp.DTO.TimeShareDTO;
 
 import retrofit2.Call;
@@ -14,5 +15,5 @@ public interface TimeShareServiceInterface {
     Call<ResponseBody> getTimeShares(@Path("taskId") Long taskId);
 
     @POST("timeshares/timeshare")
-    Call<ResponseBody> addTimeShare(@Body TimeShareDTO timeShare);
+    Call<ResponseBody> addTimeShare(@Body AddTimeshareDto addTimeshareDto);
 }

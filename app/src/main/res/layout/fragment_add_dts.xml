@@ -106,7 +106,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputMainStartTimeLayout"
         app:layout_constraintVertical_chainStyle="packed"
-        android:hint="Enter Task Description">
+        android:hint="Enter Task Name">
 
         <AutoCompleteTextView
             android:id="@+id/editTextMainTaskName"

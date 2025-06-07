@@ -15,7 +15,11 @@ import retrofit2.http.Query;
 
 public interface DailyTimeShareInterface {
     @POST("/dailyTimeShares/dailyTimeShare/")
-    Call<ResponseBody> addDailyTimeShare(@Body DailyTimeShare dailyTimeShareDTO);
+    Call<ResponseBody> addDailyTimeShare(@Body DailyTimeShareDTO dailyTimeShareDTO);
+
+//
+//    @POST("/dailyTimeShares/dailyTimeShare/")
+//    Call<ResponseBody> addDailyTimeShare(@Body DailyTimeShare dailyTimeShareDTO);
 
     @GET("/dailyTimeShares/dailyTimeShareList/{username}")
     Call<ResponseBody> getDailyTimeShareList(@Path("username") String username, @Query("dateOfTimeShare") String TSDate);

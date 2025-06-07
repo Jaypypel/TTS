@@ -455,6 +455,7 @@ public class TTSTaskDelegateListItemDetailsActivity extends AppCompatActivity {
               if(taskProcessingItemDetails != null)  {
                    appExecutors.getNetworkIO().execute(()-> {
                        if(getTimeShares(taskProcessingItemDetails.getId()).join().isEmpty()){
+                           Log.e("Error", "timeShares"+getTimeShares(taskProcessingItemDetails.getId()));
                            appExecutors.getMainThread().execute(() -> {
                                Toast.makeText(getApplicationContext(), "add the timeshare as you don't have timeshares", Toast.LENGTH_LONG).show();
 

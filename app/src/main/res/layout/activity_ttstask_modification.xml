@@ -12,130 +12,130 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp">
 
-    <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
-
-        <TextView
-            android:id="@+id/textViewPreviewUser"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:layout_column="1"
-
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textViewDate"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:layout_column="2"
-            android:layout_marginLeft="50dp"
-
-            android:textStyle="bold" />
-
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
-
-        <TextView
-            android:id="@+id/textView18"
-            android:layout_width="80dp"
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_column="1"
-            android:text="Activity Name"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:padding="5dp">
 
-        <TextView
-            android:id="@+id/textViewActName"
-            android:layout_width="210dp"
+            <TextView
+                android:id="@+id/textViewPreviewUser"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:layout_column="1"
+
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewDate"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:layout_column="2"
+                android:layout_marginLeft="50dp"
+
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_column="2"
-            android:textStyle="bold" />
-    </TableRow>
+            android:orientation="horizontal"
+            android:padding="5dp">
 
-    <TableRow
-        android:id="@+id/tableRow3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="Activity Name"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/textView19"
-            android:layout_width="80dp"
+            <TextView
+                android:id="@+id/textViewActName"
+                android:layout_width="210dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_column="1"
-            android:text="Task Name"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:padding="5dp">
 
-        <TextView
-            android:id="@+id/textViewTaskName"
-            android:layout_width="210dp"
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="Task Name"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewTaskName"
+                android:layout_width="210dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_column="2"
+            android:orientation="horizontal"
+            android:padding="5dp">
 
-            android:textStyle="bold" />
-    </TableRow>
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="Project Code"
+                android:textStyle="bold" />
 
-    <TableRow
-        android:id="@+id/tableRow4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
+            <TextView
+                android:id="@+id/textViewProjNo"
+                android:layout_width="210dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
 
-        <TextView
-            android:id="@+id/textView13"
-            android:layout_width="80dp"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+
+        <TableRow
+            android:id="@+id/tableRow5"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_column="1"
-            android:text="Project Code"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:padding="5dp">
 
-        <TextView
-            android:id="@+id/textViewProjNo"
-            android:layout_width="210dp"
-            android:layout_height="wrap_content"
-            android:layout_column="2"
+            <TextView
+                android:id="@+id/textView20"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginTop="0dp"
+                android:text="Project Name"
+                android:textStyle="bold" />
 
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/textViewProjName"
+                android:layout_width="210dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
 
-    </TableRow>
+                android:textStyle="bold" />
 
-
-    <TableRow
-        android:id="@+id/tableRow5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
-
-        <TextView
-            android:id="@+id/textView20"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_column="1"
-            android:layout_marginTop="0dp"
-            android:text="Project Name"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textViewProjName"
-            android:layout_width="210dp"
-            android:layout_height="wrap_content"
-            android:layout_column="2"
-
-            android:textStyle="bold" />
-
-    </TableRow>
+        </TableRow>
 
         <TableRow
             android:id="@+id/tableRow6"
@@ -163,47 +163,47 @@
 
         </TableRow>
 
-    <TableRow
-        android:id="@+id/tableRow7"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
-
-        <TextView
-            android:id="@+id/textViewEndTimeLabel"
-            android:layout_width="80dp"
+        <TableRow
+            android:id="@+id/tableRow7"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_column="1"
-            android:text="End Time"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:padding="5dp">
 
-        <TextView
-            android:id="@+id/textViewEndTime"
-            android:layout_width="210dp"
+            <TextView
+                android:id="@+id/textViewEndTimeLabel"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="End Time"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewEndTime"
+                android:layout_width="210dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_column="2"
+            android:orientation="horizontal"
+            android:padding="5dp">
 
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:text="Measurables"
+                android:textStyle="bold" />
 
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow8"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
-
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_column="1"
-            android:text="Measurables"
-            android:textStyle="bold" />
-
-    </TableRow>
+        </TableRow>
 
     </TableLayout>
 
@@ -316,5 +316,4 @@
         </TableRow>
     </TableLayout>
 
-    </RelativeLayout>
-
+</RelativeLayout>

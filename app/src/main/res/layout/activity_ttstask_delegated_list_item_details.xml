@@ -1,345 +1,317 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout17"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".TTSTaskDelegateListItemDetailsActivity">
 
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout1"
+
+    <!-- 2 columns -->
+
+
+    <TextView
+        android:id="@+id/textViewTDLIDUser"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTDLIDDate"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.45" />
+
+    <TextView
+        android:id="@+id/textViewTDLIDDate"
+        android:layout_width="171dp"
+        android:layout_height="48dp"
+        android:gravity="end"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewTDLIDReceivedUser"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewTDLIDUser"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.45" />
+
+
+    <TextView
+        android:id="@+id/textViewTDLIDReceivedUser"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:gravity="end"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewTDLIDActName"
+        app:layout_constraintEnd_toEndOf="@+id/textViewTDLIDDate"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTDLIDDate"
+        app:layout_constraintWidth_percent="0.45" />
+
+
+    <TextView
+        android:id="@+id/textView18"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Activity Name"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView19"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTDLIDActName"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTDLIDReceivedUser"
+        app:layout_constraintWidth_percent="0.34" />
+
+    <TextView
+        android:id="@+id/textViewTDLIDActName"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView18"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView18"
+        app:layout_constraintTop_toTopOf="@+id/textView18"
+        app:layout_constraintWidth_percent="0.64" />
+
+
+    <TextView
+        android:id="@+id/textView19"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Task Name"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView13"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTDLIDTaskName"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView18"
+        app:layout_constraintWidth_percent="0.34" />
+
+    <TextView
+        android:id="@+id/textViewTDLIDTaskName"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView19"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView19"
+        app:layout_constraintTop_toTopOf="@+id/textView19"
+        app:layout_constraintWidth_percent="0.64" />
+
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Project Code"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView20"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTDLIDProjNo"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView19"
+        app:layout_constraintWidth_percent="0.34" />
+
+    <TextView
+        android:id="@+id/textViewTDLIDProjNo"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView13"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView13"
+        app:layout_constraintTop_toTopOf="@+id/textView13"
+        app:layout_constraintWidth_percent="0.64" />
+
+
+    <TextView
+        android:id="@+id/textView20"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Project Name"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView14"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTDLIDProjName"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView13"
+        app:layout_constraintWidth_percent="0.34" />
+
+    <TextView
+        android:id="@+id/textViewTDLIDProjName"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView20"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView20"
+        app:layout_constraintTop_toTopOf="@+id/textView20"
+        app:layout_constraintWidth_percent="0.64" />
+
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Expected Date"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView15"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTDLIDExpDate"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView20"
+        app:layout_constraintWidth_percent="0.34" />
+
+    <TextView
+        android:id="@+id/textViewTDLIDExpDate"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView14"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView14"
+        app:layout_constraintTop_toTopOf="@+id/textView14"
+        app:layout_constraintWidth_percent="0.64" />
+
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Expected Time"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView16"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTDLIDExpTime"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView14"
+        app:layout_constraintWidth_percent="0.34" />
+
+    <TextView
+        android:id="@+id/textViewTDLIDExpTime"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView15"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView15"
+        app:layout_constraintTop_toTopOf="@+id/textView15"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintWidth_percent="0.64" />
+
+
+    <TextView
+        android:id="@+id/textViewTDLIDMeasurableLabel"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="4dp"
+        android:text="Measurables"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/listMeasurableTDLID"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTDLIDDescription"
+        app:layout_constraintWidth_percent="0.34" />
+
+
+    <!-- 2 columns -->
+
+
+    <ListView
+        android:id="@+id/listMeasurableTDLID"
         android:layout_width="match_parent"
+        android:layout_height="61dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonTDLIDComplete"
+        app:layout_constraintStart_toStartOf="@+id/textViewTDLIDMeasurableLabel"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTDLIDMeasurableLabel"  />
+
+
+    <!-- 2 columns -->
+
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="4dp"
+        android:text="Description"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewTDLIDDescription"
+        app:layout_constraintStart_toStartOf="@+id/textViewTDLIDDescription"
+        app:layout_constraintTop_toBottomOf="@+id/textView15"
+        app:layout_constraintWidth_percent="0.34" />
+
+
+    <!-- 2 columns -->
+
+
+    <TextView
+        android:id="@+id/textViewTDLIDDescription"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:clickable="false"
+        android:inputType="textMultiLine"
+        android:maxLines="6"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewTDLIDMeasurableLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTDLIDExpTime"
+        app:layout_constraintVertical_chainStyle="spread_inside" />
+
+
+    <!-- 2 columns -->
+
+
+    <Button
+        android:id="@+id/buttonTDLIDProcessing"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Start"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/buttonTDLIDDisplayTimeShares"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/buttonTDLIDComplete"
+        app:layout_constraintTop_toBottomOf="@+id/listMeasurableTDLID"
+        app:layout_constraintWidth_percent="0.45" />
+
+    <Button
+        android:id="@+id/buttonTDLIDComplete"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Complete"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonTDLIDProcessing"
+        app:layout_constraintEnd_toStartOf="@+id/buttonTDLIDProcessing"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/buttonTDLIDProcessing"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintWidth_percent="0.45" />
+
+    <Button
+        android:id="@+id/buttonTDLIDDisplayTimeShares"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp">
-        <!-- 2 columns -->
-
-        <TableRow
-            android:id="@+id/tableRow7"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/textViewTDLIDUser"
-                android:layout_width="82dp"
-                android:layout_height="20dp"
-                android:layout_column="1"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewTDLIDDate"
-                android:layout_width="80dp"
-                android:layout_height="20dp"
-                android:layout_column="2"
-                android:layout_marginLeft="80dp"
-                android:textStyle="bold" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow8"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dip">
-
-            <TextView
-                android:id="@+id/textViewTDLIDReceivedUser"
-                android:layout_width="110dp"
-                android:layout_height="20dp"
-                android:layout_column="1"
-                android:layout_marginLeft="10dp"
-                android:textStyle="bold" />
-
-        </TableRow>
+        android:text="Show Timeshares"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonTDLIDProcessing" />
 
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="7dip">
-
-            <TextView
-                android:id="@+id/textView18"
-                android:layout_width="99dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Activity Name"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewTDLIDActName"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:textStyle="bold" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="7dip">
-
-            <TextView
-                android:id="@+id/textView19"
-                android:layout_width="99dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Task Name"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewTDLIDTaskName"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:textStyle="bold" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="7dip">
-
-            <TextView
-                android:id="@+id/textView13"
-                android:layout_width="99dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Project Code"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewTDLIDProjNo"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:textStyle="bold" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="7dip">
-
-            <TextView
-                android:id="@+id/textView20"
-                android:layout_width="99dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Project Name"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewTDLIDProjName"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:textStyle="bold" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="7dip">
-
-            <TextView
-                android:id="@+id/textView14"
-                android:layout_width="67dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Expected Date"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewTDLIDExpDate"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:textStyle="bold" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="7dip">
-
-            <TextView
-                android:id="@+id/textView15"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Expected Time"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewTDLIDExpTime"
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:textStyle="bold" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow9"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="7dp">
-
-            <TextView
-                android:id="@+id/textViewTDLIDMeasurableLabel"
-                android:layout_width="95dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Measurables"
-                android:textStyle="bold" />
-
-        </TableRow>
-
-    </TableLayout>
-
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout2"
-        android:layout_width="fill_parent"
-        android:layout_height="60dp"
-        android:layout_below="@+id/tableLayout1">
-
-        <!-- 2 columns -->
-        <TableRow
-            android:id="@+id/tableRow21"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="7dip">
-
-            <ListView
-                android:id="@+id/listMeasurableTDLID"
-                android:layout_width="301dp"
-                android:layout_height="45dp"
-                android:layout_column="1"
-                android:layout_marginLeft="10dp" />
-
-        </TableRow>
-    </TableLayout>
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout3"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tableLayout2">
-
-        <!-- 2 columns -->
-        <TableRow
-            android:id="@+id/tableRow31"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="7dp">
-
-            <TextView
-                android:id="@+id/textView16"
-                android:layout_width="77dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Description"
-                android:textStyle="bold" />
-
-        </TableRow>
-    </TableLayout>
-
-
-    <TableLayout
-        android:id="@+id/tableLayout4"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tableLayout3">
-
-        <!-- 2 columns -->
-        <TableRow
-            android:id="@+id/tableRow41"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="7dip">
-
-            <TextView
-                android:id="@+id/textViewTDLIDDescription"
-                android:layout_width="300dp"
-                android:layout_height="70dp"
-                android:layout_column="1"
-                android:layout_marginLeft="10dp"
-                android:clickable="false"
-                android:inputType="textMultiLine"
-                android:maxLines="6"
-                android:textStyle="bold" />
-
-
-        </TableRow>
-    </TableLayout>
-
-    <TableLayout
-        android:id="@+id/tableLayout5"
-        android:layout_width="fill_parent"
-        android:layout_height="65dp"
-        android:layout_below="@+id/tableLayout4">
-
-        <!-- 2 columns -->
-        <TableRow
-            android:id="@+id/tableRow51"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:orientation="horizontal"
-            android:padding="7dip">
-
-            <Button
-                android:id="@+id/buttonTDLIDProcessing"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_column="1"
-                android:layout_marginBottom="26dp"
-                android:text="Start"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/buttonTDLIDComplete"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_column="2"
-                android:layout_marginBottom="26dp"
-                android:text="Complete"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/buttonTDLIDDisplayTimeShares"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_column="3"
-                android:text="Timeshares"
-                android:textStyle="bold" />
-
-        </TableRow>
-    </TableLayout>
-
-
-
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

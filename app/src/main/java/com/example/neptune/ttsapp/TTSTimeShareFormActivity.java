@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.DTO.AddTimeshareDto;
 import com.example.neptune.ttsapp.DTO.TimeShareDTO;
 import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
@@ -186,6 +187,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                     return;
                 }
                 if(!measurables.contains(setMeasurable(getId(),getName()))){
+                    Log.e("Error","result"+getId());
                     measurables.add(setMeasurable(getId(),getName()));
                 }else {
                     setErrorMessageOnSnackBar(v,"Warning! measurable entry is already present");
@@ -244,29 +246,50 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                                 isDescriptionValid(),
                                 delegationTime());
 
-                        appExecutor.getNetworkIO().execute(() -> addTimeShare(timeShare).thenCompose(result -> {
-                            Long id = Long.valueOf(result.get(1));
-                            return addTimeShareMeasurables(id,measurables).thenAccept(finalResult -> {
-                                if (finalResult) {
-                                    appExecutor.getMainThread().execute(() -> {
-                                        Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
-                                        clearAll();
-                                        btnSubmit.setEnabled(true);
+                    AddTimeshareDto addTimeshareDto = new AddTimeshareDto(timeShare,measurables);
 
-                                        // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                                    });
-                                }
-                            });
-                        }).exceptionally(e -> {
-                            appExecutor.getMainThread().execute(() -> {
-                               // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                                Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                btnSubmit.setEnabled(true);
+                    appExecutor.getNetworkIO().execute(() -> addTimeShare(addTimeshareDto).thenAccept(finalResult -> {
+                            if (finalResult.equals("successful")) {
+                                appExecutor.getMainThread().execute(() -> {
+                                    Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
+                                    clearAll();
+                                    btnSubmit.setEnabled(true);
+                                });
+                            }
+                    }).exceptionally(e -> {
+                        appExecutor.getMainThread().execute(() -> {
+                            // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                            Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            btnSubmit.setEnabled(true);
 
-                            });
-                            return null;
+                        });
+                        return null;
 
-                        }).join());
+                    }).join());
+
+//                        appExecutor.getNetworkIO().execute(() -> addTimeShare(timeShare).thenCompose(result -> {
+//                            Long id = Long.valueOf(result.get(1));
+//                            return addTimeShareMeasurables(id,measurables).thenAccept(finalResult -> {
+//                                if (finalResult) {
+//                                    appExecutor.getMainThread().execute(() -> {
+//                                        Toast.makeText(getApplicationContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
+//                                        clearAll();
+//                                        btnSubmit.setEnabled(true);
+//
+//                                        // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+//                                    });
+//                                }
+//                            });
+//                        }).exceptionally(e -> {
+//                            appExecutor.getMainThread().execute(() -> {
+//                               // timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+//                                Toast.makeText(getApplicationContext(), "Failure: " + e.getMessage(), Toast.LENGTH_LONG).show();
+//                                btnSubmit.setEnabled(true);
+//
+//                            });
+//                            return null;
+//
+//                        }).join());
 
 
                 }
@@ -445,7 +468,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
     }
 
     public String getId(){
-           return isMeasurableUnitValid()
+           return spinnerMeasurableName.getSelectedItem().toString()
                    .split("-")[0]
                    .split("\\.")[0];
     }
@@ -633,11 +656,8 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
         return future;
     }
 
-
-    public CompletableFuture<ArrayList<String>> addTimeShare(TimeShareDTO timeShareDTO){
-        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
-        //it is used for to message & dts Id from ResponseBody object
-        ArrayList<String> messageAndId = new ArrayList<>();
+    public CompletableFuture<String> addTimeShare(AddTimeshareDto timeShareDTO){
+        CompletableFuture<String> future = new CompletableFuture<>();
         appExecutor.getNetworkIO().execute(() -> {
             Call<ResponseBody> call = timeShareService.addTimeShare(timeShareDTO);
             call.enqueue(new Callback<ResponseBody>() {
@@ -649,12 +669,8 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                         if (apiResponse != null) {
                             if (apiResponse instanceof APISuccessResponse) {
                                 String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
-                                JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();
-                                String dtsId = dtsobject.get("id").getAsString();
                                 if ("successful".equals(message)) {
-                                    messageAndId.add(message);
-                                    messageAndId.add(dtsId);
-                                    future.complete(messageAndId);
+                                    future.complete(message);
                                 }
                             }
 
@@ -669,15 +685,15 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                         }
                     }
                     catch (ClassCastException e){
-                            future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                        }
+                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    }
                     catch (IOException e) {
-                            Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                            future.completeExceptionally(new Throwable("Exception occured while adding a timeshare due to " + e.getMessage()));
-                        }
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        future.completeExceptionally(new Throwable("Exception occured while adding a timeshare due to " + e.getMessage()));
+                    }
                     catch (RuntimeException e) {
-                            future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
-                        }
+                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                    }
 
                 }
 
@@ -690,6 +706,62 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
         return future;
     }
+//    public CompletableFuture<ArrayList<String>> addTimeShare(TimeShareDTO timeShareDTO){
+//        CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
+//        //it is used for to message & dts Id from ResponseBody object
+//        ArrayList<String> messageAndId = new ArrayList<>();
+//        appExecutor.getNetworkIO().execute(() -> {
+//            Call<ResponseBody> call = timeShareService.addTimeShare(timeShareDTO);
+//            call.enqueue(new Callback<ResponseBody>() {
+//                @Override
+//                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//
+//                    try {
+//                        APIResponse apiResponse = APIResponse.create(response);
+//                        if (apiResponse != null) {
+//                            if (apiResponse instanceof APISuccessResponse) {
+//                                String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+//                                JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();
+//                                String dtsId = dtsobject.get("id").getAsString();
+//                                if ("successful".equals(message)) {
+//                                    messageAndId.add(message);
+//                                    messageAndId.add(dtsId);
+//                                    future.complete(messageAndId);
+//                                }
+//                            }
+//
+//                            if (apiResponse instanceof APIErrorResponse) {
+//                                String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+//                                future.completeExceptionally(new Throwable(erMsg));
+//
+//                            }
+//                            if (apiResponse instanceof APIErrorResponse) {
+//                                future.completeExceptionally(new Throwable("empty response"));
+//                            }
+//                        }
+//                    }
+//                    catch (ClassCastException e){
+//                            future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+//                        }
+//                    catch (IOException e) {
+//                            Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+//                            future.completeExceptionally(new Throwable("Exception occured while adding a timeshare due to " + e.getMessage()));
+//                        }
+//                    catch (RuntimeException e) {
+//                            future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+//                        }
+//
+//                }
+//
+//                @Override
+//                public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                    future.completeExceptionally(t);
+//                }
+//            });
+//        });
+//
+//        return future;
+//    }
 
     public CompletableFuture<Boolean> addTimeShareMeasurables(Long timeShareId, List<MeasurableListDataModel> measurableListDataModel){
         CompletableFuture<Boolean> future  = new CompletableFuture<>();
@@ -716,7 +788,10 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
                             apiResponse = APIResponse.create(response);
                             if (apiResponse != null) {
                                 if (apiResponse instanceof APISuccessResponse) {
-                                    String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+                                    String message = ((APISuccessResponse<ResponseBody>) apiResponse)
+                                            .getBody()
+                                            .getMessage()
+                                            .getAsString();
                                     Log.d("Debug", "Message from API: " + message);
                                     if (!"successful".equals(message)) {
                                         Log.d("Debug", "Measurable completed with success");

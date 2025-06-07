@@ -259,7 +259,11 @@ public class TTSRegistrationActivity extends AppCompatActivity {
             return false;
         }
         if (uName.length() <=5){
-            fullName.setError("Enter Valid Full Name");
+            userName.setError("Enter Valid Full Name");
+            return false;
+        }
+        if(uName.contains(" ")){
+            userName.setError("white space is not allowed");
             return false;
         }
         return true;

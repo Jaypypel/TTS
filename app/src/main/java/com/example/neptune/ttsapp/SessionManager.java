@@ -2,9 +2,10 @@ package com.example.neptune.ttsapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class SessionManager {
@@ -15,6 +16,7 @@ public class SessionManager {
     // Shared preferences file name
     private static final String PREF_NAME = "UserSession";
     private static final String KEY_TOKEN = "userid";
+    private static final String ROLES = "roles";
     private static final String KEY_IS_LOGGED_IN = "IS_LOGGED_IN";
 
 
@@ -39,8 +41,10 @@ public class SessionManager {
         editor = sharedPreferences.edit();
     }
 
-    public void saveSession(String userId){
+    public void saveSession(String userId, ArrayList<String> join){
         editor.putString(KEY_TOKEN,userId);
+        Set<String> roles = new HashSet<>(join);
+        editor.putStringSet(ROLES,roles);
         editor.putBoolean(KEY_IS_LOGGED_IN,true);
         editor.apply();
     }
@@ -68,6 +72,10 @@ public class SessionManager {
 
     public String getToken(){
         return sharedPreferences.getString(KEY_TOKEN,null);
+    }
+
+    public Set<String> getRoles(){
+        return sharedPreferences.getStringSet(ROLES,null);
     }
 
 //

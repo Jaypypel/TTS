@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @InstallIn(SingletonComponent.class)
 public class NetworkConfig {
 
-    private static final String BASE_URL = "http://192.168.0.106:8080";
+    private static final String BASE_URL = "http://192.168.1.5:8080";
 
     @Provides
     @Singleton
@@ -99,6 +99,13 @@ public class NetworkConfig {
     @Singleton
     public static ReportServiceInterface provideReportService(Retrofit retrofit){
         return retrofit.create(ReportServiceInterface.class);
+    }
+
+
+    @Provides
+    @Singleton
+    public static RoleServiceInterface provideRoleService(Retrofit retrofit){
+        return retrofit.create(RoleServiceInterface.class);
     }
 
 

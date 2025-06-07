@@ -8,7 +8,12 @@
         android:id="@+id/nav_daily_time_share"
         android:name="com.example.neptune.ttsapp.AddDTSFragment"
         android:label="Daily Time Share"
-        tools:layout="@layout/fragment_add_dts" />
+        tools:layout="@layout/fragment_add_dts">
+
+        <action
+            android:id="@+id/nav_task_to_learner"
+            app:destination="@id/nav_task_to_learner" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_dts_view"
@@ -58,5 +63,11 @@
         android:name="com.example.neptune.ttsapp.TTSTaskModificationListFragment"
         android:label="Modification Tasks"
         tools:layout="@layout/fragment_ttsmodification_task_list" />
+    <fragment
+        android:id="@+id/nav_task_to_learner"
+        android:name="com.example.neptune.ttsapp.TaskToLearner"
+        android:label="TaskToLearner"
+        tools:layout="@layout/fragment_dummy"/>
+
 
 </navigation>

@@ -35,4 +35,16 @@
         android:name="com.example.neptune.ttsapp.TTSReportGenerationFragment"
         android:label="Generate Report"
         tools:layout="@layout/fragment_ttsreport_generation" />
+
+    <fragment
+        android:id="@+id/add_role"
+        android:name="com.example.neptune.ttsapp.CreateRoleFragment"
+        android:label="Add role"
+        tools:layout="@layout/create_role_fragment" />
+
+    <fragment
+        android:id="@+id/assign_role"
+        android:name="com.example.neptune.ttsapp.AssignRoleFragment"
+        android:label="Assign role"
+        tools:layout="@layout/create_role_fragment" />
 </navigation>

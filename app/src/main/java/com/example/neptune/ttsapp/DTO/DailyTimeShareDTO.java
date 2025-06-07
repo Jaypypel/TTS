@@ -9,10 +9,10 @@ import java.util.List;
 public class DailyTimeShareDTO {
 
     private DailyTimeShare dailyTimeShare;
-    List<MeasurableListDataModel> dailyTimeShareMeasurablesList;
+    private  List<MeasurableListDataModel> associatedMeasurableDtos;
 
     public DailyTimeShareDTO(DailyTimeShare dailyTimeShare, List<MeasurableListDataModel> dailyTimeShareMeasurablesList) {
         this.dailyTimeShare = dailyTimeShare;
-        this.dailyTimeShareMeasurablesList = dailyTimeShareMeasurablesList;
+        this.associatedMeasurableDtos = dailyTimeShareMeasurablesList;
     }
 }

@@ -2,6 +2,7 @@ package com.example.neptune.ttsapp.Network;
 
 import android.telecom.CallScreeningService;
 
+import com.example.neptune.ttsapp.DTO.AssignTaskDto;
 import com.example.neptune.ttsapp.DTO.TaskManagement;
 
 import retrofit2.Call;
@@ -27,7 +28,7 @@ public interface TaskHandlerInterface {
             @Path("TaskOwnerUsername") String username, @Path("status") String status);
 
     @POST("tasksm/taskm")
-    Call<ResponseBody> addAssignTaskHandler(@Body TaskManagement taskManagement);
+    Call<ResponseBody> addAssignTaskHandler(@Body AssignTaskDto taskManagement);
 
 
     @GET("tasksm/count/")

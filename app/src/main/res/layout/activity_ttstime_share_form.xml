@@ -1,395 +1,382 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout14"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="0dp">
 
-        <TableRow
-            android:id="@+id/tableRow1"
+    <TextView
+        android:id="@+id/textViewUser"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView27"
+        app:layout_constraintEnd_toStartOf="@+id/textInputLayout36"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_conversion_absoluteHeight="19dp"
+        tools:layout_conversion_absoluteWidth="100dp" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout36"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/TSTextViewProjNo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewUser"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.49"
+        tools:layout_conversion_absoluteHeight="35dp"
+        tools:layout_conversion_absoluteWidth="97dp">
+
+        <EditText
+            android:id="@+id/editTextDate"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="5dp">
+            android:ems="10"
+            android:hint="Enter Date"
+            android:inputType="textPersonName"
+            android:paddingBottom="5dp" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/textViewUser"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:layout_marginTop="-10dp"
+    <TextView
+        android:id="@+id/textView27"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Project Code:"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView28"
+        app:layout_constraintEnd_toStartOf="@+id/TSTextViewProjNo"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewUser"
+        app:layout_constraintWidth_percent="0.34"
+        tools:layout_conversion_absoluteHeight="19dp"
+        tools:layout_conversion_absoluteWidth="94dp" />
 
-                android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/editTextDate"
-                android:layout_width="97dp"
-                android:layout_height="35dp"
-                android:layout_column="2"
-                android:layout_marginLeft="90dp"
-                android:ems="10"
-                android:hint="Enter Date"
-                android:inputType="textPersonName"
-                android:paddingBottom="5dp" />
+    <TextView
+        android:id="@+id/TSTextViewProjNo"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:textStyle="bold"
 
-        </TableRow>
-    </TableLayout>
+        app:layout_constraintBottom_toTopOf="@+id/TSTextViewProjName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView27"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout36"
+        app:layout_constraintWidth_percent="0.64"
+        tools:layout_conversion_absoluteHeight="40dp"
+        tools:layout_conversion_absoluteWidth="220dp" />
 
-    <TableLayout
-        android:id="@+id/tableLayout2"
-        android:layout_width="fill_parent"
+    <TextView
+        android:id="@+id/textView28"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Project Name:"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView21"
+        app:layout_constraintEnd_toStartOf="@+id/TSTextViewProjName"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView27"
+        app:layout_constraintWidth_percent="0.34"
+        tools:layout_conversion_absoluteHeight="19dp"
+        tools:layout_conversion_absoluteWidth="94dp" />
+
+
+    <TextView
+        android:id="@+id/TSTextViewProjName"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/TSTextViewActName"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView28"
+        app:layout_constraintTop_toBottomOf="@+id/TSTextViewProjNo"
+        app:layout_constraintWidth_percent="0.64"
+        tools:layout_conversion_absoluteHeight="40dp"
+        tools:layout_conversion_absoluteWidth="220dp" />
+
+    <TextView
+        android:id="@+id/textView21"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Activity Name:"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView26"
+        app:layout_constraintEnd_toStartOf="@+id/TSTextViewActName"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView28"
+        app:layout_constraintWidth_percent="0.34"
+        tools:layout_conversion_absoluteHeight="19dp"
+        tools:layout_conversion_absoluteWidth="94dp" />
+
+
+    <TextView
+        android:id="@+id/TSTextViewActName"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:textStyle="bold"
+
+        app:layout_constraintBottom_toTopOf="@+id/TSTextViewTaskName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView21"
+        app:layout_constraintTop_toBottomOf="@+id/TSTextViewProjName"
+        app:layout_constraintWidth_percent="0.64"
+        tools:layout_conversion_absoluteHeight="37dp"
+        tools:layout_conversion_absoluteWidth="220dp" />
+
+    <TextView
+        android:id="@+id/textView26"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Task Name:"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayout40"
+        app:layout_constraintEnd_toStartOf="@+id/TSTextViewTaskName"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView21"
+        app:layout_constraintWidth_percent="0.34"
+        tools:layout_conversion_absoluteHeight="20dp"
+        tools:layout_conversion_absoluteWidth="94dp" />
+
+
+    <TextView
+        android:id="@+id/TSTextViewTaskName"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:textStyle="bold"
+
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayout40"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView26"
+        app:layout_constraintTop_toBottomOf="@+id/TSTextViewActName"
+        app:layout_constraintWidth_percent="0.64"
+        tools:layout_conversion_absoluteHeight="40dp"
+        tools:layout_conversion_absoluteWidth="220dp" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout40"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tableLayout1"
-        android:layout_marginTop="0dp">
+        android:hint="Start time"
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayout42"
+        app:layout_constraintEnd_toStartOf="@+id/textInputLayout39"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView26"
+        app:layout_constraintWidth_percent="0.49"
+        tools:layout_conversion_absoluteHeight="51dp"
+        tools:layout_conversion_absoluteWidth="150dp">
 
-        <TableRow
-            android:id="@+id/tableRow4"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextStartTime"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/textView27"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Project Code:"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/TSTextViewProjNo"
-                android:layout_width="220dp"
-                android:layout_height="40dp"
-                android:layout_column="2"
-                android:ems="10"
-
-                android:textStyle="bold" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/textView28"
-                android:layout_width="94dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Project Name:"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/TSTextViewProjName"
-                android:layout_width="220dp"
-                android:layout_height="40dp"
-                android:layout_column="2"
-                android:ems="10"
-
-                android:textStyle="bold" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/textView21"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:text="Activity Name:"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/TSTextViewActName"
-                android:layout_width="220dp"
-                android:layout_height="37dp"
-                android:layout_column="2"
-                android:ems="10"
-
-                android:textStyle="bold" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/textView26"
-                android:layout_width="80dp"
-                android:layout_height="20dp"
-                android:layout_column="1"
-                android:text="Task Name:"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/TSTextViewTaskName"
-                android:layout_width="220dp"
-                android:layout_height="40dp"
-                android:layout_column="2"
-                android:ems="10"
-
-                android:textStyle="bold" />
-
-        </TableRow>
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:inputType="time" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 
-
-    </TableLayout>
-
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout3"
-        android:layout_width="match_parent"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout39"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tableLayout2"
-        android:layout_marginTop="0dp">
+        android:hint="End time"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayout40"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textInputLayout40"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayout40"
+        app:layout_constraintWidth_percent="0.49"
+        tools:layout_conversion_absoluteHeight="51dp"
+        tools:layout_conversion_absoluteWidth="150dp">
 
-        <TableRow
-            android:id="@+id/tableRow6"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextEndTime"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:inputType="time" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputMainStartTimeLayout"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_marginStart="20dp"
-                android:layout_weight="1"
-                app:hintEnabled="true"
-                app:boxBackgroundMode="outline"
-                android:hint="Start Time">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextStartTime"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:inputType="time"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputMainEndTimeLayout"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_marginStart="70dp"
-                android:layout_marginEnd="20dp"
-                app:hintEnabled="true"
-                android:hint="End Time"
-                android:layout_weight="1"
-                app:boxBackgroundMode="outline">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextEndTime"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="time"
-                android:gravity="center_vertical"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-        </TableRow>
-    </TableLayout>
-
-    <TableLayout
-        android:id="@+id/tableLayout4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="300dp">
-
-    <TableRow
-        android:id="@+id/tableRow7"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout42"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        app:layout_constraintBottom_toTopOf="@+id/listTimeShareMeasurable"
+        app:layout_constraintEnd_toStartOf="@+id/textInputLayout41"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout40"
+        app:layout_constraintWidth_percent="0.4"
+        tools:layout_conversion_absoluteHeight="56dp"
+        tools:layout_conversion_absoluteWidth="154dp">
 
         <Spinner
             android:id="@+id/spinnerTimeShareMeasurable"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:spinnerMode="dialog"
-            />
+            android:spinnerMode="dialog" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayoutQty"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:hint="Qty"
-            app:boxBackgroundMode="outline">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout41"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Qty"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayout42"
+        app:layout_constraintEnd_toStartOf="@+id/textInputLayout43"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textInputLayout42"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayout42"
+        app:layout_constraintWidth_percent="0.2"
+        tools:layout_conversion_absoluteHeight="51dp"
+        tools:layout_conversion_absoluteWidth="77dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextTimeShareMeasurableQty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="number"
-            android:gravity="center_vertical"/>
-        </com.google.android.material.textfield.TextInputLayout>
+            android:gravity="center_vertical"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayoutUnit"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_weight="1"
-            android:hint="Unit"
-            app:boxBackgroundMode="outline"
-            app:hintEnabled="true">
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout43"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Unit"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayout41"
+        app:layout_constraintEnd_toStartOf="@+id/buttonTimeShareMeasurableAdd"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textInputLayout41"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayout41"
+        app:layout_constraintWidth_percent="0.2"
+        tools:layout_conversion_absoluteHeight="51dp"
+        tools:layout_conversion_absoluteWidth="77dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextTimeShareMeasurableUnit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="text"
-            android:gravity="center_vertical"/>
-        </com.google.android.material.textfield.TextInputLayout>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-        <Button
-            android:id="@+id/buttonTimeShareMeasurableAdd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="ADD"
-            android:textStyle="bold"
-           />
-        </TableRow>
-
-    </TableRow>
-    </TableLayout>
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 
-    <TableLayout
-        android:id="@+id/tableLayout5"
-        android:layout_width="match_parent"
+    <!--<Button-->
+    <!--android:id="@+id/buttonPreview"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_column="2"-->
+    <!--android:layout_marginLeft="20dp"-->
+    <!--android:text="Preview"-->
+    <!--android:textStyle="bold" />-->
+
+    <Button
+        android:id="@+id/buttonTimeShareMeasurableAdd"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tableLayout4"
-        android:layout_marginTop="0dp">
+        app:layout_constraintWidth_percent="0.2"
+        android:text="Add"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/listTimeShareMeasurable"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout39" />
 
-    <TableRow
-        android:id="@+id/tableRow8"
+    <ListView
+        android:id="@+id/listTimeShareMeasurable"
         android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayout44"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout41"
+        tools:layout_conversion_absoluteHeight="100dp"
+        tools:layout_conversion_absoluteWidth="406dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout44"
+        android:layout_width="288dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:hint="Enter the description"
+        app:layout_constraintBottom_toTopOf="@+id/buttonCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listTimeShareMeasurable"
+        app:layout_constraintWidth_percent="0.70"
+        tools:layout_conversion_absoluteHeight="51dp"
+        tools:layout_conversion_absoluteWidth="331dp">
 
-        <ListView
-            android:id="@+id/listTimeShareMeasurable"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="1"/>
-    </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow9"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-           >
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputMainProjectLayout"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginBottom="5dp"
-                app:hintEnabled="true"
-                app:boxBackgroundMode="outline"
-                android:hint="Enter Description">
-
-            <EditText
-                android:id="@+id/editTextDescription"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:ems="10"
-                android:inputType="text"
-                android:gravity="center"/>
-            </com.google.android.material.textfield.TextInputLayout>
-        </TableRow>
-    </TableLayout>
-
-
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tableLayout5"
-        android:layout_marginTop="25dp">
-
-
-        <TableRow
-            android:id="@+id/tableRow10"
+        <EditText
+            android:id="@+id/editTextDescription"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:ems="10"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/buttonCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:layout_marginLeft="20dp"
-                android:text="Cancel" />
+    <Button
+        android:id="@+id/buttonCancel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout44"
+        app:layout_constraintEnd_toStartOf="@+id/buttonSubmit"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.45"
+        tools:layout_conversion_absoluteHeight="48dp"
+        tools:layout_conversion_absoluteWidth="92dp"
+        tools:layout_editor_absoluteY="500dp" />
 
-            <!--<Button-->
-            <!--android:id="@+id/buttonPreview"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_column="2"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:text="Preview"-->
-            <!--android:textStyle="bold" />-->
-
-            <Button
-                android:id="@+id/buttonSubmit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:layout_marginLeft="100dp"
-                android:text="Submit" />
-        </TableRow>
-
-    </TableLayout>
-
+    <Button
+        android:id="@+id/buttonSubmit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout44"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/buttonCancel"
+        app:layout_constraintWidth_percent="0.45"
+        tools:layout_conversion_absoluteHeight="48dp"
+        tools:layout_conversion_absoluteWidth="93dp"
+        tools:layout_editor_absoluteY="500dp" />
 
 
     <!--<ProgressBar-->
-        <!--android:id="@+id/progressBarInTimeShare"-->
-        <!--style="?android:attr/progressBarStyleLarge"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerInParent="true"-->
-        <!--android:progressDrawable="@drawable/circular_progress_bar" />-->
-</RelativeLayout>
+    <!--android:id="@+id/progressBarInTimeShare"-->
+    <!--style="?android:attr/progressBarStyleLarge"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_centerInParent="true"-->
+    <!--android:progressDrawable="@drawable/circular_progress_bar" />-->
+</androidx.constraintlayout.widget.ConstraintLayout>

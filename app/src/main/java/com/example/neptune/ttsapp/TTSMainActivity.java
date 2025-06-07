@@ -87,6 +87,7 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -164,7 +165,8 @@ public class TTSMainActivity extends AppCompatActivity {
                     R.id.nav_accepted_tasks,
                     R.id.nav_completed_tasks,
                     R.id.nav_modified_tasks,
-                    R.id.nav_task_admin)
+                    R.id.nav_task_admin,
+                    R.id.nav_task_to_learner)
                     .setOpenableLayout(mDrawerLayout)
                     .build();
 
@@ -215,6 +217,10 @@ public class TTSMainActivity extends AppCompatActivity {
                 return true;
             }
 
+//            if(item.getItemId()==R.id.nav_task_to_learner){
+//                navController.navigate("task_to_learner");
+//            }
+
             // Handle regular navigation
             boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
             if (handled) {
@@ -225,9 +231,9 @@ public class TTSMainActivity extends AppCompatActivity {
     }
 
     private boolean isAdmin() {
-        String token = sessionManager.getToken();
-        return token.equals("Prerna") || token.equals("YoKo") ||
-                token.equals("swar") || token.equals("mangal");
+        Set<String> roles = sessionManager.getRoles();
+        Log.e("dUBGING", "ROLES"+ roles);
+        return roles != null ? roles.contains("ROLE_ADMIN"):false;
     }
 
     @Override

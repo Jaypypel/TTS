@@ -77,7 +77,9 @@ public class TTSAdminActivity extends AppCompatActivity {
 
                         R.id.nav_measurable,
                         R.id.nav_other_activity,
-                        R.id.nav_report_generation
+                        R.id.nav_report_generation,
+                        R.id.add_role,
+                        R.id.assign_role
                     ).
                     setOpenableLayout(mDrawerLayout).
                     build();

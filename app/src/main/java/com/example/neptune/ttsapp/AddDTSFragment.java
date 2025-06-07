@@ -33,6 +33,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.ui.AppBarConfiguration;
 
+import com.example.neptune.ttsapp.DTO.DailyTimeShareDTO;
 import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
@@ -67,6 +68,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -373,29 +375,55 @@ public class AddDTSFragment extends Fragment{
                                 ,isProjectNameValid(),isActivityNameValid(),
                                 isTaskNameValid(),isStartTimeValid(),isEndTimeValid(),getConsumedTime(),
                                 isDescriptionValid(),delegationTime(),user );
+                        DailyTimeShareDTO dailyTimeShareDTO = new DailyTimeShareDTO(dailyTimeShare,measurableListDataModels);
 
-                        addDailyTimeShare(dailyTimeShare).thenCompose(result -> {
-                            Long id = Long.valueOf(result.get(1));
-                            return addDailyTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
-                                if (finalResult) {
-                                    appExecutor.getMainThread().execute(() -> {
-                                        Toast.makeText(requireContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
-                                        clearAll();
-                                        clear();
-                                        timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
-                                        timeShareSubmit.setEnabled(true);
-                                    });
-                                }
-                            });
+                        addDailyTimeShare1(dailyTimeShareDTO).thenAccept(isAdded -> {
+                            if(isAdded.equals("successful")){
+                                appExecutor.getMainThread().execute(() -> {
+                                    Toast.makeText(requireContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
+                                    clearAll();
+                                    clear();
+                                    timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+                                    timeShareSubmit.setEnabled(true);
+                                });
+                            }else {
+                                appExecutor.getMainThread().execute(() ->
+                                {
+                                    Toast.makeText(requireContext().getApplicationContext(), "Insertion Failed ", Toast.LENGTH_LONG).show();
+                                    timeShareSubmit.setEnabled(true);
+                                });
+                            }
                         }).exceptionally(e -> {
                             appExecutor.getMainThread().execute(() -> {
                                 timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
                                 Toast.makeText(getActivity(), "Failure: " +e.getMessage(), Toast.LENGTH_LONG).show();
                                 timeShareSubmit.setEnabled(true);
                             });
-                            return null;
+                            return null;}
+                        );
 
-                        }).join();
+//                        addDailyTimeShare(dailyTimeShare).thenCompose(result -> {
+//                            Long id = Long.valueOf(result.get(1));
+//                             return addDailyTimeShareMeasurables(id,measurableListDataModels).thenAccept(finalResult -> {
+//                                if (finalResult) {
+//                                    appExecutor.getMainThread().execute(() -> {
+//                                        Toast.makeText(requireContext(), "Time Share Inserted", Toast.LENGTH_LONG).show();
+//                                        clearAll();
+//                                        clear();
+//                                        timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+//                                        timeShareSubmit.setEnabled(true);
+//                                    });
+//                                }
+//                            });
+//                        }).exceptionally(e -> {
+//                            appExecutor.getMainThread().execute(() -> {
+//                                timeShareSubmit.setBackgroundResource(android.R.drawable.btn_default);
+//                                Toast.makeText(getActivity(), "Failure: " +e.getMessage(), Toast.LENGTH_LONG).show();
+//                                timeShareSubmit.setEnabled(true);
+//                            });
+//                            return null;
+//
+//                        }).join();
                     });
                 } else {
                     Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
@@ -474,8 +502,8 @@ public class AddDTSFragment extends Fragment{
             MaterialTimePicker timePicker = new MaterialTimePicker
                     .Builder().setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
                     .setTimeFormat(TimeFormat.CLOCK_12H)
-                    .setHour(12)
-                    .setMinute(10)
+                    .setHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY))
+                    .setMinute(Calendar.getInstance().get(Calendar.MINUTE))
                     .setTitleText("Select Start Time")
                     .build();
             if (!timePicker.isAdded()) timePicker
@@ -496,8 +524,8 @@ public class AddDTSFragment extends Fragment{
             MaterialTimePicker timePicker = new MaterialTimePicker
                     .Builder().setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
                     .setTimeFormat(TimeFormat.CLOCK_12H)
-                    .setHour(12)
-                    .setMinute(10)
+                    .setHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY))
+                    .setMinute(Calendar.getInstance().get(Calendar.MINUTE))
                     .setTitleText("Select End Time")
                     .build();
 
@@ -665,7 +693,9 @@ public class AddDTSFragment extends Fragment{
         tsMeasurableUnit.setVisibility(View.VISIBLE);
         tsProjectName.setVisibility(View.VISIBLE);
 
-        if (!(sessionManager.getToken().equals("Prerna") || sessionManager.getToken().equals("Yo") || sessionManager.getToken().equals("Jaypel"))                                   )
+        if (!(sessionManager.getToken().equalsIgnoreCase("Prerna") 
+                || sessionManager.getToken().equalsIgnoreCase("Yo")
+                || sessionManager.getToken().equalsIgnoreCase("Jaypel"))                                   )
         { appExecutor.getMainThread().execute(() -> {
           //  Toast.makeText(getActivity(), "Date Has Been Expired Contact to Admin", Toast.LENGTH_LONG).show();
             timeShareDate.setVisibility(View.INVISIBLE);
@@ -837,8 +867,60 @@ public class AddDTSFragment extends Fragment{
         return hours + " hr : "+mins+" mins";
     }
 
+    private CompletableFuture<String> addDailyTimeShare1(DailyTimeShareDTO dailyTimeSharedto) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        //it is used for to message & dts Id from ResponseBody object
+        ArrayList<String> messageAndId = new ArrayList<>();
+        appExecutor.getNetworkIO().execute(() -> {
+            Call<ResponseBody> call = dailyTimeShareInterface.addDailyTimeShare(dailyTimeSharedto);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    try {
+                        APIResponse apiResponse = APIResponse.create(response);
+                        if (apiResponse != null) {
+                            if (apiResponse instanceof APISuccessResponse) {
+                                String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
+                                // JsonObject dtsobject = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody().getAsJsonObject();
+                                if ("successful".equals(message)) {
+                                    future.complete(message);
+                                }
+                            }
 
-    private CompletableFuture<ArrayList<String>> addDailyTimeShare(DailyTimeShare dailyTimeShare) {
+                            if (apiResponse instanceof APIErrorResponse) {
+                                String erMsg = ((APIErrorResponse<ResponseBody>) apiResponse).getErrorMessage();
+                                future.completeExceptionally(new Throwable(erMsg));
+
+                            }
+                            if (apiResponse instanceof APIErrorResponse) {
+                                future.completeExceptionally(new Throwable("empty response"));
+                            }
+                        }
+                    }
+                    catch (ClassCastException e){
+                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
+                    }
+                    catch (IOException e) {
+                        Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
+                        future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
+                    }
+                    catch (RuntimeException e) {
+                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    future.completeExceptionally(new Throwable(t.getMessage()));
+                }
+            });
+        });
+
+        return future;
+    }
+
+    private CompletableFuture<ArrayList<String>> addDailyTimeShare(DailyTimeShareDTO dailyTimeShare) {
         CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
         //it is used for to message & dts Id from ResponseBody object
         ArrayList<String> messageAndId = new ArrayList<>();
