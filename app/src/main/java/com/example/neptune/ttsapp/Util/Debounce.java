@@ -9,7 +9,7 @@ public class Debounce {
     /* function  called once after debouncing*/
     public static void debounceEffect(Runnable onClickFunction){
         latestClick = System.currentTimeMillis();
-        if (latestClick - lastClick < 1500){
+        if (latestClick - lastClick < 2500){
             return;
         }
         lastClick = latestClick;

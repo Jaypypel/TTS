@@ -15,8 +15,10 @@ public class SessionManager {
 
     // Shared preferences file name
     private static final String PREF_NAME = "UserSession";
-    private static final String KEY_TOKEN = "userid";
+    private static final String KEY_TOKEN = "jwt";
     private static final String ROLES = "roles";
+    
+    private static final String USER_ID = "userid";
     private static final String KEY_IS_LOGGED_IN = "IS_LOGGED_IN";
 
 
@@ -41,10 +43,11 @@ public class SessionManager {
         editor = sharedPreferences.edit();
     }
 
-    public void saveSession(String userId, ArrayList<String> join){
-        editor.putString(KEY_TOKEN,userId);
+    public void saveSession(String userId, ArrayList<String> join, String jwt){
+        editor.putString(USER_ID,userId);
         Set<String> roles = new HashSet<>(join);
         editor.putStringSet(ROLES,roles);
+        editor.putString(KEY_TOKEN,jwt);
         editor.putBoolean(KEY_IS_LOGGED_IN,true);
         editor.apply();
     }
@@ -70,7 +73,11 @@ public class SessionManager {
         return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN,false);
     }
 
-    public String getToken(){
+    public String getUsername(){
+        return sharedPreferences.getString(USER_ID,null);
+    }
+    
+    public String getJWT(){
         return sharedPreferences.getString(KEY_TOKEN,null);
     }
 
@@ -79,7 +86,7 @@ public class SessionManager {
     }
 
 //
-//    public String getToken(){
+//    public String getUsername(){
 //        return pref.getString(KEY_IS_USER_ID, null);
 //    }
 }

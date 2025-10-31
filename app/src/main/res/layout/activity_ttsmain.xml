@@ -6,31 +6,35 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context=".TTSMainActivity">
 
     <!-- Main content container -->
-    <LinearLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <!-- Toolbar -->
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/app_bar_main" />
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
+
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/app_bar_main" />
+
+        </com.google.android.material.appbar.AppBarLayout>
 
         <!-- NavHostFragment for fragments -->
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/nav_host_fragment"
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:defaultNavHost="true"
             app:navGraph="@navigation/main_navigation" />
 
-    </LinearLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <!-- Navigation Drawer - must be last child of DrawerLayout -->
     <com.google.android.material.navigation.NavigationView

@@ -15,6 +15,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 
@@ -110,17 +111,11 @@ public class TaskAllocatedListCustomAdapter extends ArrayAdapter<TaskDataModel> 
 
     private String extractDate(String timestamp)
     {
-        String currentDate = "";
-        try
-        {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
-            ZonedDateTime dateTimeInIst = ZonedDateTime.of(LocalDateTime
-                    .parse(timestamp, formatter), ZoneId.of("Asia/Kolkata"));
-
-            DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            currentDate = dateTimeInIst.format(dateformatter);
-        }catch (Exception e){e.printStackTrace();}
-
+        String currentDate= "";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a", Locale.ENGLISH);
+        ZonedDateTime ist = ZonedDateTime.of(LocalDateTime.parse(timestamp.toUpperCase(Locale.ENGLISH),dateTimeFormatter), ZoneId.systemDefault());
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
+        currentDate = ist.format(dateFormatter);
         return currentDate;
     }
 

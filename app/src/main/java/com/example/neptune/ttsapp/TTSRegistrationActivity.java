@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -58,6 +60,8 @@ public class TTSRegistrationActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
 
+    private RadioGroup rolesGroup;
+
     private boolean isRequestInProcess = false;
 
     @Override
@@ -67,7 +71,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
 //        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 //        StrictMode.setThreadPolicy(policy);
 
-
+        rolesGroup = findViewById(R.id.radioGroupRoles);
         fullName =  findViewById(R.id.editTextName);
         userName =  findViewById(R.id.editTextRegUserName);
         password =  findViewById(R.id.editTextRegPassword);
@@ -191,13 +195,20 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                     btnSubmit.setEnabled(true);
                     return;
                 }
+                if(!isRoleSelected()) {
+                    Toast.makeText(getApplicationContext(),"You must select a Role",Toast.LENGTH_LONG).show();
+                    btnSubmit.setEnabled(true);
+                    return;
+                }
                 progressBar.setVisibility(View.VISIBLE);
                 if(isRequestInProcess){
                     Toast.makeText(TTSRegistrationActivity.this,"Request in process",Toast.LENGTH_LONG).show();
                     return;
                 }
+
+                Log.e("Error", getSelectedRadioValue());
                 //   String result = registerUser(isValidFullName(), isValidUserId(), checkPassword(), isValidEmail(), isValidMobileNo(), delegationTime());
-                User newUser= new User(fName, uName, passwordck,mail,mobile);
+                User newUser= new User(fName, uName, passwordck,mail,mobile,getSelectedRadioValue());
 
 
 
@@ -213,6 +224,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                         }else{
                             appExecutors.getMainThread().execute(() -> {Toast.makeText(TTSRegistrationActivity.this, "Registration Failed", Toast.LENGTH_LONG).show();  btnSubmit.setEnabled(true);});
                             isRequestInProcess = false;
+                            btnSubmit.setEnabled(true);
                         }
                     }).exceptionally(e -> {
                         appExecutors.getMainThread().execute(() -> {
@@ -221,7 +233,6 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                             btnSubmit.setEnabled(true);
                         });
                         isRequestInProcess = false;
-
                         return null;
                     }).whenComplete((result,throwable)-> isRequestInProcess = false);
 
@@ -232,6 +243,12 @@ public class TTSRegistrationActivity extends AppCompatActivity {
                 btnSubmit.setEnabled(true);
 
             }
+    }
+
+    private String getSelectedRadioValue(){
+        int selectedId = rolesGroup.getCheckedRadioButtonId();
+        TextView role = findViewById(selectedId);
+        return role.getText().toString();
     }
 
     String fName;
@@ -269,6 +286,11 @@ public class TTSRegistrationActivity extends AppCompatActivity {
         return true;
     }
 
+
+
+    public boolean isRoleSelected(){
+       return rolesGroup.getCheckedRadioButtonId() != -1;
+    }
     String mail;
     //Start Checking Email valid Or Not
     public boolean isValidEmail() {
@@ -278,7 +300,7 @@ public class TTSRegistrationActivity extends AppCompatActivity {
             email.setError("Email Cannot Be Empty");
             return false;
         }
-        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        String expression = "^[\\w.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
         CharSequence inputStr = mail;
         Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(inputStr);

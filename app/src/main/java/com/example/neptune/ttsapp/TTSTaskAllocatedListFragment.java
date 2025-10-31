@@ -27,6 +27,7 @@ import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
 import com.example.neptune.ttsapp.Util.Debounce;
+import com.example.neptune.ttsapp.repository.QueryRepository;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -64,6 +65,10 @@ public class TTSTaskAllocatedListFragment extends Fragment {
     @Inject
     TaskHandlerInterface taskHandlerInterface;
 
+
+    @Inject
+    QueryRepository queryRepository;
+
     @Inject
     MeasurableServiceInterface measurableService;
 
@@ -91,7 +96,7 @@ public class TTSTaskAllocatedListFragment extends Fragment {
 
 
         sessionManager = new SessionManager(requireContext());
-        userId = sessionManager.getToken();
+        userId = sessionManager.getUsername();
         user=view.findViewById(R.id.textViewAllocatedListUser);
         user.setText(userId);
 
@@ -107,7 +112,7 @@ public class TTSTaskAllocatedListFragment extends Fragment {
         if (InternetConnectivity.isConnected()){
         appExecutors.getNetworkIO().execute(() -> {
 
-           getAssignedTask(getToken(),"Pending").thenAccept(result -> {
+           getAssignedTask(getUsername(),"Pending").thenAccept(result -> {
                allocatedTaskState.setVisibility(View.INVISIBLE);
                appExecutors.getMainThread().execute(() -> {
                    tasks = result;
@@ -133,7 +138,8 @@ public class TTSTaskAllocatedListFragment extends Fragment {
         listView.setOnItemClickListener((parent, view1, position, id) -> Debounce
                 .debounceEffect(() -> {
             TaskDataModel dataModel= tasks.get(position);
-        if (dataModel.getTaskSeenOn().equals(notSeen.name())){
+
+        if (dataModel.getTaskSeenOn()==null){
             updateTaskManagementSeenTime(dataModel.getId());
         }
         appExecutors
@@ -158,10 +164,10 @@ public class TTSTaskAllocatedListFragment extends Fragment {
 
 
 
-    private String getToken()
+    private String getUsername()
     {
         sessionManager = new SessionManager(requireContext());
-        return sessionManager.getToken();
+        return sessionManager.getUsername();
     }
 
 

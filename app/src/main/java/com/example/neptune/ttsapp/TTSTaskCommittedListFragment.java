@@ -23,6 +23,9 @@ import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
 import com.example.neptune.ttsapp.Util.Debounce;
+import com.example.neptune.ttsapp.displayTaskToLearners.LearnerTaskDetailsKt;
+import com.example.neptune.ttsapp.displayTaskToLearners.TaskSummary;
+import com.example.neptune.ttsapp.displayTaskToLearners.TaskToLearnerDetailsActivity;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -79,7 +82,7 @@ public class TTSTaskCommittedListFragment extends Fragment {
         listView=view.findViewById(R.id.processingTaskList);
 
         sessionManager = new SessionManager(getActivity());
-        userId = sessionManager.getToken();
+        userId = sessionManager.getUsername();
         user=view.findViewById(R.id.textViewProcessingListUser);
         user.setText(userId);
 
@@ -98,11 +101,11 @@ public class TTSTaskCommittedListFragment extends Fragment {
         if (InternetConnectivity.isConnected()) {
 
             appExecutors.getNetworkIO().execute(() -> {
-                getProcessingTasks(getToken(),"In_Process").thenAccept(tasks -> {
+                getProcessingTasks(getUsername(),"In_Process").thenAccept(tasks -> {
                     committedTasksState.setVisibility(View.INVISIBLE);
                     appExecutors.getMainThread().execute(() -> {
                         dataModels = tasks;
-                        adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity());
+                        adapter = new TaskAllocatedListCustomAdapter(dataModels,requireContext());
                         listView.setAdapter(adapter);
                         if(dataModels == null || dataModels.isEmpty()){
                             committedTasksState.setVisibility(View.VISIBLE);
@@ -120,6 +123,13 @@ public class TTSTaskCommittedListFragment extends Fragment {
 
         listView.setOnItemClickListener((parent, view1, position, id) -> Debounce.debounceEffect(() -> {
             TaskDataModel dataModel= dataModels.get(position);
+            if(sessionManager.getRoles().contains("ROLE_LEARNER")){
+                Intent i = new Intent(requireContext(), TaskToLearnerDetailsActivity.class);
+                TaskSummary taskSummary = new TaskSummary(dataModel.id.toString(), dataModel.taskAssignedOn,dataModel.taskName,dataModel.status,"",true,0);
+                i.putExtra("taskSummary",taskSummary);
+                startActivity(i);
+                return;
+            }
             getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> appExecutors.getMainThread().execute(() -> {
                 Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
                 i.putExtra("TaskProcessingItemDetails",dataModel);
@@ -133,10 +143,21 @@ public class TTSTaskCommittedListFragment extends Fragment {
         return view;
     }
 
-    private String getToken()
+
+    public boolean goToLearnerDetailsActivity(TaskDataModel dataModel){
+        if(sessionManager.getRoles().contains("ROLE_LEARNER")){
+            Intent i = new Intent(requireContext(), TaskToLearnerDetailsActivity.class);
+            TaskSummary taskSummary = new TaskSummary(dataModel.taskReceivedUserID, dataModel.taskAssignedOn,dataModel.taskName,dataModel.status,"",true,0);
+            i.putExtra("taskSummary",taskSummary);
+            startActivity(i);
+            return true;
+        }
+        return false;
+    }
+    private String getUsername()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getToken();
+        return sessionManager.getUsername();
     }
 
     public CompletableFuture<ArrayList<TaskDataModel>> getProcessingTasks(String receivedUsername, String status){

@@ -2,6 +2,7 @@ package com.example.neptune.ttsapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.StrictMode;
 //import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
@@ -14,6 +15,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.compose.ui.node.MyersDiffKt;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.neptune.ttsapp.EnumStatus.Status;
 import com.example.neptune.ttsapp.Network.APIErrorResponse;
@@ -21,13 +24,16 @@ import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
+import com.example.neptune.ttsapp.repository.QueryRepository;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
@@ -41,6 +47,10 @@ import retrofit2.Response;
 public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
 
     Status accepted = Status.Accepted;
+
+
+    @Inject
+    QueryRepository queryRepository;
 
     @Inject
     AppExecutors appExecutor;
@@ -112,7 +122,7 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
             measurableListCustomAdapter = new MeasurableListCustomAdapter(allocatedTaskMeasurableList, getApplicationContext());
             TALIDlistView.setAdapter(measurableListCustomAdapter);
 
-            TALIDDisplayTimeShare.setVisibility(View.INVISIBLE);
+            TALIDDisplayTimeShare.setText("Raise a query");
         }
 
         else if (completedTaskListItemDetails != null)
@@ -140,7 +150,7 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
 
 
             TALIDAccept.setOnClickListener(v -> {
-                if(allocatedTaskListItemDetails.getTaskAcceptedOn()!=null && allocatedTaskListItemDetails.getTaskAcceptedOn().equals("not_accepted")) {
+                if(allocatedTaskListItemDetails.getTaskAcceptedOn()!=null && allocatedTaskListItemDetails.getTaskAcceptedOn().equals(LocalDateTime.of(1970, 1, 1, 0, 0).toString())) {
                     if (InternetConnectivity.isConnected())
                     {
                         TALIDAccept.setEnabled(false);
@@ -167,13 +177,34 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
 
             });
 
+
             TALIDDisplayTimeShare.setOnClickListener(v -> {
+                if(allocatedTaskListItemDetails!=null && allocatedTaskListItemDetails.getStatus().equals("Pending")){
+
+                    appExecutor.getNetworkIO().execute(() ->  {
+                        ArrayList<Query>  queries = queryRepository.getQueries(allocatedTaskListItemDetails.getId()).join();
+                        if(!queries.isEmpty() ){
+                            Intent intent = new Intent(this, DisplayQueriesAgainstTaskActivity.class);
+                            intent.putParcelableArrayListExtra("queries",  queries);
+                            intent.putExtra("task_id", Math.toIntExact(allocatedTaskListItemDetails.getId())); // Pass your ID here
+                            startActivity(intent);
+
+                        }else {
+                            Intent intent = new Intent(this, QueryAgainstTask.class);
+                            intent.putExtra("task_id", Math.toIntExact(allocatedTaskListItemDetails.getId())); // Pass your ID here
+                            startActivity(intent);
+                        }
+                    });
+
+
+
+                }else {
 
                 Intent i = new Intent(getApplicationContext(), TTSTimeShareListActivity.class);
 
                 i.putExtra("TaskCompletedDetails",completedTaskListItemDetails);
                 startActivity(i);
-                finish();
+                finish();}
 
             });
 
@@ -192,7 +223,9 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() { finish(); }
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish(); }
 
 
 
@@ -200,7 +233,7 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
         CompletableFuture<Boolean> isUpdated = new CompletableFuture<>();
 
         Call<ResponseBody> call = taskHandlerService.updateTaskManagementStatus(taskId,obj.name());
-        call.enqueue(new Callback<ResponseBody>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 Log.e("response",":-"+response);
@@ -240,7 +273,7 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                 Log.e("Error","Failed to make request due to "+t.getMessage());
                 isUpdated.completeExceptionally(new Throwable(t.getMessage()));
             }
@@ -249,38 +282,6 @@ public class TTSTaskAllocatedListItemDetailsActivity extends AppCompatActivity {
 
         return isUpdated;
     }
-
-
-
-    // Update the Time and status when Accept the Task
-//    public boolean updateAcceptTimeStatus(Long taskId){
-//        Connection con;
-//        int x = 0;
-//
-//        try {
-//            con = DatabaseHelper.getDBConnection();
-//
-//            Calendar calendar = Calendar.getInstance();
-//            Timestamp acceptTimestamp = new Timestamp(calendar.getTime().getTime());
-//
-//            PreparedStatement ps = con.prepareStatement("UPDATE TASK_MANAGEMENT SET STATUS =?, ACCEPTED_ON =? WHERE ID =?");
-//
-//            ps.setString(1,"ACCEPTED");
-//            ps.setString(2, acceptTimestamp.toString());
-//            ps.setLong(3,taskId);
-//            x=ps.executeUpdate();
-//
-//            if(x==1){ result = true; }
-//
-//            ps.close();
-//            con.close();
-//        } catch (Exception e) { e.printStackTrace(); }
-//
-//        return result;
-//
-//    }
-
-
 
 
 }

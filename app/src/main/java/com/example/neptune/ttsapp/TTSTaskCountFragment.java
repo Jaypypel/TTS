@@ -84,7 +84,7 @@ public class TTSTaskCountFragment extends Fragment {
 
         user = view.findViewById(R.id.textViewTaskCountUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        user.setText(sessionManager.getToken());
+        user.setText(sessionManager.getUsername());
 
         date = view.findViewById(R.id.textViewTaskCountDate);
         time = view.findViewById(R.id.textViewTaskCountTime);
@@ -98,23 +98,23 @@ public class TTSTaskCountFragment extends Fragment {
 
         if (InternetConnectivity.isConnected()) {
             try {
-                user.setText(sessionManager.getToken());
+                user.setText(sessionManager.getUsername());
 
                 appExecutors.getNetworkIO().execute(() -> {
                     // Execute network tasks asynchronously
-                    CompletableFuture<String> pendingTasksFuture = countTaskByUserAndStatus(sessionManager.getToken(),Status.Pending.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                    CompletableFuture<String> pendingTasksFuture = countTaskByUserAndStatus(sessionManager.getUsername(),Status.Pending.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
                         return "";
                     });
                     Log.d("Logs","pending Count "+pendingTasksFuture.join());
-                    CompletableFuture<String> acceptedTasksFuture = countTaskByUserAndStatus(sessionManager.getToken(), Status.Accepted.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                    CompletableFuture<String> acceptedTasksFuture = countTaskByUserAndStatus(sessionManager.getUsername(), Status.Accepted.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
                         return "";
                     });
                     Log.d("Logs","accepted Count "+acceptedTasksFuture.join());
-                    CompletableFuture<String> approvedTasksFuture = countTaskByUserAndStatus(sessionManager.getToken(), Status.Approved.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                    CompletableFuture<String> approvedTasksFuture = countTaskByUserAndStatus(sessionManager.getUsername(), Status.Approved.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
                         return "";
                     });
                     Log.d("Logs","approved Count "+approvedTasksFuture.join());
-                    CompletableFuture<String> completedTasksFuture = countTaskByUserAndStatus(sessionManager.getToken(),Status.Completed.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
+                    CompletableFuture<String> completedTasksFuture = countTaskByUserAndStatus(sessionManager.getUsername(),Status.Completed.name()).exceptionally(e -> {Log.e("Error","EROR"+e.getMessage());
                         return "";
                     });
                     Log.d("Logs","completed Count "+completedTasksFuture.join());
@@ -150,7 +150,7 @@ public class TTSTaskCountFragment extends Fragment {
         if (InternetConnectivity.isConnected()) {
             appExecutors
                     .getNetworkIO()
-                    .execute(() -> getAssignedTask(sessionManager.getToken())
+                    .execute(() -> getAssignedTask(sessionManager.getUsername())
                             .thenAccept(task -> appExecutors
                                     .getMainThread()
                                     .execute(() -> {

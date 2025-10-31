@@ -16,8 +16,8 @@ public interface UserServiceInterface {
     @POST("/app/user/register")
     Call<ResponseBody> registerUser(@Body User user);
 
-    @GET("/app/user/login")
-    Call<ResponseBody> login(@Query("username") String username,@Query("password") String password);
+    @POST("/app/user/login")
+    Call<ResponseBody> login(@Body LoginRequest loginRequest);
 
     @GET("/app/user/list")
     Call<ResponseBody> getUsernames();

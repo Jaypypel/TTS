@@ -369,7 +369,7 @@ public class AddDTSFragment extends Fragment{
                         appExecutor.getMainThread().execute(() -> timeShareSubmit.setBackgroundColor(Color.GRAY));
 
                         String projectcode = !isProjectNameValid().isEmpty()? isProjectCodeValid(): "No code received";
-                        User user = new User(sessionManager.getToken());
+                        User user = new User(sessionManager.getUsername());
 
                         DailyTimeShare dailyTimeShare = new DailyTimeShare(isDateValid(),projectcode
                                 ,isProjectNameValid(),isActivityNameValid(),
@@ -693,9 +693,7 @@ public class AddDTSFragment extends Fragment{
         tsMeasurableUnit.setVisibility(View.VISIBLE);
         tsProjectName.setVisibility(View.VISIBLE);
 
-        if (!(sessionManager.getToken().equalsIgnoreCase("Prerna") 
-                || sessionManager.getToken().equalsIgnoreCase("Yo")
-                || sessionManager.getToken().equalsIgnoreCase("Jaypel"))                                   )
+        if (!(sessionManager.getRoles().contains("ROLE_ADMIN"))                                   )
         { appExecutor.getMainThread().execute(() -> {
           //  Toast.makeText(getActivity(), "Date Has Been Expired Contact to Admin", Toast.LENGTH_LONG).show();
             timeShareDate.setVisibility(View.INVISIBLE);
@@ -1112,20 +1110,21 @@ public class AddDTSFragment extends Fragment{
     public CompletableFuture<ArrayList<String>> getActivityNames() {
         CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
         Call<ResponseBody> call = activityService.getActivitiesName();
-        call.enqueue(new Callback<ResponseBody>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
 
                 try {
-                    APIResponse apiResponse =   APIResponse.create(response);
-                    if(apiResponse instanceof  APISuccessResponse){
+                    APIResponse apiResponse = APIResponse.create(response);
+                    if (apiResponse instanceof APISuccessResponse) {
                         JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse)
                                 .getBody().getBody();
                         Gson gson = new Gson();
-                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+                        Type listType = new TypeToken<ArrayList<String>>() {
+                        }.getType();
 
-                        if(result.isJsonArray()){
+                        if (result.isJsonArray()) {
                             JsonArray activityNames = result.getAsJsonArray();
                             ArrayList<String> list = gson.fromJson(activityNames, listType);
                             future.complete(list);
@@ -1141,16 +1140,13 @@ public class AddDTSFragment extends Fragment{
                     if (apiResponse instanceof APIErrorResponse) {
                         future.completeExceptionally(new Throwable("empty response"));
                     }
-                }
-                catch (ClassCastException e){
-                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                }
-                catch (IOException e) {
+                } catch (ClassCastException e) {
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to " + e.getMessage()));
+                } catch (IOException e) {
                     Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
                     future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
-                }
-                catch (RuntimeException e) {
-                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                } catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is " + e.getMessage() + " its cause " + e.getCause()));
                 }
 
             }

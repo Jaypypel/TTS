@@ -106,7 +106,7 @@ public class TTSTimeShareFormActivity extends AppCompatActivity {
 
         user=findViewById(R.id.textViewUser);
         sessionManager = new SessionManager(getApplicationContext());
-        user.setText(sessionManager.getToken());
+        user.setText(sessionManager.getUsername());
 
         date=findViewById(R.id.editTextDate);
 

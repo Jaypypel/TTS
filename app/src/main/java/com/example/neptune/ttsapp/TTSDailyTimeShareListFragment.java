@@ -88,18 +88,16 @@ public class TTSDailyTimeShareListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_ttsdaily_time_share_list, container, false);
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
 
-        listViewDailyTimeShares=(ListView)view.findViewById(R.id.listDailyTimeShare);
+        listViewDailyTimeShares= view.findViewById(R.id.listDailyTimeShare);
 
         sessionManager = new SessionManager(requireContext());
-        userId = sessionManager.getToken();
-        user=(TextView)view.findViewById(R.id.textViewDailyTimeShareListUser);
+        userId = sessionManager.getUsername();
+        user= view.findViewById(R.id.textViewDailyTimeShareListUser);
         user.setText(userId);
 
-        date =(TextView)view.findViewById(R.id.textViewDailyTimeShareListDate);
-        time =(TextView)view.findViewById(R.id.textViewDailyTimeShareListTime);
+        date = view.findViewById(R.id.textViewDailyTimeShareListDate);
+        time = view.findViewById(R.id.textViewDailyTimeShareListTime);
         dailyTimeShares = view.findViewById(R.id.dailyTimeShares);
 
         final Handler someHandler = new Handler(Looper.getMainLooper());

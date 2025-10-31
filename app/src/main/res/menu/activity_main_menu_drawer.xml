@@ -2,34 +2,49 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
+
+
+
+
+
+
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_daily_time_share"
-            android:title="Daily Time Share" />
+            android:title="@string/daily_time_share" />
         <item android:id="@+id/nav_dts_view"
-            android:title="DTS View"/>
+            android:title="@string/dts_view"/>
         <item android:id="@+id/nav_received_tasks"
-            android:title="Received Tasks"/>
+            android:title="@string/received_tasks"/>
         <item android:id="@+id/nav_committed_tasks"
-            android:title="Committed Tasks" />
+            android:title="@string/committed_tasks" />
         <item android:id="@+id/nav_approval_completion_tasks"
-            android:title="Approval Completion Tasks" />
+            android:title="@string/approval_completion_tasks" />
         <item android:id="@+id/nav_work_done_status"
-            android:title="Work Done Status" />
+            android:title="@string/work_done_status" />
         <item android:id="@+id/nav_assign_task"
-            android:title="Assign Task" />
+            android:title="@string/assign_task" />
         <item android:id="@+id/nav_assigned_tasks"
-            android:title="Assigned Tasks" />
+            android:title="@string/assigned_tasks" />
         <item android:id="@+id/nav_accepted_tasks"
-            android:title="Accepted Tasks" />
+            android:title="@string/accepted_tasks" />
         <item android:id="@+id/nav_completed_tasks"
-            android:title="Completed Tasks" />
+            android:title="@string/completed_tasks" />
         <item android:id="@+id/nav_modified_tasks"
-            android:title="Modification Tasks" />
+            android:title="@string/modification_tasks" />
         <item android:id="@+id/nav_task_admin"
-            android:title="Task Admin" />
+            android:title="@string/task_admin" />
         <item android:id="@+id/nav_task_to_learner"
-            android:title="Task To Learner" />
+            android:title="@string/task_to_learner" />
+
+        <item android:id="@+id/nav_learner_tasks"
+            android:title="@string/learner_tasks" />
+
+        <item android:id="@+id/nav_learner_assigned_tasks"
+            android:title="@string/learner_assigned_tasks" />
+
+        <item android:id="@+id/nav_learner_accepted_tasks"
+            android:title="Learner Accepted Tasks" />
 
     </group>
 </menu>

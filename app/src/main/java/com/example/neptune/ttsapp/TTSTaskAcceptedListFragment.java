@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.neptune.ttsapp.EnumStatus.Status;
 import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
@@ -25,6 +26,9 @@ import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.TaskHandlerInterface;
 import com.example.neptune.ttsapp.Util.DateConverter;
 import com.example.neptune.ttsapp.Util.Debounce;
+import com.example.neptune.ttsapp.displayTaskToLearners.LearnerTaskDetailsKt;
+import com.example.neptune.ttsapp.displayTaskToLearners.TaskSummary;
+import com.example.neptune.ttsapp.displayTaskToLearners.TaskToLearnerDetailsActivity;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -88,7 +92,7 @@ public class TTSTaskAcceptedListFragment extends Fragment {
         listView=view.findViewById(R.id.listAccepted);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getToken();
+        userId = sessionManager.getUsername();
         user=view.findViewById(R.id.textViewAcceptedListUser);
         user.setText(userId);
 
@@ -101,7 +105,7 @@ public class TTSTaskAcceptedListFragment extends Fragment {
         });
 
         if (InternetConnectivity.isConnected()){
-            appExecutors.getNetworkIO().execute(() -> getAcceptedTask(getToken(),"accepted").thenAccept(result -> {
+            appExecutors.getNetworkIO().execute(() -> getAcceptedTask(getUsername(), Status.Accepted.name()).thenAccept(result -> {
                 acceptedTasksState.setVisibility(View.INVISIBLE);
                 dataModels = result;
                 adapter = new TaskAllocatedListCustomAdapter(dataModels,getActivity());
@@ -124,26 +128,35 @@ public class TTSTaskAcceptedListFragment extends Fragment {
 
         listView.setOnItemClickListener((parent, v, position, id) -> Debounce.debounceEffect(() -> {
                 TaskDataModel dataModel= dataModels.get(position);
-                getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> {
-                appExecutors.getMainThread().execute(() -> {
-                Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
-                i.putExtra("acceptedTasks",dataModel);
-                i.putExtra("acceptedTaskMeasurables",measurables);
-                startActivity(i);
-            });
-        }).exceptionally(e -> {
-                    Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
-            return  null;
-        });
+                if(sessionManager.getRoles().contains("ROLE_LEARNER")){
+                    Intent i = new Intent(requireContext(), TaskToLearnerDetailsActivity.class);
+                    TaskSummary taskSummary = new TaskSummary(dataModel.getId().toString(),
+                            dataModel.getTaskAssignedOn(),dataModel.getTaskName(),dataModel.getStatus(),"",false,0);
+                    i.putExtra("taskSummary",taskSummary);
+                    startActivity(i);
+                }else {
+                    getAllocatedMeasurableList(dataModel.getId()).thenAccept(measurables -> appExecutors
+                            .getMainThread()
+                            .execute(() -> {
+                                Intent i = new Intent(getActivity(), TTSTaskDelegateListItemDetailsActivity.class);
+                                i.putExtra("acceptedTasks",dataModel);
+                                i.putExtra("acceptedTaskMeasurables",measurables);
+                                startActivity(i);
+                            })).exceptionally(e -> {
+                        Toast.makeText(requireContext(), "Failure: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                        return  null;
+                    });
+                }
+
         }));
 
          return view;
     }
 
-    private String getToken()
+    private String getUsername()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getToken();
+        return sessionManager.getUsername();
     }
 
 

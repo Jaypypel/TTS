@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
@@ -33,6 +34,8 @@ import android.widget.ToggleButton;
 import com.example.neptune.ttsapp.Network.APIErrorResponse;
 import com.example.neptune.ttsapp.Network.APIResponse;
 import com.example.neptune.ttsapp.Network.APISuccessResponse;
+import com.example.neptune.ttsapp.Network.BasicAuthInterceptor;
+import com.example.neptune.ttsapp.Network.LoginRequest;
 import com.example.neptune.ttsapp.Network.ResponseBody;
 import com.example.neptune.ttsapp.Network.UserServiceInterface;
 import com.google.gson.Gson;
@@ -41,13 +44,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -62,6 +68,9 @@ public class TTSLoginActivity extends AppCompatActivity {
 
     @Inject
     UserServiceInterface userServiceInterface;
+
+    @Inject
+    BasicAuthInterceptor basicAuthInterceptor;
 
     @Inject
     AppExecutors appExecutors;
@@ -148,6 +157,7 @@ public class TTSLoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         finish();
     }
 
@@ -160,14 +170,16 @@ public class TTSLoginActivity extends AppCompatActivity {
                 return false;
             }
              if (isValidPassword().length() < 8 || isValidPassword().isEmpty())
-            {
-                if (isValidPassword().isEmpty()) { password.setError("Password Cannot Be Empty"); btnLogin.setBackgroundResource(android.R.drawable.btn_default);return false; }
+            {if (isValidPassword().isEmpty()) { password.setError("Password Cannot Be Empty"); btnLogin.setBackgroundResource(android.R.drawable.btn_default);return false; }
                 if (isValidPassword().length() < 8) { password.setError("Please Enter Valid Password"); btnLogin.setBackgroundResource(android.R.drawable.btn_default);return false;}
                 btnLogin.setBackgroundResource(android.R.drawable.btn_default);
                 return false;
             }
+//             basicAuthInterceptor.setCredentials(isValidUserId(),isValidPassword());
+
                 appExecutors.getNetworkIO().execute(() -> {
-                    CompletableFuture<ArrayList<String>> isRequestDone = makeUserLogin(isValidUserId(),isValidPassword());
+                    LoginRequest loginRequest = new LoginRequest(isValidUserId(),isValidPassword());
+                    CompletableFuture<ArrayList<String>> isRequestDone = makeUserLogin(loginRequest);
                   CompletableFuture<Void> future =  new CompletableFuture<>();
                     if(!future.isDone()) {
                         appExecutors.getMainThread().execute(() -> {
@@ -190,7 +202,7 @@ public class TTSLoginActivity extends AppCompatActivity {
                                            .replaceAll("\\s+", "");
                                    sessionManager = new SessionManager(this);
                                    Log.e("debuggin","rols "+isRequestDone.join());
-                                   sessionManager.saveSession(userId,isRequestDone.join());
+                                   sessionManager.saveSession(userId,isRequestDone.join(),isRequestDone.join().get(isRequestDone.join().size()-1));
                                    Toast.makeText(TTSLoginActivity.this, "You're logged in now", Toast.LENGTH_SHORT).show();
                                    Intent i = new Intent(TTSLoginActivity.this, TTSMainActivity.class);
                                    startActivity(i);
@@ -278,29 +290,41 @@ public class TTSLoginActivity extends AppCompatActivity {
     }
 
 
-    public CompletableFuture<ArrayList<String>> makeUserLogin(String username, String password){
+    public CompletableFuture<ArrayList<String>> makeUserLogin(LoginRequest loginRequest){
         CompletableFuture<ArrayList<String>> result = new CompletableFuture<>();
-        Call<ResponseBody> call = userServiceInterface.login(username,password);
-        call.enqueue(new Callback<ResponseBody>() {
+        Call<ResponseBody> call = userServiceInterface.login(loginRequest);
+        call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 try {
                     APIResponse apiResponse = APIResponse.create(response);
                     if (apiResponse != null) {
                         if (apiResponse instanceof APISuccessResponse) {
                             JsonElement responseBody = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
-                            Log.e("dEBUGIN","responseBody"+ responseBody);
+                            Log.e("dBUGGING", "responseBody" + responseBody);
                             Gson gson = new Gson();
-                            Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+                            Type listType = new TypeToken<ArrayList<String>>() {
+                            }.getType();
 
                             String message = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getMessage().getAsString();
-                            Log.e("dEBUGIN","message"+ message);
+                            Log.e("dBUGGING", "message" + message);
                             if ("Successful".equals(message)) {
-                                if (responseBody.isJsonArray()){
-                                    JsonArray roles = responseBody.getAsJsonArray();
-                                    ArrayList<String> rolesArr = gson.fromJson(roles,listType);
-                                    result.complete(rolesArr);
-                                }
+                                String jwt = responseBody.getAsString().split("]")[1].trim();
+                                List<String> roles;
+                                roles = Arrays.stream(responseBody.getAsString().split("]")[0].replace("[","").split(",")).map(String::trim).collect(Collectors.toList());
+                                Log.e("dBUGGING", "roles" + roles);
+//                                Collections.addAll(roles, responseBody.getAsString().split("\\s")[0].replace("[","").replace("]",""));
+                                roles.add(jwt);
+                                Log.e("dBUGGING", "roles" + roles);
+                                ArrayList<String> rolesArr = (ArrayList<String>) roles;
+                                result.complete(rolesArr);
+
+//                                if (responseBody.isJsonArray()) {
+//
+//                                    JsonArray roles = responseBody.getAsJsonArray();
+//                                    ArrayList<String> rolesArr = gson.fromJson(roles, listType);
+//                                    result.complete(rolesArr);
+//                                }
                             }
                         }
                         if (apiResponse instanceof APIErrorResponse) {
@@ -312,16 +336,13 @@ public class TTSLoginActivity extends AppCompatActivity {
                             result.completeExceptionally(new Throwable("empty response"));
                         }
                     }
-                }
-                catch (ClassCastException e){
-                    result.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                }
-                catch (IOException e) {
+                } catch (ClassCastException e) {
+                    result.completeExceptionally(new Throwable("Unable to cast the response into required format due to " + e.getMessage()));
+                } catch (IOException e) {
                     Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
                     result.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
-                }
-                catch (RuntimeException e) {
-                    result.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                } catch (RuntimeException e) {
+                    result.completeExceptionally(new Throwable("Unnoticed Exception occurred which is " + e.getMessage() + " its cause " + e.getCause()));
                 }
             }
 

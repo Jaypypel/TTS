@@ -6,13 +6,15 @@ public class User {
     private final String password;
     private final String email;
     private final String mobileNo;
+    private final String userRole;
 
-    public User(String fullName, String userName, String password, String email, String mobileNo) {
+    public User(String fullName, String userName, String password, String email, String mobileNo, String userRole) {
         this.fullName = fullName;
         this.username = userName;
         this.password = password;
         this.email = email;
         this.mobileNo = mobileNo;
+        this.userRole = userRole;
     }
 
     public User(String username){
@@ -21,6 +23,7 @@ public class User {
         this.password = null;
         this.email = null;
         this.mobileNo = null;
+        this.userRole = "";
     }
     public String getFullName() {
         return fullName;
@@ -34,6 +37,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", mobileNo='" + mobileNo + '\'' +
+                ", userRole='" + userRole + '\'' +
                 '}';
     }
 

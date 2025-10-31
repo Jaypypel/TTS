@@ -13,6 +13,20 @@
         <action
             android:id="@+id/nav_task_to_learner"
             app:destination="@id/nav_task_to_learner" />
+
+        <action
+            android:id="@+id/nav_learner_tasks"
+            app:destination="@id/nav_learner_tasks" />
+
+        <action
+            android:id="@+id/nav_learner_assigned_tasks"
+            app:destination="@id/nav_learner_assigned_tasks" />
+
+
+
+        <action
+            android:id="@+id/nav_learner_accepted_tasks"
+            app:destination="@id/nav_learner_assigned_tasks" />
     </fragment>
 
     <fragment
@@ -67,6 +81,24 @@
         android:id="@+id/nav_task_to_learner"
         android:name="com.example.neptune.ttsapp.TaskToLearner"
         android:label="TaskToLearner"
+        tools:layout="@layout/fragment_dummy"/>
+
+    <fragment
+        android:id="@+id/nav_learner_tasks"
+        android:name="com.example.neptune.ttsapp.displayTaskToLearners.LearnerTasks"
+        android:label="TaskToLearner"
+        tools:layout="@layout/fragment_dummy"/>
+
+    <fragment
+        android:id="@+id/nav_learner_assigned_tasks"
+        android:name="com.example.neptune.ttsapp.mentor.MentorTaskList"
+        android:label="LearnerAssignedTask"
+        tools:layout="@layout/fragment_dummy"/>
+
+    <fragment
+        android:id="@+id/nav_learner_accepted_tasks"
+        android:name="com.example.neptune.ttsapp.displayTaskToLearners.TasksStatusChanger"
+        android:label="Learner Accepted Tasks"
         tools:layout="@layout/fragment_dummy"/>
 
 

@@ -15,14 +15,14 @@
         android:id="@+id/registeration"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginVertical="40dp"
-        android:text="Registration"
+        android:gravity="center"
+        android:text="@string/registration"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/fullname"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5"
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/username"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registeration">
 
@@ -43,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter Name"
+            android:hint="@string/enter_full_name"
             android:inputType="textPersonName" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -63,10 +63,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter User Name"
-            android:inputType="textPersonName"
-            tools:layout_editor_absoluteX="100dp"
-            tools:layout_editor_absoluteY="233dp" />
+            android:hint="@string/enter_user_name"
+            android:inputType="textPersonName" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -75,45 +73,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:endIconMode="password_toggle"
-        app:passwordToggleEnabled="true"
         app:layout_constraintBottom_toTopOf="@+id/retypepassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username">
+        app:layout_constraintTop_toBottomOf="@+id/username"
+        app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextRegPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter Password"
+            android:hint="@string/enter_password"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/retypepassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="5dp"
         app:endIconMode="password_toggle"
-        app:passwordToggleEnabled="true"
         app:layout_constraintBottom_toTopOf="@+id/email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password"
-        android:layout_marginVertical="5dp">
+        app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextRetypePassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Retype Password"
-            android:inputType="textPassword"
-
-
-            />
+            android:hint="@string/retype_password"
+            android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -132,7 +128,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter E-Mail"
+            android:hint="@string/enter_e_mail"
             android:inputType="textEmailAddress" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -142,8 +138,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonCancel"
+        app:layout_constraintBottom_toTopOf="@+id/radioGroupRoles"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/radioGroupRoles"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email">
@@ -153,7 +150,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter Mobile No"
+            android:hint="@string/enter_mobile_no"
             android:inputType="phone" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -166,8 +163,8 @@
     <ProgressBar
         android:id="@+id/progressBarInReg"
         style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="72dp"
+        android:layout_height="66dp"
         android:layout_marginVertical="5dp"
         android:layout_marginStart="151dp"
         android:layout_marginTop="@dimen/activity_vertical_margin"
@@ -180,29 +177,71 @@
         app:layout_constraintTop_toBottomOf="@id/buttonSubmit" />
 
     <Button
-        android:id="@+id/buttonSubmit"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="30dp"
-        android:text="@string/submit"
-        android:textStyle="bold"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/buttonCancel"
-        app:layout_constraintTop_toBottomOf="@id/contactNo"
-        tools:layout_editor_absoluteY="493dp" />
-
-    <Button
         android:id="@+id/buttonCancel"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="10dp"
         android:text="@android:string/cancel"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/buttonSubmit"
+        app:layout_constraintEnd_toStartOf="@+id/buttonSubmit"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/contactNo"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/radioGroupRoles" />
+
+    <Button
+        android:id="@+id/buttonSubmit"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/submit"
+
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/buttonCancel"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroupRoles" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupRoles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Select Role"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/buttonCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonSubmit"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/contactNo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contactNo"> <!-- or "horizontal" -->
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Are you a/an" />
+
+        <RadioButton
+            android:id="@+id/radioButtonOption1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Learner" />
+
+        <RadioButton
+            android:id="@+id/radioButtonOption2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Associate" />
+
+        <RadioButton
+            android:id="@+id/radioButtonOption3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mentor" />
+
+
+        <!-- Add more RadioButton elements as needed -->
+
+    </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

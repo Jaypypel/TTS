@@ -83,7 +83,7 @@ public class TTSTaskModificationListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_ttsmodification_task_list, container, false);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getToken();
+        userId = sessionManager.getUsername();
         user=view.findViewById(R.id.textViewModificationListUser);
         user.setText(userId);
         receivedModifiedTasks = view.findViewById(R.id.receivedModifiedTasksState);
@@ -104,7 +104,7 @@ public class TTSTaskModificationListFragment extends Fragment {
         if (InternetConnectivity.isConnected()) {
             appExecutors
                     .getNetworkIO()
-                    .execute(() -> getSendModificationTaskList(getToken(),"revised")
+                    .execute(() -> getSendModificationTaskList(getUsername(),"revised")
                             .thenAccept(tasks -> {
                 receivedModifiedTasks.setVisibility(View.INVISIBLE);
                 senderDataModels = tasks;
@@ -118,7 +118,7 @@ public class TTSTaskModificationListFragment extends Fragment {
                 return null;
             }));
             appExecutors.getNetworkIO().execute(() ->
-                    getReceiveModificationTaskList(getToken(),"revised")
+                    getReceiveModificationTaskList(getUsername(),"revised")
                             .thenAccept(tasks -> {
                                 assignedModifiedTasksState.setVisibility(View.INVISIBLE);
                 receiverDataModels = tasks;
@@ -165,10 +165,10 @@ public class TTSTaskModificationListFragment extends Fragment {
         return view;
     }
 
-    private String getToken()
+    private String getUsername()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getToken();
+        return sessionManager.getUsername();
     }
 
     public CompletableFuture<ArrayList<TaskDataModel>> getSendModificationTaskList(String taskOwnerUsername, String status){

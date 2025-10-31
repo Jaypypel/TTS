@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.compose' version '2.0.21'
     id 'com.google.dagger.hilt.android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -61,6 +63,8 @@ dependencies {
 
     // Compose BOM
     implementation platform('androidx.compose:compose-bom:2025.05.01')
+    implementation 'androidx.fragment:fragment:1.8.8'
+    implementation 'androidx.core:core-i18n:1.0.0'
     androidTestImplementation platform('androidx.compose:compose-bom:2025.05.01')
 
     // Compose core
@@ -76,7 +80,8 @@ dependencies {
 
     // Hilt
     implementation 'com.google.dagger:hilt-android:2.51'
-    annotationProcessor 'com.google.dagger:hilt-android-compiler:2.51.1'
+    kapt 'com.google.dagger:hilt-android-compiler:2.51.1'
+    implementation 'androidx.hilt:hilt-navigation-compose:1.2.0'
 
     // Network
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
@@ -98,4 +103,15 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+
+    // Paging 3
+    implementation "androidx.paging:paging-runtime:3.3.0"
+    implementation "androidx.paging:paging-compose:3.3.0"
+    implementation "androidx.paging:paging-compose:3.4.0-alpha04"
+    
+    // Room
+    implementation "androidx.room:room-runtime:2.5.1"
+    kapt "androidx.room:room-compiler:2.5.1"
+    implementation "androidx.room:room-ktx:2.5.1"
+    implementation "androidx.room:room-paging:2.5.1"
 }

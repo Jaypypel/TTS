@@ -8,5 +8,5 @@ public enum Status {
    Updated,
    In_Process,
    Accepted,
-   Not_Seen,
+   Not_Seen, Revised,
 }

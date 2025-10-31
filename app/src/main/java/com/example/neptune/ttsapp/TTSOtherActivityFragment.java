@@ -57,7 +57,7 @@ public class TTSOtherActivityFragment extends Fragment {
         StrictMode.setThreadPolicy(policy);
 
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        userId = sessionManager.getToken();
+        userId = sessionManager.getUsername();
         user=(TextView)view.findViewById(R.id.textViewTOAUser);
         user.setText(userId);
 

@@ -26,6 +26,25 @@
         <activity android:name=".TTSTaskDelegateListItemDetailsActivity" />
         <activity android:name=".TTSAdminActivity" />
         <activity
+            android:name=".QueryAgainstTask"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".DisplayQueriesAgainstTaskActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".displayTaskToLearners.TaskToLearnerDetailsActivity"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".TaskSubmissionActivity"
+            android:theme="@style/AppTheme" />
+
+
+        <activity
+            android:name=".LearnerTaskCompletionActivity"
+            android:theme="@style/AppTheme" />
+        <activity
             android:name=".TTSTaskModificationActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity

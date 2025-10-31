@@ -1,146 +1,115 @@
 package com.example.neptune.ttsapp;
 
-import android.content.Context;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.neptune.ttsapp.databinding.TaskAcceptanceRowItemBinding;
 
-public class TaskDelegatedListCustomAdapter extends ArrayAdapter<TaskDataModel> implements View.OnClickListener{
+import java.util.Objects;
 
-    private ArrayList<TaskDataModel> dataSet;
-    Context mContext;
+public class TaskDelegatedListCustomAdapter extends ListAdapter<TaskDataModel, TaskDelegatedListCustomAdapter.TaskDelegatedViewHolder> {
 
-    // View lookup cache
-    private static class ViewHolder {
-    //    TextView txttaskDeligateOwnerName;
-        TextView txttaskDeligateReceivedName;
-        TextView txttaskDeligateTaskDate;
-        TextView txttaskDeligateTaskName;
-        TextView txttaskDeligateTaskStatus;
-      //  Button gotoTimeshare;
-
+    public interface OnItemClickListener {
+        void onItemClick(TaskDataModel item);
     }
 
+    private final OnItemClickListener listener;
 
-
-    public TaskDelegatedListCustomAdapter(ArrayList<TaskDataModel> data, Context context) {
-        super(context, R.layout.task_acceptance_row_item, data);
-        this.dataSet = data;
-        this.mContext=context;
-
+    public TaskDelegatedListCustomAdapter(OnItemClickListener listener) {
+        super(DIFF_CALLBACK);
+        this.listener = listener;
+        setHasStableIds(true); // Optional but good for large lists
     }
 
-
+    // Use stable IDs for better recycling
     @Override
-    public void onClick(View v) {
+    public long getItemId(int position) {
+        //ensure getItem(position) is not null before accessing getId() in production
+        TaskDataModel item = getItem(position);
+        if(item != null) return item.getId(); //Ensure getId() returns a unique, stable value
+        return RecyclerView.NO_ID; // Fallback if item is somehow null
+    }
 
-
-        int position=(Integer) v.getTag();
-        Object object= getItem(position);
-        TaskDataModel dataModel=(TaskDataModel)object;
-
-
-
-
-        switch (v.getId())
-        {
-
-//            case R.id.item_info:
+    // ViewHolder
+    static class TaskDelegatedViewHolder extends RecyclerView.ViewHolder {
+//     private final   TextView taskName, taskReceivedUser, taskDate, taskStatus;
+        private final TaskAcceptanceRowItemBinding binding;
+        public TaskDelegatedViewHolder(@NonNull TaskAcceptanceRowItemBinding itemBinding) {
+                super(itemBinding.getRoot());
+                this.binding = itemBinding;
 //
-////                Snackbar.make(v, "Release date " +dataModel.getFeature(), Snackbar.LENGTH_LONG)
-////                        .setAction("No action", null).show();
-//
-//                break;
-
-
+//            super(itemView);
+//            taskName = itemView.findViewById(R.id.taskDeligateTaskName);
+//            taskReceivedUser = itemView.findViewById(R.id.taskDeligateOwnerName);
+//            taskDate = itemView.findViewById(R.id.taskDeligateTaskDate);
+//            taskStatus = itemView.findViewById(R.id.taskDeligateTaskStatus);
         }
 
+        public void bind(final TaskDataModel item, final OnItemClickListener listener) {
+            if(item == null){
+                Log.w("Adapter", "Attemtping to bind null item in ViewHolder.");
+                binding.taskDeligateTaskName.setText("");
+                binding.taskDeligateOwnerName.setText("");
+                binding.taskDeligateTaskDate.setText("");
+                binding.taskDeligateTaskStatus.setText("");
+                binding.getRoot().setOnClickListener(null);
+                return;
+            }
 
+            binding.taskDeligateTaskName.setText(item.getTaskName());
+            binding.taskDeligateOwnerName.setText(item.getTaskReceivedUserID());
+            binding.taskDeligateTaskDate.setText(item.getExpectedDate());
+            binding.taskDeligateTaskStatus.setText(item.getStatus());
+            binding.getRoot().setOnClickListener(v -> {
+                if (listener!=null) listener.onItemClick(item);
+            });
+//            taskName.setText(item.getTaskName());
+//                    taskReceivedUser.setText(item.getTaskReceivedUserID());
+//            taskDate.setText(item.getExpectedDate());
+//            taskStatus.setText(item.getStatus());
+//            itemView.setOnClickListener(v -> listener.onItemClick(item));
+        }
     }
 
-    private int lastPosition = -1;
-
+    // Create ViewHolder
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        // Get the data item for this position
+    public TaskDelegatedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//        View view = LayoutInflater.from(parent.getContext())
+//                .inflate(R.layout.task_acceptance_row_item, parent, false); // Replace with your item layout
+//        return new TaskDelegatedViewHolder(view);
+        TaskAcceptanceRowItemBinding binding = TaskAcceptanceRowItemBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+        return new TaskDelegatedViewHolder(binding);
+    }
 
-        TaskDataModel dataModel = getItem(position);
-        // Check if an existing view is being reused, otherwise inflate the view
-        ViewHolder viewHolder; // view lookup cache stored in tag
+    // Bind ViewHolder
+    @Override
+    public void onBindViewHolder(@NonNull TaskDelegatedViewHolder holder, int position) {
+        TaskDataModel item = getItem(position);
+        Log.d("Adapter", "Binding item at position " + position + ": " + item.getTaskName());
+        holder.bind(item, listener);
+    }
 
-        final View result;
-
-        if (convertView == null) {
-
-
-            viewHolder = new ViewHolder();
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.task_acceptance_row_item, parent, false);
-
-            viewHolder.txttaskDeligateReceivedName = (TextView) convertView.findViewById(R.id.taskDeligateOwnerName);
-            viewHolder.txttaskDeligateTaskDate = (TextView) convertView.findViewById(R.id.taskDeligateTaskDate);
-            viewHolder.txttaskDeligateTaskName = (TextView) convertView.findViewById(R.id.taskDeligateTaskName);
-            viewHolder.txttaskDeligateTaskStatus = (TextView) convertView.findViewById(R.id.taskDeligateTaskStatus);
-
-
-
-            result=convertView;
-
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-            result=convertView;
+    // DiffUtil Callback
+    public static final DiffUtil.ItemCallback<TaskDataModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull TaskDataModel oldItem, @NonNull TaskDataModel newItem) {
+            return Objects.equals(oldItem.getId(), newItem.getId());
         }
 
-//        Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.animator.up_from_bottom : R.animator.down_from_top);
-//        result.startAnimation(animation);
-//        lastPosition = position;
-
-
-        viewHolder.txttaskDeligateReceivedName.setText(dataModel.getTaskReceivedUserID());
-//        if(dataModel.getTaskAssignedOn() != null){
-//            viewHolder.txttaskDeligateTaskDate.setText(extractDate(dataModel.getTaskAssignedOn()));
-//        }
-        viewHolder.txttaskDeligateTaskDate.setText(extractDate(dataModel.getTaskAssignedOn()));
-//        viewHolder.txttaskDeligateTaskDate.setText("25-08-2001");
-               if(dataModel.getTaskAssignedOn() != null){
-
-           String d = dataModel.getTaskAssignedOn();
-       }else{
-
-       }
-        viewHolder.txttaskDeligateTaskName.setText(dataModel.getTaskName());
-        viewHolder.txttaskDeligateTaskStatus.setText(dataModel.getStatus());
-
-
-        return convertView;
-    }
-
-
-    private String extractDate(String timestamp)
-    {
-        String currentDate= "";
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a", Locale.ENGLISH);
-        ZonedDateTime ist = ZonedDateTime.of(LocalDateTime.parse(timestamp.toUpperCase(Locale.ENGLISH),dateTimeFormatter), ZoneId.systemDefault());
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
-        currentDate = ist.format(dateFormatter);
-
-
-
-        return currentDate;
-    }
+        @Override
+        public boolean areContentsTheSame(@NonNull TaskDataModel oldItem, @NonNull TaskDataModel newItem) {
+            return oldItem.equals(newItem); // Override equals() properly in YourModel
+        }
+    };
 }

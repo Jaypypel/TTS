@@ -68,7 +68,7 @@ public class AssignRoleFragment extends Fragment {
 
         user=view.findViewById(R.id.textViewUser);
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        user.setText(sessionManager.getToken());
+        user.setText(sessionManager.getUsername());
 
         date=view.findViewById(R.id.textViewDate);
         time=view.findViewById(R.id.textViewTime);

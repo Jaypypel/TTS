@@ -102,13 +102,13 @@
         app:layout_constraintTop_toBottomOf="@id/textViewDelegatedListTime"
         app:layout_constraintWidth_percent="0.20" />
 
-    <ListView
-        android:id="@+id/listTaskDelegated"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewDelegatedListTask"
-        app:layout_constraintWidth_percent="0.65" />
+<!--    <ListView-->
+<!--        android:id="@+id/listTaskDelegated"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/textViewDelegatedListTask"-->
+<!--        app:layout_constraintWidth_percent="0.65" />-->
 
     <TextView
         android:id="@+id/assignedTasksState"
@@ -122,4 +122,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewDelegatedListTask" />
 
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerTaskDelegated"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/textViewDelegatedListTask"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

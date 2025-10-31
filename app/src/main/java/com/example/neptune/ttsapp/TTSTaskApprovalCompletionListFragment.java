@@ -80,7 +80,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_ttsapproval_completion_list, container, false);
 
         sessionManager = new SessionManager(getActivity());
-        userId = sessionManager.getToken();
+        userId = sessionManager.getUsername();
         user=view.findViewById(R.id.textViewApprovalCompletionUser);
         user.setText(userId);
         receivedApprovalCompletionTasks = view.findViewById(R.id.receivedApprovalCompletionTasks);
@@ -101,7 +101,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
         //Get Data From Database for Modification Task And set to the ListView
         if (InternetConnectivity.isConnected()) {
             appExecutors.getNetworkIO().execute(() -> {
-                getSendModificationTasks(getToken(),"unapproved").thenAccept(tasks -> {
+                getSendModificationTasks(getUsername(),"unapproved").thenAccept(tasks -> {
                     receivedApprovalCompletionTasks.setVisibility(View.INVISIBLE);
                     senderDataModels = tasks;
                     adapter = new TaskAllocatedListCustomAdapter(senderDataModels,getActivity());
@@ -115,7 +115,7 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
                 });
             });
             appExecutors.getNetworkIO().execute(() ->
-                    getReceiveModificationTasks(getToken(),"unapproved")
+                    getReceiveModificationTasks(getUsername(),"unapproved")
                             .thenAccept(tasks -> {
                 assignedTasksState.setVisibility(View.INVISIBLE);
                 receiverDataModels = tasks;
@@ -173,10 +173,10 @@ public class TTSTaskApprovalCompletionListFragment extends Fragment {
         return view;
     }
 
-    private String getToken()
+    private String getUsername()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getToken();
+        return sessionManager.getUsername();
     }
 
 

@@ -2,6 +2,7 @@ package com.example.neptune.ttsapp;
 
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class TaskDataModel implements Serializable {
 
@@ -107,6 +108,18 @@ public class TaskDataModel implements Serializable {
 
     public void setModificationdescription(String modificationdescription) {
         this.modificationdescription = modificationdescription;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        TaskDataModel that = (TaskDataModel) o;
+        return Objects.equals(id, that.id) && Objects.equals(taskOwnerUserID, that.taskOwnerUserID) && Objects.equals(taskReceivedUserID, that.taskReceivedUserID) && Objects.equals(activityName, that.activityName) && Objects.equals(taskName, that.taskName) && Objects.equals(projectCode, that.projectCode) && Objects.equals(projectName, that.projectName) && Objects.equals(expectedDate, that.expectedDate) && Objects.equals(expectedTotalTime, that.expectedTotalTime) && Objects.equals(description, that.description) && Objects.equals(taskAssignedOn, that.taskAssignedOn) && Objects.equals(actualTotalTime, that.actualTotalTime) && Objects.equals(taskSeenOn, that.taskSeenOn) && Objects.equals(taskCompletedOn, that.taskCompletedOn) && Objects.equals(taskAcceptedOn, that.taskAcceptedOn) && Objects.equals(taskProcessedOn, that.taskProcessedOn) && Objects.equals(tasKApprovedOn, that.tasKApprovedOn) && Objects.equals(status, that.status) && Objects.equals(modificationdescription, that.modificationdescription);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, taskOwnerUserID, taskReceivedUserID, activityName, taskName, projectCode, projectName, expectedDate, expectedTotalTime, description, taskAssignedOn, actualTotalTime, taskSeenOn, taskCompletedOn, taskAcceptedOn, taskProcessedOn, tasKApprovedOn, status, modificationdescription);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.example.neptune.ttsapp;
 
+import android.os.Looper;
+
 import com.example.neptune.ttsapp.Network.MainThreadExecutor;
 
 import java.util.concurrent.Executor;
@@ -18,7 +20,7 @@ public class AppModule {
     @Provides
     @Singleton
     public Executor provideDiskIOExecutor() {
-        return Executors.newSingleThreadExecutor();
+        return Executors.newCachedThreadPool();
     }
 
     @Provides
@@ -32,6 +34,9 @@ public class AppModule {
     public Executor provideMainThreadExecutor() {
         return  new MainThreadExecutor();
     }
+
+
+
 
 
 }

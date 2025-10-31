@@ -134,7 +134,7 @@ public class TTSTaskDelegationFragment extends Fragment {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
 
         taskDeliUser=view.findViewById(R.id.textViewTaskdeliUser);
-        taskDeliUser.setText(sessionManager.getToken());
+        taskDeliUser.setText(sessionManager.getUsername());
 
 
         taskDeliDate=view.findViewById(R.id.textViewDate);
@@ -311,15 +311,9 @@ public class TTSTaskDelegationFragment extends Fragment {
                 taskManagement.setExpectedDate(isExpDateValid());
                 taskManagement.setExpectedTime(isExpTimeValid());
                 taskManagement.setExpectedTotalTime(isTotalTimeValid());
-                taskManagement.setActualTotalTime("not_Available");
-                taskManagement.setTaskAssignedOn(delegationTime());
-                taskManagement.setStatus(pending.name());
-                taskManagement.setTaskAcceptedOn("not_accepted");
-                taskManagement.setTasKApprovedOn("not_approved");
-                taskManagement.setTaskSeenOn("not_seen");
-                taskManagement.setTaskCompletedOn("not_completed");
-                taskManagement.setTaskProcessedOn("not_processed");
-
+//                taskManagement.setActualTotalTime("not_Available");
+//                askManagement.setTaskAssignedOn(delegationTime()); t
+//                taskManagement.setStatus(pending.name());
                 AssignTaskDto assignTaskDto = new AssignTaskDto(taskManagement,measurableListDataModels);
 
 
@@ -551,7 +545,7 @@ public class TTSTaskDelegationFragment extends Fragment {
                         int min = Integer.parseInt(totalTimeMM);
                         if (min > 60)
                         {
-                            Toast.makeText(getActivity().getApplicationContext(), "Invalid Minute", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Invalid Minute", Toast.LENGTH_LONG).show();
                         }
                     } catch (Exception e) { e.printStackTrace(); }
                 }
@@ -740,7 +734,7 @@ public class TTSTaskDelegationFragment extends Fragment {
     private String deligateOwnerUserId()
     {
         sessionManager = new SessionManager(getActivity().getApplicationContext());
-        return sessionManager.getToken();
+        return sessionManager.getUsername();
     }
 
     private String isReceivedUserValid()
@@ -785,7 +779,7 @@ public class TTSTaskDelegationFragment extends Fragment {
 
     private String isExpTimeValid()
     {
-        String expTime= taskDeliExpTime.getText().toString().trim().replaceAll("\\s+","");
+        String expTime= taskDeliExpTime.getText().toString().trim();
         if(expTime.isEmpty()) { taskDeliExpTime.setError("Expected Time Cannot Be Empty"); }
         return expTime;
     }
@@ -1124,7 +1118,7 @@ public class TTSTaskDelegationFragment extends Fragment {
                 }
                 catch (IOException e) {
                     Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                    future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
+                    future.completeExceptionally(new Throwable("Exception occurred while getting assigned tasks due to" + e.getMessage()));
                 }
                 catch (RuntimeException e) {
                     future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
@@ -1148,20 +1142,21 @@ public class TTSTaskDelegationFragment extends Fragment {
 
 
         Call<ResponseBody> call = activityService.getActivitiesName();
-        call.enqueue(new Callback<ResponseBody>() {
+        call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
 
 
                 try {
-                    APIResponse apiResponse =   APIResponse.create(response);
-                    if(apiResponse instanceof  APISuccessResponse){
+                    APIResponse apiResponse = APIResponse.create(response);
+                    if (apiResponse instanceof APISuccessResponse) {
                         JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse)
                                 .getBody().getBody();
                         Gson gson = new Gson();
-                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+                        Type listType = new TypeToken<ArrayList<String>>() {
+                        }.getType();
 
-                        if(result.isJsonArray()){
+                        if (result.isJsonArray()) {
                             JsonArray activityNames = result.getAsJsonArray();
                             ArrayList<String> list = gson.fromJson(activityNames, listType);
                             future.complete(list);
@@ -1177,16 +1172,13 @@ public class TTSTaskDelegationFragment extends Fragment {
                     if (apiResponse instanceof APIErrorResponse) {
                         future.completeExceptionally(new Throwable("empty response"));
                     }
-                }
-                catch (ClassCastException e){
-                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                }
-                catch (IOException e) {
+                } catch (ClassCastException e) {
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to " + e.getMessage()));
+                } catch (IOException e) {
                     Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                    future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
-                }
-                catch (RuntimeException e) {
-                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                    future.completeExceptionally(new Throwable("Exception occurred while getting assigned tasks due to" + e.getMessage()));
+                } catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is " + e.getMessage() + " its cause " + e.getCause()));
                 }
 
             }
@@ -1207,19 +1199,20 @@ public class TTSTaskDelegationFragment extends Fragment {
     public CompletableFuture<ArrayList<String>> getTaskNames() {
         CompletableFuture<ArrayList<String>> future = new CompletableFuture<>();
         Call<ResponseBody> call = taskService.getTaskNames();
-        call.enqueue(new Callback<ResponseBody>() {
+        call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
 
 
                 try {
-                    APIResponse apiResponse =   APIResponse.create(response);
-                    if(apiResponse instanceof  APISuccessResponse){
+                    APIResponse apiResponse = APIResponse.create(response);
+                    if (apiResponse instanceof APISuccessResponse) {
                         JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
                         Gson gson = new Gson();
-                        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+                        Type listType = new TypeToken<ArrayList<String>>() {
+                        }.getType();
 
-                        if(result.isJsonArray()){
+                        if (result.isJsonArray()) {
                             JsonArray activityNames = result.getAsJsonArray();
                             ArrayList<String> list = gson.fromJson(activityNames, listType);
                             future.complete(list);
@@ -1235,22 +1228,19 @@ public class TTSTaskDelegationFragment extends Fragment {
                     if (apiResponse instanceof APIErrorResponse) {
                         future.completeExceptionally(new Throwable("empty response"));
                     }
-                }
-                catch (ClassCastException e){
-                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                }
-                catch (IOException e) {
+                } catch (ClassCastException e) {
+                    future.completeExceptionally(new Throwable("Unable to cast the response into required format due to " + e.getMessage()));
+                } catch (IOException e) {
                     Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                    future.completeExceptionally(new Throwable("Exception occured while getting assigned tasks due to" + e.getMessage()));
-                }
-                catch (RuntimeException e) {
-                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
+                    future.completeExceptionally(new Throwable("Exception occurred while getting assigned tasks due to" + e.getMessage()));
+                } catch (RuntimeException e) {
+                    future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is " + e.getMessage() + " its cause " + e.getCause()));
                 }
 
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                 future.completeExceptionally(new Throwable(t.getMessage()));
 
             }
@@ -1266,18 +1256,19 @@ public class TTSTaskDelegationFragment extends Fragment {
 
         appExecutor.getNetworkIO().execute(() -> {
             Call<ResponseBody> usernamesResponse = userService.getUsernames();
-            usernamesResponse.enqueue(new Callback<ResponseBody>() {
+            usernamesResponse.enqueue(new Callback<>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
 
 
                     try {
-                        APIResponse apiResponse =   APIResponse.create(response);
-                        if(apiResponse instanceof APISuccessResponse){
+                        APIResponse apiResponse = APIResponse.create(response);
+                        if (apiResponse instanceof APISuccessResponse) {
                             JsonElement result = ((APISuccessResponse<ResponseBody>) apiResponse).getBody().getBody();
                             Gson gson = new Gson();
-                            Type listType = new TypeToken<ArrayList<String>>() {}.getType();
-                            if(result.isJsonArray()){
+                            Type listType = new TypeToken<ArrayList<String>>() {
+                            }.getType();
+                            if (result.isJsonArray()) {
                                 JsonArray usernames = result.getAsJsonArray();
                                 ArrayList<String> list = gson.fromJson(usernames, listType);
                                 future.complete(list);
@@ -1291,24 +1282,18 @@ public class TTSTaskDelegationFragment extends Fragment {
                         if (apiResponse instanceof APIErrorResponse) {
                             future.completeExceptionally(new Throwable("empty response"));
                         }
-                    }
-
-                    catch (ClassCastException e){
-                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to "+ e.getMessage()));
-                    }
-                    catch (IOException e) {
+                    } catch (ClassCastException e) {
+                        future.completeExceptionally(new Throwable("Unable to cast the response into required format due to " + e.getMessage()));
+                    } catch (IOException e) {
                         Log.e("IOException", "Exception occurred: " + e.getMessage(), e);
-                        future.completeExceptionally(new Throwable("Exception occured while getting measurables due to" + e.getMessage()));
+                        future.completeExceptionally(new Throwable("Exception occurred while getting measurables due to" + e.getMessage()));
+                    } catch (RuntimeException e) {
+                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is " + e.getMessage() + " its cause " + e.getCause()));
                     }
-                    catch (RuntimeException e) {
-                        future.completeExceptionally(new Throwable("Unnoticed Exception occurred which is "+ e.getMessage() +   " its cause "+e.getCause()));
-                    }
-
-
                 }
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                     future.completeExceptionally(new Throwable(t.getMessage()));
                 }
             });

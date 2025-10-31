@@ -47,5 +47,10 @@
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
 
+        <!-- Make status bar transparent for edge-to-edge -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <!-- Make status bar icons dark for light theme -->
+        <item name="android:windowLightStatusBar">true</item>
+
     </style>
 </resources>
